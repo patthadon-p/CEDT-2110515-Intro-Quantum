@@ -1,0 +1,215 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage{../CEDT-Assignment-style}
+
+\begin{document}
+\subject
+\asgntitle{1}{}{Week 1}{6733172621 Patthadon Phengpinij}{Claude (for\,\LaTeX\,styling and grammar checking)}
+
+% ================================================================================ %
+%                                    Problem 01                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Quantum Computing Account}
+\par Please go to IBM Quantum Experience and register an account, \url{https://quantum.cloud.ibm.com/}.
+\end{problem}
+
+\begin{solution}
+	Logged in to IBM Quantum Experience and registered an account successfully.
+	\fig*[0.9\linewidth]{images/p1-answer.png}{}{}
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 02                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{My First Quantum Circuit}
+\par Try to create a circuit. Click on IBM Quantum Composer and drag the gates to form the following circuit.
+
+\fig*[0.3\linewidth]{images/p2-question.png}{}{}
+
+The first icon is a quantum gate called Hadamard gate and the second icon is a measurement.
+The input is from the left ($q_0$).
+Do not worry if you do not understand what it is at this moment.
+But good job! You have created your first quantum circuit!
+\end{problem}
+
+\begin{solution}
+	Finished creating the quantum circuit as instructed.
+	\fig*[0.3\linewidth]{images/p2-answer.png}{}{}
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 03                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{My First Quantum Computing}
+\par Submit the job. Click on the result when it is finished. You see some like this.
+You may submit to a simulator or real quantum hardware.
+
+\fig*[0.3\linewidth]{images/p3-question.png}{}{}
+
+We started with a state in \( \ket{0} \) (a basis state).
+After the \textit{Hadamard gate}, it becomes a superposition of \( \ket{0} \) and \( \ket{1} \), i.e. \( \sim \ket{0} + \ket{1} \) (we will learn later).
+Then we performed a measurement on the output and the superposition state collapses to either \( \ket{0} \) or \( \ket{1} \).
+The histogram shows that about 50\% of the chance we obtain \( \ket{0} \) and another 50\% of the chance we obtain \( \ket{1} \).
+Cool! We have done our first quantum computation.
+This job was submitted to a real quantum computer, called ``ibmq\_casablanca.''
+It is a 5-qubit quantum computer. However, this computer is gone.
+But definitely, you will find other more powerful ones.
+\end{problem}
+
+\begin{solution}
+	The job was done successfully and the result was obtained as instructed.
+	\fig*[0.7\linewidth]{images/p3-answer.png}{}{}
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 04                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Google Colab and Python}
+\par We need to do a lot of matrix operations. We will choose Google Colab, in which we can run Python easily.
+Since IBM Quantum Experience also uses Python, it will save your efforts.
+Please open a Google Colab account here \url{https://colab.research.google.com/}.
+\end{problem}
+
+\begin{solution}
+	I decided to use my local computer to run the Jupyter notebook instead of Google Colab.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 05                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Vector Inner Product Using Python}
+\par We use the NumPy library to perform vector and matrix operations. To import the library, type
+
+\begin{codingbox}
+import numpy as np
+\end{codingbox}
+
+Then let's implement
+\[
+	\vec{v_1} \cdot \vec{v_2}
+	= \begin{pmatrix}\sqrt{3} & 1\end{pmatrix} \begin{pmatrix}1 \\ 1\end{pmatrix}
+	= \paren{\sqrt{3} \times 1} + \paren{1 \times 1}
+	= \sqrt{3} + 1
+	\approx 2.732
+\]
+
+\begin{codingbox}
+v1 = np.array([np.sqrt(3), 1])
+v2 = np.array([1, 1])
+inner_product = np.vdot(v1, v2)
+
+print(inner_product)
+\end{codingbox}
+
+Type Shift-Enter to let it run. Do you see the same result?
+Note that we use \texttt{np.vdot} instead of \texttt{np.dot} because we need to use complex vector dot products in quantum computing.
+Try also \texttt{print(v1.shape)}, which will give you (2, 1).
+It means we constructed a \( 2 \times 1 \) matrix, which is a column vector with 2 elements.
+\end{problem}
+
+\begin{solution}
+	Try running the code in a Python environment and obtained the same result of approximately 2.732.
+
+	\begin{codingbox}
+import numpy as np
+
+v1 = np.array([[np.sqrt(3)], [1]])
+v2 = np.array([[1], [1]])
+inner_product = np.vdot(v1, v2)
+
+print(f"Inner product: {inner_product:.3f}")
+print("v1 Shape:", v1.shape)
+print("v2 Shape:", v2.shape)
+\end{codingbox}
+
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 06                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Inner Product with Complex Coefficient 1}
+\par Now, let's try \( \vec{v_1} = \begin{pmatrix} i \\ 1 \end{pmatrix} \) and \( \vec{v_2} = \begin{pmatrix} -i \\ 1 \end{pmatrix} \).
+Firstly, try to use hand calculation. Then use Python to check if it is correct.
+Note that in the NumPy library, you need to put \( i \) as \( j \).
+For example, \( 5 + i \) should be entered as \( 5 + 1j \) (putting the ``1'' is necessary).
+
+Think about that before reading the code below:
+
+\begin{codingbox}
+v1 = np.array([[1j], [1]])
+v2 = np.array([[-1j], [1]])
+inner_result = np.vdot(v1, v2)
+print(inner_result)
+\end{codingbox}
+
+\end{problem}
+
+\begin{solution}
+	First, try to calculate the inner product manually:
+	\begin{align*}
+		\vec{v_1} \cdot \vec{v_2} & = \begin{pmatrix} i \\ 1 \end{pmatrix} \cdot \begin{pmatrix} -i \\ 1 \end{pmatrix} \\
+		                          & = \begin{pmatrix} i^* & 1^* \end{pmatrix} \begin{pmatrix} -i \\ 1 \end{pmatrix}    \\
+		                          & = \begin{pmatrix} -i & 1 \end{pmatrix} \begin{pmatrix} -i \\ 1 \end{pmatrix}       \\
+		                          & = (-i \times -i) + (1 \times 1)                                                    \\
+		                          & = -1 + 1                                                                           \\
+		\vec{v_1} \cdot \vec{v_2} & = 0
+	\end{align*}
+
+	Then, re-check the result using Python code given by the problem.
+	We can see that the result is also 0, which is the same as what we calculated manually.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 07                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Inner Product with Complex Coefficient 2}
+\par Now, let's try \( \vec{v_1} = \begin{pmatrix} 1 + 2i \\ 1 \end{pmatrix} \) and \( \vec{v_2} = \begin{pmatrix} 1 - i \\ 1 \end{pmatrix} \).
+\end{problem}
+
+\begin{solution}
+	First, we calculate the inner product manually:
+	\begin{align*}
+		\vec{v_1} \cdot \vec{v_2} & = \begin{pmatrix} 1 + 2i \\ 1 \end{pmatrix} \cdot \begin{pmatrix} 1 - i \\ 1 \end{pmatrix} \\
+		                          & = \begin{pmatrix} (1 + 2i)^* & 1^* \end{pmatrix} \begin{pmatrix} 1 - i \\ 1 \end{pmatrix}  \\
+		                          & = \begin{pmatrix} 1 - 2i & 1 \end{pmatrix} \begin{pmatrix} 1 - i \\ 1 \end{pmatrix}        \\
+		                          & = (1 - 2i)(1 - i) + (1)(1)                                                                 \\
+		                          & = 1 - i - 2i + 2i^2 + 1                                                                    \\
+		                          & = 1 - 3i - 2 + 1                                                                           \\
+		\vec{v_1} \cdot \vec{v_2} & = -3i
+	\end{align*}
+
+	Then, re-check the result using the following Python code:
+
+	\begin{codingbox}
+v1 = np.array([[1 + 2j], [1]])
+v2 = np.array([[1 - 1j], [1]])
+inner_result = np.vdot(v1, v2)
+
+print(f"Inner product: {inner_result:.3f}")
+\end{codingbox}
+
+	We can see that the result is also -3i, which is the same as what we calculated manually.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                     Appendix                                     %
+% ================================================================================ %
+
+\myappendix{code/assignment-01.pdf}{Assignment 01 | Code Solution}
+
+% ================================================================================ %
+
+\end{document}
