@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *)",
+      "Bash(latexmk assignment-template.tex)",
+      "Bash(rm -f assignment-template.synctex.gz)",
+      "Bash(latexmk)"
+    ]
+  }
+}
