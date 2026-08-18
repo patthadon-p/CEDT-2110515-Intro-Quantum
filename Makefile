@@ -56,12 +56,3 @@ fmt-all:
 		mkdir -p "$$d/.build"; \
 		latexindent -w -s -c "$$d/.build/" -l="$(LATEXINDENT_CONF)" "$$d"/*.tex; \
 	done
-
-nb-pdf:
-	@test -n "$(NB)" || (echo "Usage: make nb-pdf NB=assignment-01/code/assignment-01.ipynb" >&2 && exit 1)
-	@test -f "$(NB)" || (echo "No such notebook: $(NB)" >&2 && exit 1)
-	@test -x "$(JUPYTER)" || (echo "No jupyter found at $(JUPYTER) -- see .venv/ setup in README.md" >&2 && exit 1)
-	TEXINPUTS="$(CURDIR):$$TEXINPUTS" "$(JUPYTER)" nbconvert --to pdf \
-		--TemplateExporter.extra_template_basedirs="$(NBCONVERT_TEMPLATE_DIR)" \
-		--template=cedt-assignment \
-		"$(NB)"
