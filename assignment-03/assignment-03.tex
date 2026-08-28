@@ -1,0 +1,338 @@
+\documentclass[a4paper, 10pt]{article}
+\input{../course-config}
+\usepackage{../vendor/template/CEDT-Assignment-style}
+
+\begin{document}
+\subject
+\asgntitle{3}{}{Week 3}{6733172621 Patthadon Phengpinij}{Claude (for\,\LaTeX\,styling and grammar checking)}
+
+% ================================================================================ %
+%                                    Problem 01                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Finding Eigenvectors by Hand}
+\par This is a tedious exercise.
+But I want you to go through to practice the skill of finding eigenvectors.
+We can also measure the electron spin in \( \hat{y} \) direction by setting up an external magnetic field in the \( \hat{y} \) direction.
+It is given that the corresponding operator is \[ \sigma_y = \begin{pmatrix}
+	0 & -i \\
+	i & 0
+\end{pmatrix}. \] Again, we are using the \( \ket{0}/\ket{1} \) basis.
+Find the eigenvalues and eigenvectors in the \( \ket{0}/\ket{1} \) basis.
+\end{problem}
+
+\begin{solution}
+	To find the eigenvalues, we solve the characteristic equation \( \det\paren{\sigma_y - \lambda I} = 0 \):
+	\[
+		\det\begin{pmatrix}
+			-\lambda & -i       \\
+			i        & -\lambda
+		\end{pmatrix} = \lambda^2 - (-i)(i) = \lambda^2 - 1 = 0
+	\]
+	which gives \( \lambda_1 = 1 \) and \( \lambda_2 = -1 \).
+
+	\textbf{Eigenvector for \( \lambda_1 = 1 \).} Solve \( \paren{\sigma_y - I}\vec{v} = \vec{0} \):
+	\[
+		\begin{pmatrix}
+			-1 & -i \\
+			i  & -1
+		\end{pmatrix}
+		\begin{pmatrix}
+			v_1 \\ v_2
+		\end{pmatrix} = \begin{pmatrix}
+			0 \\ 0
+		\end{pmatrix}
+	\]
+	The first row gives \( -v_1 - i v_2 = 0 \), i.e. \( v_1 = -i v_2 \). Setting \( v_1 = 1 \) gives \( v_2 = i \), so the unnormalized eigenvector is \( \begin{pmatrix} 1 \\ i \end{pmatrix} \). Normalizing (norm \( = \sqrt{1^2 + |i|^2} = \sqrt{2} \)):
+	\[
+		\ket{\lambda_1 = 1} = \frac{1}{\sqrt{2}}\begin{pmatrix}
+			1 \\ i
+		\end{pmatrix} = \frac{1}{\sqrt{2}}\paren{\ket{0} + i\ket{1}}
+	\]
+
+	\textbf{Eigenvector for \( \lambda_2 = -1 \).} Solve \( \paren{\sigma_y + I}\vec{v} = \vec{0} \):
+	\[
+		\begin{pmatrix}
+			1 & -i \\
+			i & 1
+		\end{pmatrix}
+		\begin{pmatrix}
+			v_1 \\ v_2
+		\end{pmatrix} = \begin{pmatrix}
+			0 \\ 0
+		\end{pmatrix}
+	\]
+	The first row gives \( v_1 - i v_2 = 0 \), i.e. \( v_1 = i v_2 \). Setting \( v_1 = 1 \) gives \( v_2 = -i \), so the unnormalized eigenvector is \( \begin{pmatrix} 1 \\ -i \end{pmatrix} \). Normalizing:
+	\[
+		\ket{\lambda_2 = -1} = \frac{1}{\sqrt{2}}\begin{pmatrix}
+			1 \\ -i
+		\end{pmatrix} = \frac{1}{\sqrt{2}}\paren{\ket{0} - i\ket{1}}
+	\]
+
+	\textbf{Check.}
+	\[
+		\sigma_y \ket{\lambda_1 = 1} = \frac{1}{\sqrt{2}}\begin{pmatrix}
+			0 & -i \\
+			i & 0
+		\end{pmatrix}\begin{pmatrix}
+			1 \\ i
+		\end{pmatrix} = \frac{1}{\sqrt{2}}\begin{pmatrix}
+			1 \\ i
+		\end{pmatrix} = \ket{\lambda_1 = 1}
+	\]
+	\[
+		\sigma_y \ket{\lambda_2 = -1} = \frac{1}{\sqrt{2}}\begin{pmatrix}
+			0 & -i \\
+			i & 0
+		\end{pmatrix}\begin{pmatrix}
+			1 \\ -i
+		\end{pmatrix} = -\frac{1}{\sqrt{2}}\begin{pmatrix}
+			1 \\ -i
+		\end{pmatrix} = -\ket{\lambda_2 = -1}
+	\]
+	both of which confirm \( \sigma_y \ket{\lambda_k} = \lambda_k \ket{\lambda_k} \), as expected.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 02                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Finding Eigenvectors Using Python}
+\par Use Google Colab to check your answer. What you need is the function to find the
+eigenvectors and eigenvalues. The following code first builds the matrix and then find the
+eigenvectors and eigenvalues:
+\begin{codingbox}
+sigmay = np.array([[0, -1j], [1j, 0]])
+print(sigmay)
+
+eigenvalues, eigenvectors = np.linalg.eig(sigmay)
+print(eigenvalues)
+print(eigenvectors)
+\end{codingbox}
+\end{problem}
+
+\begin{solution}
+	Running the provided code in Google Colab prints
+	\[
+		\text{eigenvalues} \approx \begin{pmatrix}
+			1 \\ -1
+		\end{pmatrix}, \qquad
+		\text{eigenvectors} \approx \begin{pmatrix}
+			-0.7071i & 0.7071   \\
+			0.7071   & -0.7071i
+		\end{pmatrix}
+	\]
+	where each column of the eigenvector matrix is the eigenvector for the eigenvalue in the corresponding position.
+
+	\begin{enumerate}
+		\item  The first column, \( \begin{pmatrix} -0.7071i \\ 0.7071 \end{pmatrix} = -i \cdot \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ i \end{pmatrix} \),
+		is the hand-calculated eigenvector for \( \lambda_1 = 1 \) up to the global phase factor \( -i \),
+		which is physically irrelevant since an eigenvector is only defined up to a nonzero scalar multiple.
+
+		\item The second column, \( \begin{pmatrix} 0.7071 \\ -0.7071i \end{pmatrix} \approx \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ -i \end{pmatrix} \),
+		matches the hand-calculated eigenvector for \( \lambda_2 = -1 \) exactly.
+	\end{enumerate}
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 03                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Pauli Matrix Multiplication by Hand and Using Python}
+\par Use hand calculation to show that \( \sigma_y^2 = I \).
+Then verify with Colab using the following codes.
+Note that \texttt{np.matmul} is for matrix multiplication.
+\begin{codingbox}
+sigmay = np.array([[0, -1j], [1j, 0]])
+
+print(sigmay)
+print(np.matmul(sigmay, sigmay))
+\end{codingbox}
+\end{problem}
+
+\begin{solution}
+	By hand:
+	\[
+		\sigma_y^2 = \begin{pmatrix}
+			0 & -i \\
+			i & 0
+		\end{pmatrix}\begin{pmatrix}
+			0 & -i \\
+			i & 0
+		\end{pmatrix} = \begin{pmatrix}
+			(-i)(i) & 0       \\
+			0       & (i)(-i)
+		\end{pmatrix} = \begin{pmatrix}
+			-i^2 & 0    \\
+			0    & -i^2
+		\end{pmatrix} = \begin{pmatrix}
+			1 & 0 \\
+			0 & 1
+		\end{pmatrix} = I
+	\]
+
+	Verifying with the provided Python code, the output is
+	\begin{align*}
+		\sigma_y &= \begin{pmatrix}
+			0 & -i \\
+			i & 0
+		\end{pmatrix} \\
+		\sigma_y^2 &= \begin{pmatrix}
+			1 & 0 \\
+			0 & 1
+		\end{pmatrix}
+	\end{align*}
+	
+	which matches the hand-calculated result \( \sigma_y^2 = I \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 04                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Pauli Matrix Multiplication by Hand and Using Python}
+\par Repeat the previous question for \( \sigma_z^2 = I \) using both hand calculation and Colab.
+\end{problem}
+
+\begin{solution}
+	By hand, with \( \sigma_z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix} \):
+	\[
+		\sigma_z^2 = \begin{pmatrix}
+			1 & 0  \\
+			0 & -1
+		\end{pmatrix}\begin{pmatrix}
+			1 & 0  \\
+			0 & -1
+		\end{pmatrix} = \begin{pmatrix}
+			1^2 & 0      \\
+			0   & (-1)^2
+		\end{pmatrix} = \begin{pmatrix}
+			1 & 0 \\
+			0 & 1
+		\end{pmatrix} = I
+	\]
+
+	Verifying with Colab:
+\begin{codingbox}
+sigmaz = np.array([[1, 0], [0, -1]])
+
+print(sigmaz)
+print(np.matmul(sigmaz, sigmaz))
+\end{codingbox}
+	which prints \( \sigma_z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix} \) and \( \sigma_z^2 = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} \), matching the hand-calculated result.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 05                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Proof of Hermitianity}
+\par Show that \( \sigma_y \) is Hermitian. Verify using Colab.
+\par \( \paren{\underline{\textit{Hints:}} \text{ find } \sigma_y^{*^T} \text{ and show that it is the same as } \sigma_y} \)
+\end{problem}
+
+\begin{solution}
+	By hand, the conjugate transpose of \( \sigma_y \) is obtained by transposing and then conjugating every entry:
+	\[
+		\sigma_y = \begin{pmatrix}
+			0  & -i \\
+			i & 0
+		\end{pmatrix}
+		\quad\Longrightarrow\quad
+		\sigma_y^T = \begin{pmatrix}
+			0  & i \\
+			-i & 0
+		\end{pmatrix}
+		\quad\Longrightarrow\quad
+		\sigma_y^{*^T} = \begin{pmatrix}
+			0 & -i \\
+			i & 0
+		\end{pmatrix} = \sigma_y
+	\]
+	Since \( \sigma_y^{*^T} = \sigma_y \), \( \sigma_y \) is Hermitian.
+	
+	Verifying with Colab:
+\begin{codingbox}
+sigmay_dagger = sigmay.conj().T
+
+print(sigmay_dagger)
+print(np.allclose(sigmay_dagger, sigmay))
+\end{codingbox}
+	which prints \( \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix} \),
+	identical to \( \sigma_y \), and \texttt{True} for the equality check,
+	confirming \( \sigma_y \) is Hermitian.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 06                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Operation of Paul Matrix on Bra and Ket}
+\par Find \( \sigma_y \ket{0} \), \( \bra{0} \sigma_y \).
+Are they the same? Why? Verify using Colab.
+You can use \texttt{np.dot} for matrix-vector multiplication.
+The following shows how to do \( \sigma_y \ket{0} \).
+\begin{codingbox}
+zerospin = np.array([[1], [0]])
+
+print(zerospin.shape)
+print(np.dot(sigmay, zerospin))
+\end{codingbox}
+\end{problem}
+
+\begin{solution}
+	First, \( \sigma_y \ket{0} \):
+	\[
+		\sigma_y \ket{0} = \begin{pmatrix}
+			0 & -i \\
+			i & 0
+		\end{pmatrix}\begin{pmatrix}
+			1 \\ 0
+		\end{pmatrix} = \begin{pmatrix}
+			0 \\ i
+		\end{pmatrix} = i\ket{1}
+	\]
+	Next, \( \bra{0}\sigma_y \), where \( \bra{0} = \begin{pmatrix} 1 & 0 \end{pmatrix} \):
+	\[
+		\bra{0}\sigma_y = \begin{pmatrix}
+			1 & 0
+		\end{pmatrix}\begin{pmatrix}
+			0 & -i \\
+			i & 0
+		\end{pmatrix} = \begin{pmatrix}
+			0 & -i
+		\end{pmatrix} = -i\bra{1}
+	\]
+	They are \textbf{not} the same: \( \sigma_y\ket{0} = i\ket{1} \) while \( \bra{0}\sigma_y = -i\bra{1} \), which differ by a sign on the imaginary coefficient.
+	This is expected because, since \( \sigma_y \) is Hermitian (Problem 5), \( \bra{0}\sigma_y = \paren{\sigma_y\ket{0}}^{*^T} \) is the \emph{conjugate} transpose, not just the transpose, of \( \sigma_y\ket{0} \); as \( \sigma_y\ket{0} = i\ket{1} \) has a nonzero imaginary coefficient, conjugation flips its sign.
+
+	Verifying with Colab:
+\begin{codingbox}
+zerospin = np.array([[1], [0]])
+print(zerospin.shape)
+
+sigma_y_zero = np.dot(sigmay, zerospin)
+print(sigma_y_zero)
+
+bra_zero = zerospin.conj().T
+bra_zero_sigma_y = np.dot(bra_zero, sigmay)
+print(bra_zero_sigma_y)
+\end{codingbox}
+	which prints \( \begin{pmatrix} 0 \\ i \end{pmatrix} \) for \( \sigma_y\ket{0} \) and \( \begin{pmatrix} 0 & -i \end{pmatrix} \) for \( \bra{0}\sigma_y \), matching the hand-calculated result.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                     Appendix                                     %
+% ================================================================================ %
+
+\myappendix{code/assignment-03-code.pdf}{Assignment 03 | Code Solution}
+
+% ================================================================================ %
+
+\end{document}
