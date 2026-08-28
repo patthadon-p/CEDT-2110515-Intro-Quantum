@@ -1,0 +1,362 @@
+\documentclass[a4paper, 10pt]{article}
+\input{../course-config}
+\usepackage{../vendor/template/CEDT-Assignment-style}
+
+\begin{document}
+\subject
+\asgntitle{2}{}{Week 2}{6733172621 Patthadon Phengpinij}{Claude (for\,\LaTeX\,styling and grammar checking)}
+
+% ================================================================================ %
+%                                    Problem 01                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Normalization by Hand}
+\par Normalize vector \( \ket{\vec{v_1}} = 2\ket{\uparrow} + 1\ket{\downarrow} \) by hand.
+\end{problem}
+
+\begin{solution}
+	To normalize the vector \( \ket{\vec{v_1}} = 2\ket{\uparrow} + 1\ket{\downarrow} \), we need to divide it by its norm.
+
+	The norm of \( \ket{\vec{v_1}} \) is given by:
+	\[
+		\abs{\ket{\vec{v_1}}} = \sqrt{|2|^2 + |1|^2} = \sqrt{4 + 1} = \sqrt{5}
+	\]
+	Therefore, the normalized vector is:
+	\[
+		\ket{\vec{v_1}_{\text{normalized}}} = \frac{2}{\sqrt{5}} \ket{\uparrow} + \frac{1}{\sqrt{5}} \ket{\downarrow}
+		\approx \begin{pmatrix}
+			0.8944 \\
+			0.4472
+		\end{pmatrix}
+	\]
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 02                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Normalization Using Python}
+\par Check using Google Colab. You can use the scikit-learn library to do so:
+\begin{codingbox}
+import numpy as np
+
+v1 = np.array([[2], [1]])
+print(v1)
+
+from sklearn.preprocessing import normalize
+
+v2 = v1 / np.linalg.norm(v1)
+print(v2)
+\end{codingbox}
+\end{problem}
+
+\begin{solution}
+	After running the provided Python code, the output is:
+	\[
+		\ket{\vec{v_1}_{\text{normalized}}} \approx \begin{pmatrix}
+			0.8944 \\
+			0.4472
+		\end{pmatrix}
+	\]
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 03                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Normalization by Hand with Complex Coefficient}
+\par Normalize vector \( \ket{\vec{v_1}} = 2\ket{\uparrow} + (1 + i)\ket{\downarrow} \) by hand.
+\end{problem}
+
+\begin{solution}
+	The norm of \( \ket{\vec{v_1}} = 2\ket{\uparrow} + (1 + i)\ket{\downarrow} \) is calculated as follows:
+	\[
+		\abs{\ket{\vec{v_1}}} = \sqrt{|2|^2 + |1 + i|^2} = \sqrt{4 + (1^2 + 1^2)} = \sqrt{4 + 2} = \sqrt{6}
+	\]
+	
+	Thus, the normalized vector is:
+	\[
+		\ket{\vec{v_1}_{\text{normalized}}} = \frac{2}{\sqrt{6}} \ket{\uparrow} + \frac{1 + i}{\sqrt{6}} \ket{\downarrow}
+		\approx \begin{pmatrix}
+			0.8165 \\
+			0.4082 + 0.4082i
+		\end{pmatrix}
+	\]
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 04                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Normalization Using Python with Complex Coefficient}
+\par Verify using Google Colab. Remember you need to use \( 1 + 1j \) to represent \( 1 + i \).
+\end{problem}
+
+\begin{solution}
+	Using the following Python code:
+\begin{codingbox}
+v1 = np.array([[2], [1+1j]])
+v2 = np.round(v1 / np.linalg.norm(v1), 4)
+print(f"Normalized vector:\n{v2}")
+\end{codingbox}
+
+	After running the provided Python code, the output is:
+	\[
+		\ket{\vec{v_1}_{\text{normalized}}} \approx \begin{pmatrix}
+			0.8165 \\
+			0.4082 + 0.4082i
+		\end{pmatrix}
+	\]
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 05                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Vectors on a 2D Plane}
+\par On a 2D plane, draw the vectors \( \ket{\vec{x^\prime}} = \frac{1}{\sqrt{2}}\paren{ \ket{\hat{x}} + \ket{\hat{y}} } \) and \( \ket{\vec{y^\prime}} = \frac{1}{\sqrt{2}}\paren{ \ket{\hat{x}} - \ket{\hat{y}} } \).
+Write the column forms of \( \ket{\vec{x^\prime}} \) and \( \ket{\vec{y^\prime}} \).
+Show that \( \ket{\vec{x^\prime}} \) and \( \ket{\vec{y^\prime}} \) are orthonormal,
+i.e. \( \braket{\vec{x^\prime}|\vec{x^\prime}} = \braket{\vec{y^\prime}|\vec{y^\prime}} = 1 \)
+and \( \braket{\vec{x^\prime}|\vec{y^\prime}} = \braket{\vec{y^\prime}|\vec{x^\prime}} = 0 \) and .
+You have derived a new orthonormal basis for a 2D plane.
+But this is not surprising, right?
+As \( \ket{\vec{x^\prime}} \) and \( \ket{\vec{y^\prime}} \) can be obtained by just rotating
+\end{problem}
+
+\begin{solution}
+	The column forms of \( \ket{\vec{x^\prime}} \) and \( \ket{\vec{y^\prime}} \), using \( \ket{\hat{x}} = \begin{pmatrix} 1 \\ 0 \end{pmatrix} \) and \( \ket{\hat{y}} = \begin{pmatrix} 0 \\ 1 \end{pmatrix} \), are
+	\[
+		\ket{\vec{x^\prime}} = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 \\ 1 \end{pmatrix}, \qquad
+		\ket{\vec{y^\prime}} = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 \\ -1 \end{pmatrix}
+	\]
+
+	\begin{center}
+		\begin{tikzpicture}[scale=2.2, >=Stealth]
+			\draw[->] (-0.2, 0) -- (1.3, 0) node[right] {\( \hat{x} \)};
+			\draw[->] (0, -0.2) -- (0, 1.3) node[above] {\( \hat{y} \)};
+
+			\draw[->, thick, blue] (0, 0) -- ({1/sqrt(2)}, {1/sqrt(2)}) node[above right] {\( \ket{\vec{x^\prime}} \)};
+			\draw[->, thick, red] (0, 0) -- ({1/sqrt(2)}, {-1/sqrt(2)}) node[below right] {\( \ket{\vec{y^\prime}} \)};
+
+			\draw[dashed, gray] (0.55, 0) arc (0:45:0.55);
+			\node at (0.68, 0.15) {\small \( 45^\circ \)};
+		\end{tikzpicture}
+	\end{center}
+
+	\textbf{Norms:}
+	\[
+		\braket{\vec{x^\prime}|\vec{x^\prime}} = \frac{1}{2}\paren{1 \cdot 1 + 1 \cdot 1} = \frac{2}{2} = 1, \qquad
+		\braket{\vec{y^\prime}|\vec{y^\prime}} = \frac{1}{2}\paren{1 \cdot 1 + (-1) \cdot (-1)} = \frac{2}{2} = 1
+	\]
+
+	\textbf{Cross terms:}
+	\[
+		\braket{\vec{x^\prime}|\vec{y^\prime}} = \frac{1}{2}\paren{1 \cdot 1 + 1 \cdot (-1)} = \frac{1 - 1}{2} = 0, \qquad
+		\braket{\vec{y^\prime}|\vec{x^\prime}} = \frac{1}{2}\paren{1 \cdot 1 + (-1) \cdot 1} = \frac{1 - 1}{2} = 0
+	\]
+
+	Since both vectors have unit norm and their inner product with each other is zero,
+	\( \ket{\vec{x^\prime}} \) and \( \ket{\vec{y^\prime}} \) form an orthonormal basis.
+
+	This is not surprising: \( \ket{\vec{x^\prime}} \) and \( \ket{\vec{y^\prime}} \) are simply \( \ket{\hat{x}} \) and \( \ket{\hat{y}} \) rotated counterclockwise by \( 45^\circ \),
+	and a rotation always preserves lengths and angles,
+	so it necessarily maps an orthonormal basis to another orthonormal basis.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 06                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Basis Change by Hand}
+\par Vector \( \vec{v_1} = \begin{pmatrix}
+	1 \\ 2
+\end{pmatrix} \) is in the \( \ket{+}/\ket{-} \) basis.
+Represent it in the \( \ket{0}/\ket{1} \) basis.
+Try to convert \( \ket{+} \) and \( \ket{-} \) in terms of \( \ket{0} \) and \( \ket{1} \) and perform the substitution.
+To check your answer, convert it back to \( \ket{+}/\ket{-} \) using the equations introduced in this chapter and you should get back \( \begin{pmatrix}
+	1 \\ 2
+\end{pmatrix} \).
+\end{problem}
+
+\begin{solution}
+	We have \( \ket{+} = \frac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}} \) and \( \ket{-} = \frac{1}{\sqrt{2}}\paren{\ket{0} - \ket{1}} \).
+	Substituting \( \vec{v_1} = 1 \ket{+} + 2 \ket{-} \):
+	\begin{align*}
+		\vec{v_1} & =  1 \ket{+} + 2 \ket{-} \\
+		 & = 1 \cdot \frac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}} + 2 \cdot \frac{1}{\sqrt{2}}\paren{\ket{0} - \ket{1}}    \\
+		          & = \frac{1}{\sqrt{2}}\sqbracket{(1 + 2)\ket{0} + (1 - 2)\ket{1}}                                              \\
+		\vec{v_1} & = \frac{3}{\sqrt{2}} \ket{0} - \frac{1}{\sqrt{2}} \ket{1}
+	\end{align*}
+
+	So in the \( \ket{0}/\ket{1} \) basis:
+	\[
+		\vec{v_1} = \begin{pmatrix}
+			3/\sqrt{2} \\ -1/\sqrt{2}
+		\end{pmatrix} \approx \begin{pmatrix}
+			2.1212 \\ -0.7071
+		\end{pmatrix}
+	\]
+
+	\textbf{Check.} Converting back to the \( \ket{+}/\ket{-} \) basis with \( \ket{0} = \frac{1}{\sqrt{2}}\paren{\ket{+} + \ket{-}} \) and \( \ket{1} = \frac{1}{\sqrt{2}}\paren{\ket{+} - \ket{-}} \), and writing \( \vec{v_1} = a\ket{0} + b\ket{1} \) with \( a = 3/\sqrt{2},\, b = -1/\sqrt{2} \):
+	\[
+		c_+ = \frac{a + b}{\sqrt{2}} = \frac{3/\sqrt{2} - 1/\sqrt{2}}{\sqrt{2}} = \frac{2/\sqrt{2}}{\sqrt{2}} = 1
+	\]
+	\[
+		c_- = \frac{a - b}{\sqrt{2}} = \frac{3/\sqrt{2} + 1/\sqrt{2}}{\sqrt{2}} = \frac{4/\sqrt{2}}{\sqrt{2}} = 2
+	\]
+	which recovers \( \vec{v_1} = \begin{pmatrix} 1 \\ 2 \end{pmatrix} \) in the \( \ket{+}/\ket{-} \) basis, exactly as expected.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 07                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Vector Normalization by Hand and Using Python}
+\par Normalize vector \( \ket{\vec{v_1}} = \begin{pmatrix}
+	1 \\ 2
+\end{pmatrix} \) (which is in the \( \ket{0}/\ket{1} \) basis) in the \( \ket{+}/\ket{-} \) basis.
+Use Google Colab to verify your answer.
+\end{problem}
+
+\begin{solution}
+	From Problem 6, \( \vec{v_1} \) expressed in the \( \ket{+}/\ket{-} \) basis (before normalization) is
+	\[
+		\vec{v_1} = \begin{pmatrix}
+			3/\sqrt{2} \\ -1/\sqrt{2}
+		\end{pmatrix}
+	\]
+	Its norm is
+	\[
+		\abs{\vec{v_1}} = \sqrt{\paren{\frac{3}{\sqrt{2}}}^2 + \paren{\frac{-1}{\sqrt{2}}}^2} = \sqrt{\frac{9}{2} + \frac{1}{2}} = \sqrt{5}
+	\]
+	so the normalized vector, in the \( \ket{+}/\ket{-} \) basis, is
+	\[
+		\ket{\vec{v_1}_{\text{normalized}}} = \frac{3/\sqrt{2}}{\sqrt{5}} \ket{+} - \frac{1/\sqrt{2}}{\sqrt{5}} \ket{-}
+		= \frac{3}{\sqrt{10}} \ket{+} - \frac{1}{\sqrt{10}} \ket{-}
+		\approx \begin{pmatrix}
+			0.9487 \\ -0.3162
+		\end{pmatrix}
+	\]
+
+	\newpage
+
+	Using Python to verify:
+\begin{codingbox}
+import numpy as np
+
+# v1 = (1, 2) in the |0>/|1> basis
+v1_01 = np.array([[1], [2]])
+
+# basis change matrix from |0>/|1> to |+>/|-> coefficients
+M = (1 / np.sqrt(2)) * np.array([[1, 1], [1, -1]])
+
+v1_pm = np.round(M @ v1_01, 4)
+print("v1 in +/- basis (unnormalized):", v1_pm.ravel())
+
+v1_pm_normalized = np.round(v1_pm / np.linalg.norm(v1_pm), 4)
+print("v1 in +/- basis (normalized):", v1_pm_normalized.ravel())
+\end{codingbox}
+	which prints \( \begin{pmatrix} 0.9487 \\ -0.3162 \end{pmatrix} \), matching the hand-calculated result.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 08                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Measurement Probability}
+\par For the \( \vec{v_1} \) in the last question, what is the probability to find \( \ket{+} \) in the \( \ket{+}/\ket{-} \) basis measurement?
+\end{problem}
+
+\begin{solution}
+	The probability of measuring \( \ket{+} \) is the squared magnitude of its coefficient in the normalized vector:
+	\[
+		P(\ket{+}) = \abs{\frac{3}{\sqrt{10}}}^2 = \frac{9}{10} = 0.9
+	\]
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 09                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Vector Normalization by Hand and Using Python 2}
+\par Normalize \( \ket{\vec{v_1}} \) in the \( \ket{0}/\ket{1} \) basis.
+What is the probability to find \( \ket{0} \) in the \( \ket{0}/\ket{1} \) basis measurement?
+Use Google Colab to verify your answer.
+\end{problem}
+
+\begin{solution}
+	The norm of \( \vec{v_1} = \begin{pmatrix} 1 \\ 2 \end{pmatrix} \) in the \( \ket{0}/\ket{1} \) basis is
+	\[
+		\abs{\vec{v_1}} = \sqrt{1^2 + 2^2} = \sqrt{5}
+	\]
+	so the normalized vector is
+	\[
+		\ket{\vec{v_1}_{\text{normalized}}} = \frac{1}{\sqrt{5}} \ket{0} + \frac{2}{\sqrt{5}} \ket{1}
+		\approx \begin{pmatrix}
+			0.4472 \\ 0.8944
+		\end{pmatrix}
+	\]
+	The probability to find \( \ket{0} \) is
+	\[
+		P(\ket{0}) = \abs{\frac{1}{\sqrt{5}}}^2 = \frac{1}{5} = 0.2
+	\]
+
+	\newpage
+
+	Using Python to verify:
+\begin{codingbox}
+import numpy as np
+
+v1 = np.array([[1], [2]])
+v1_normalized = v1 / np.linalg.norm(v1)
+print("v1 normalized in 0/1 basis:", v1_normalized.ravel())
+
+prob_0 = np.abs(v1_normalized[0, 0]) ** 2
+print("P(|0>):", prob_0)
+\end{codingbox}
+	which prints \( \begin{pmatrix} 0.4472 \\ 0.8944 \end{pmatrix} \) and \( P(\ket{0}) = 0.2 \), matching the hand-calculated result.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 10                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Basis Change and Measurement}
+\par If I get \( \ket{1} \) in the measurement in Problem 9, what is the probability of getting \( \ket{+} \) if I measure again in the \( \ket{+}/\ket{-} \) basis measurement?
+(hint: after getting \( \ket{1} \), how to represent it in the \( \ket{+}/\ket{-} \) basis?)
+\end{problem}
+
+\begin{solution}
+	After the measurement collapses the state to \( \ket{1} = \begin{pmatrix} 0 \\ 1 \end{pmatrix} \) in the \( \ket{0}/\ket{1} \) basis,
+	we convert it to the \( \ket{+}/\ket{-} \) basis using \( a = 0,\, b = 1 \):
+	\[
+		c_+ = \frac{a + b}{\sqrt{2}} = \frac{0 + 1}{\sqrt{2}} = \frac{1}{\sqrt{2}}, \qquad
+		c_- = \frac{a - b}{\sqrt{2}} = \frac{0 - 1}{\sqrt{2}} = -\frac{1}{\sqrt{2}}
+	\]
+	so \( \ket{1} = \frac{1}{\sqrt{2}} \ket{+} - \frac{1}{\sqrt{2}} \ket{-} \), which is already normalized.
+	The probability of getting \( \ket{+} \) is
+	\[
+		P(\ket{+}) = \abs{\frac{1}{\sqrt{2}}}^2 = \frac{1}{2} = 0.5
+	\]
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                     Appendix                                     %
+% ================================================================================ %
+
+\myappendix{code/assignment-02-code.pdf}{Assignment 02 | Code Solution}
+
+% ================================================================================ %
+
+\end{document}
