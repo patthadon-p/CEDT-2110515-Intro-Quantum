@@ -1,0 +1,149 @@
+\documentclass[a4paper, 10pt]{article}
+\input{../course-config}
+\usepackage{../vendor/template/CEDT-Assignment-style}
+
+\begin{document}
+\subject
+\asgntitle{4}{}{Week 4}{\StudentID\ \StudentName}{\DefaultCollaborators}
+
+% ================================================================================ %
+%                                    Problem 01                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Find Eigenvalues using Colab}
+\par Find the eigenvectors and eigenvalues of \( \sigma_x \) using colab.
+You may use this code.
+But please ask yourself, which basis are we using when we express \( \sigma_x \) in the following form?
+\begin{codingbox}
+sigmax = np.array([[0, 1], [1, 0]])
+print(sigmax)
+
+eigenvalues, eigenvectors = np.linalg.eig(sigmax)
+print(eigenvalues)
+print(eigenvectors)
+\end{codingbox}
+\end{problem}
+
+\begin{solution}
+	The solution goes here.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 02                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Construct Projection Operator}
+\par Now, use hand calculation, derive the projection operators to project to the eigenstates of \( \sigma_z \).
+\end{problem}
+
+\begin{solution}
+	The solution goes here.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 03                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Use Projection Operator to find Measurement probability}
+\par Use the projector equation to find the probability of measuring spin up and down when it is applied to the eigenvectors of \( \sigma_x \).
+\par \underline{\textit{Hints:}} you should get 50\% for all of them.
+\end{problem}
+
+\begin{solution}
+	The solution goes here.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 04                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Vector normalization by hand and using python 2}
+\par Check \textbf{Problem 3.} using co-lab.
+\par \underline{\textit{Hints:}}
+\begin{itemize}
+	\item Use \texttt{np.transpose} for transpose.
+	\item Use \texttt{np.dot} for multiplication, including outer product.
+	\item Use \texttt{np.linalg.eig} to find eigenvalues.
+\end{itemize}
+\end{problem}
+
+\begin{solution}
+	The solution goes here.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 05                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Orthonormality of Unitary Matrix Row Vectors}
+\par Prove that the row vectors of a unitary matrix are orthonormal.
+\end{problem}
+
+\begin{solution}
+	The solution goes here.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 06                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Finding the Determinants of Pauli Matrices by Hand}
+\par Find the determinants of \( \sigma_x \), \( \sigma_y \), and \( \sigma_z \).
+What do you notice?
+\end{problem}
+
+\begin{solution}
+	The solution goes here.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 07                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Finding the Determinants of Pauli Matrices using Colab}
+\par Confirm your answers in \textbf{Problem 6.} using Colab.
+This is a sample code.
+\begin{codingbox}
+M = np.array([[1, 0], [0, -1]])
+print(np.linalg.det(M))
+\end{codingbox}
+\end{problem}
+
+\begin{solution}
+	The solution goes here.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 08                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Proof of Unitarity}
+\par For an orthonormal set of basis, \( \ket{v_i} \), we have \( \braket{v_i \vert v_j} = \delta_{i,j} \).
+We transform it using a matrix \( A \), i.e. they become \( A\ket{v_i} \).
+Prove that if after the transformation, they are still orthonormal, then \( A \) is unitary.
+\par \underline{\textit{Hint:}} Express the basis vectors in column form and each of them has only 1 entry.
+Express \( A \) in its matrix form. The fact that after the transformation,
+they are still orthonormal implies that the columns of \( A \) are orthonormal and thus \( A \) is unitary.
+\end{problem}
+
+\begin{solution}
+	The solution goes here.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                     Appendix                                     %
+% ================================================================================ %
+
+\myappendix{code/assignment-04-code.pdf}{Assignment 04 | Code Solution}
+
+% ================================================================================ %
+
+\end{document}
