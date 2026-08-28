@@ -16,21 +16,42 @@ It is structured for clarity, reproducibility, and ease of compilation.
 │   │   └── assignment-01.ipynb   # Jupyter notebook (circuits, code)
 │   └── images/                   # Diagrams / figures (if any)
 ├── assignment-02/ ...            # Later assignments, same layout (notebook and/or LaTeX)
-├── templates/
-│   ├── assignment-template.tex   # Base template for new LaTeX assignments
-│   └── nbconvert/
-│       └── cedt-assignment/      # Custom nbconvert template (see Notebook → PDF below)
-├── CEDT-Assignment-style.sty     # Shared LaTeX styling package
-├── new-assignment.sh             # Scaffold a new assignment-XX/ folder
-├── Makefile                      # build/watch/clean/new/fmt/nb-pdf wrapper
-├── .latexindent.yaml             # Formatter config (see Formatting below)
+├── vendor/template/              # Git submodule: shared style + scaffolding (see below)
+├── course-config.tex             # This subject's values (course code/name, student info)
+├── Makefile                      # Thin wrapper that includes vendor/template/Makefile.include
+├── .gitmodules
 ├── .gitignore
 └── README.md
 ```
 
 - **`assignment-xx/`** → Each assignment, as a Jupyter notebook and/or LaTeX source, with its compiled PDF and (for LaTeX ones) a per-folder `.latexmkrc`.
-- **`templates/`** → Common LaTeX macros, environments, or assignment style templates.
 - **`images/`** → Supporting figures, TikZ diagrams, plots, or circuit screenshots.
+
+### Shared template (`vendor/template/`)
+
+`CEDT-Assignment-style.sty`, `templates/assignment-template.tex`, `new-assignment.sh`,
+`.latexindent.yaml`, and the Makefile build rules all live in a separate repo,
+[`cedt-latex-template`](../../../cedt-latex-template), vendored here as a git submodule at
+`vendor/template/` rather than copy-pasted per subject. This repo (and any other CEDT subject
+repo) only owns `course-config.tex`, which sets the subject-specific values
+(`\CourseCode`, `\CourseName`, `\StudentID`, `\StudentName`, `\DefaultCollaborators`) that the
+shared style/template read.
+
+To pull in template updates:
+
+```bash
+git submodule update --remote --merge vendor/template
+git add vendor/template && git commit -m "Update template submodule"
+```
+
+To bootstrap a *new* subject repo the same way:
+
+```bash
+git submodule add <template-repo-url> vendor/template
+cp vendor/template/course-config.tex.example course-config.tex
+# edit course-config.tex, then:
+git add vendor/template .gitmodules course-config.tex
+```
 
 ---
 
@@ -92,11 +113,9 @@ make fmt-all                 # format every project in place
 
 ```bash
 make new NAME=assignment-07
-# or directly:
-./new-assignment.sh 07
 ```
 
-This scaffolds `assignment-07/` from `templates/assignment-template.tex`, pre-fills the assignment number, author, and subject line, and copies the shared `.latexmkrc`. Fill in the week number and section/problem content, then build with `make build DIR=assignment-07`.
+This scaffolds `assignment-07/` from the shared `assignment-template.tex`, pre-fills the assignment number, and copies the shared `.latexmkrc`. The subject line and author block come from `course-config.tex` automatically. Fill in the week number and section/problem content, then build with `make build DIR=assignment-07`.
 
 ---
 
