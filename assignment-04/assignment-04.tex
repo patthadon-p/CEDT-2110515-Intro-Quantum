@@ -1,4 +1,6 @@
 \documentclass[a4paper, 10pt]{article}
+\usepackage{scrextend}
+\changefontsizes{9pt}
 \input{../course-config}
 \usepackage{../vendor/template/CEDT-Assignment-style}
 
@@ -25,7 +27,20 @@ print(eigenvectors)
 \end{problem}
 
 \begin{solution}
-	The solution goes here.
+	\noindent After running the code in Colab, we find that the eigenvalues and eigenvectors of matrix \( \sigma_x \) are:
+	\renewcommand{\arraystretch}{1.3}
+	\begin{center}
+		\begin{tabular}{c|c|c}
+			\hline
+			\multirow{2}{*}{\textbf{Eigenvalues}} & \multicolumn{2}{c}{\textbf{Eigenvectors}}                                                                                                           \\ \cline{2-3}
+			                                      & \multicolumn{1}{c|}{\textbf{from code}}                                  & \textbf{by hand}                                                         \\ \hline
+			1                                     & \multicolumn{1}{c|}{\( \begin{pmatrix}0.7071 \\ 0.7071\end{pmatrix} \)}  & \( \displaystyle\frac{1}{\sqrt{2}}\begin{pmatrix}1 \\ 1\end{pmatrix} \)  \\ \hline
+			-1                                    & \multicolumn{1}{c|}{\( \begin{pmatrix}0.7071 \\ -0.7071\end{pmatrix} \)} & \( \displaystyle\frac{1}{\sqrt{2}}\begin{pmatrix}1 \\ -1\end{pmatrix} \) \\ \hline
+		\end{tabular}
+	\end{center}
+
+	These results match our expectations from the theoretical calculation.
+	Additionally, the basis we use to represent \( \sigma_x \) in matrix form is the standard computational basis \( \ket{0}/\ket{1} \).
 \end{solution}
 % ================================================================================ %
 
@@ -38,7 +53,35 @@ print(eigenvectors)
 \end{problem}
 
 \begin{solution}
-	The solution goes here.
+	To project the eigenstates of \( \sigma_z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix} \),
+	we first identify its eigenvectors:
+	\[
+		\ket{0} = \begin{pmatrix} 1 \\ 0 \end{pmatrix}, \quad
+		\ket{1} = \begin{pmatrix} 0 \\ 1 \end{pmatrix}.
+	\]
+
+	\noindent These eigenvectors correspond to the eigenvalues \( +1 \) and \( -1 \) of \( \sigma_z \) respectively.
+	\par Next, we construct the projection operators for these eigenstates by taking the outer product of each eigenvector with its bra:
+
+	\noindent
+	\begin{minipage}[t]{0.46\textwidth}
+		\begin{align*}
+			P_+ & = \ket{0} \otimes \bra{0}                                                  \\
+			    & = \ket{0}\bra{0}                                                           \\
+			    & = \begin{pmatrix} 1 \\ 0 \end{pmatrix} \begin{pmatrix} 1 & 0 \end{pmatrix} \\
+			P_+ & = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}
+		\end{align*}
+	\end{minipage}%
+	\hfill \vrule \hfill
+	\begin{minipage}[t]{0.46\textwidth}
+		\begin{align*}
+			P_- & = \ket{1} \otimes \bra{1}                                                  \\
+			    & = \ket{1}\bra{1}                                                           \\
+			    & = \begin{pmatrix} 0 \\ 1 \end{pmatrix} \begin{pmatrix} 0 & 1 \end{pmatrix} \\
+			P_- & = \begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix}
+		\end{align*}
+	\end{minipage}
+	\myspace
 \end{solution}
 % ================================================================================ %
 
@@ -52,9 +95,83 @@ print(eigenvectors)
 \end{problem}
 
 \begin{solution}
-	The solution goes here.
+	\noindent From \textbf{Problem 1.}, the eigenvectors of \( \sigma_x \) are
+	\[
+		\ket{+} = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 \\ 1 \end{pmatrix}, \quad
+		\ket{-} = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 \\ -1 \end{pmatrix}.
+	\]
+
+	\noindent ``Measuring spin up/down'' is a measurement of \( S_z \), so the outcome projectors are the ones derived in \textbf{Problem 2.}:
+	\[
+		P_{\uparrow} = \ket{0}\bra{0} = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}, \quad
+		P_{\downarrow} = \ket{1}\bra{1} = \begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix}.
+	\]
+
+	\noindent By the Born rule, a normalized state \( \ket{\psi} \) gives outcome \( m \in \{\uparrow, \downarrow\} \) with probability
+	\[
+		\text{P}_{\psi}(m) = \bra{\psi} P_m \ket{\psi}
+	\]
+	Each \( \ket{\pm} \) carries the factor \( \displaystyle \frac{1}{\sqrt{2}} \), so every \( \bra{\pm}\cdots\ket{\pm} \) contributes \( \displaystyle \frac{1}{\sqrt{2}} \cdot \frac{1}{\sqrt{2}} = \frac{1}{2} \).
+
+	\myspace
+
+	\noindent For \( \ket{\psi} = \ket{+} \):
+
+	\noindent
+	\begin{minipage}[t]{0.46\textwidth}
+		\begin{align*}
+			\text{P}_{+}(\uparrow) &= \bra{+} P_{\uparrow} \ket{+} \\
+			&= \frac{1}{2} \begin{pmatrix} 1 & 1 \end{pmatrix} \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix} \begin{pmatrix} 1 \\ 1 \end{pmatrix} \\
+			&= \frac{1}{2} \begin{pmatrix} 1 & 1 \end{pmatrix} \begin{pmatrix} 1 \\ 0 \end{pmatrix} \\
+			\text{P}_{+}(\uparrow) &= \frac{1}{2}
+		\end{align*}
+	\end{minipage}%
+	\hfill \vrule \hfill
+	\begin{minipage}[t]{0.46\textwidth}
+		\begin{align*}
+			\text{P}_{+}(\downarrow) &= \bra{+} P_{\downarrow} \ket{+} \\
+			&= \frac{1}{2} \begin{pmatrix} 1 & 1 \end{pmatrix} \begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix} \begin{pmatrix} 1 \\ 1 \end{pmatrix} \\
+			&= \frac{1}{2} \begin{pmatrix} 1 & 1 \end{pmatrix} \begin{pmatrix} 0 \\ 1 \end{pmatrix} \\
+			\text{P}_{+}(\downarrow) &= \frac{1}{2}
+		\end{align*}
+	\end{minipage}
+
+	\myspace
+
+	\noindent For \( \ket{\psi} = \ket{-} \):
+
+	\noindent
+	\begin{minipage}[t]{0.46\textwidth}
+		\begin{align*}
+			\text{P}_{-}(\uparrow) &= \bra{-} P_{\uparrow} \ket{-} \\
+			&= \frac{1}{2} \begin{pmatrix} 1 & -1 \end{pmatrix} \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix} \begin{pmatrix} 1 \\ -1 \end{pmatrix} \\
+			&= \frac{1}{2} \begin{pmatrix} 1 & -1 \end{pmatrix} \begin{pmatrix} 1 \\ 0 \end{pmatrix} \\
+			\text{P}_{-}(\uparrow) &= \frac{1}{2}
+		\end{align*}
+	\end{minipage}%
+	\hfill \vrule \hfill
+	\begin{minipage}[t]{0.46\textwidth}
+		\begin{align*}
+			\text{P}_{-}(\downarrow) &= \bra{-} P_{\downarrow} \ket{-} \\
+			&= \frac{1}{2} \begin{pmatrix} 1 & -1 \end{pmatrix} \begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix} \begin{pmatrix} 1 \\ -1 \end{pmatrix} \\
+			&= \frac{1}{2} \begin{pmatrix} 1 & -1 \end{pmatrix} \begin{pmatrix} 0 \\ -1 \end{pmatrix} \\
+			\text{P}_{-}(\downarrow) &= \frac{1}{2}
+		\end{align*}
+	\end{minipage}
+
+	\myspace
+
+	\noindent All four outcomes have probability \( \frac{1}{2} \), matching the hint:
+	\[
+		\text{P}_{+}(\uparrow) = \text{P}_{+}(\downarrow) =
+		\text{P}_{-}(\uparrow) = \text{P}_{-}(\downarrow) = \frac{1}{2}.
+	\]
+
+	\noindent This is expected: \( \ket{+} \) and \( \ket{-} \) are equal-magnitude superpositions of \( \ket{0} \) and \( \ket{1} \), so a measurement along \( z \) is completely random.
 \end{solution}
 % ================================================================================ %
+
+\newpage
 
 % ================================================================================ %
 %                                    Problem 04                                    %
@@ -71,7 +188,30 @@ print(eigenvectors)
 \end{problem}
 
 \begin{solution}
-	The solution goes here.
+	\noindent \textbf{Problem 3} gave \( \text{P}_{\pm}(\uparrow) = \text{P}_{\pm}(\downarrow) = \frac{1}{2} \) for both eigenvectors of \( \sigma_x \).
+	We reproduce it in Colab: take \( \ket{+}, \ket{-} \) from \texttt{np.linalg.eig} (returned unit-normalized),
+	build the spin-up/down projectors \( \ket{0}\bra{0}, \ket{1}\bra{1} \) as outer products with \texttt{np.dot},
+	and evaluate \( \bra{\psi} P_m \ket{\psi} \) using \texttt{np.transpose} and \texttt{np.dot}.
+\begin{codingbox}
+sigmax = np.array([[0, 1], [1, 0]])
+_, eigvecs = np.linalg.eig(sigmax)          # |+>, |->  (unit-normalized)
+plus, minus = eigvecs[:, [0]], eigvecs[:, [1]]
+
+zero, one = np.array([[1], [0]]), np.array([[0], [1]])
+P_up   = np.dot(zero, np.transpose(zero))   # |0><0|
+P_down = np.dot(one,  np.transpose(one))    # |1><1|
+
+for psi in (plus, minus):
+    p_up   = np.dot(np.transpose(psi), np.dot(P_up,   psi))[0, 0]
+    p_down = np.dot(np.transpose(psi), np.dot(P_down, psi))[0, 0]
+    print(p_up, p_down)
+\end{codingbox}
+	\noindent The notebook (\textbf{Appendix~1}) confirms \( \braket{+}{+} = \braket{-}{-} = 1 \) and
+	\[
+		\text{P}_{+}(\uparrow) = \text{P}_{+}(\downarrow) =
+		\text{P}_{-}(\uparrow) = \text{P}_{-}(\downarrow) = 0.5,
+	\]
+	matching the hand calculation in \textbf{Problem 3}.
 \end{solution}
 % ================================================================================ %
 
@@ -84,9 +224,27 @@ print(eigenvectors)
 \end{problem}
 
 \begin{solution}
-	The solution goes here.
+	\noindent Let \( U \) be an \( n \times n \) unitary matrix, so \( UU^{\dagger} = I \), and write its rows as \( \mathbf{r}_1, \dots, \mathbf{r}_n \).
+	The \( (i,j) \) entry of \( UU^{\dagger} \) is row \( i \) of \( U \) times column \( j \) of \( U^{\dagger} \):
+	\[
+		\paren{UU^{\dagger}}_{ij}
+		= \sum_{k=1}^{n} U_{ik}\,\overline{U_{jk}}
+		= \sum_{k=1}^{n} \overline{(\mathbf{r}_j)_k}\,(\mathbf{r}_i)_k
+		= \braket{\mathbf{r}_j \vert \mathbf{r}_i},
+	\]
+	i.e. the Hermitian inner product of rows \( i \) and \( j \).
+
+	\noindent Since \( U \) is unitary, \( \paren{UU^{\dagger}}_{ij} = \delta_{ij} \), hence \( \braket{\mathbf{r}_i \vert \mathbf{r}_j} = \delta_{ij} \) for all \( i, j \):
+	\begin{itemize}
+		\item \( i = j \): \quad \( \braket{\mathbf{r}_i \vert \mathbf{r}_i} = \norm{\mathbf{r}_i}^2 = 1 \), so every row is a unit vector;
+		\item \( i \neq j \): \quad \( \braket{\mathbf{r}_i \vert \mathbf{r}_j} = 0 \), so distinct rows are orthogonal.
+	\end{itemize}
+	Therefore the row vectors of \( U \) form an orthonormal set.
+	(Repeating the argument with \( U^{\dagger}U = I \) shows the columns are orthonormal as well.) \( \blacksquare \)
 \end{solution}
 % ================================================================================ %
+
+\newpage
 
 % ================================================================================ %
 %                                    Problem 06                                    %
@@ -98,7 +256,22 @@ What do you notice?
 \end{problem}
 
 \begin{solution}
-	The solution goes here.
+	\noindent For a \( 2 \times 2 \) matrix, \( \det \begin{pmatrix} a & b \\ c & d \end{pmatrix} = ad - bc \). With
+	\[
+		\sigma_x = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}, \qquad
+		\sigma_y = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}, \qquad
+		\sigma_z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix},
+	\]
+	this gives
+	\begin{align*}
+		\det \sigma_x & = (0)(0) - (1)(1) = -1,                     \\
+		\det \sigma_y & = (0)(0) - (-i)(i) = -\paren{-i^{2}} = -1,  \\
+		\det \sigma_z & = (1)(-1) - (0)(0) = -1.
+	\end{align*}
+
+	\noindent \textbf{What we notice:} all three Pauli matrices have \( \det \sigma_i = -1 \).
+	Each \( \sigma_i \) has eigenvalues \( +1 \) and \( -1 \), and the determinant is the product of the eigenvalues,
+	\( (+1)(-1) = -1 \), while the trace is their sum, \( 0 \).
 \end{solution}
 % ================================================================================ %
 
@@ -116,9 +289,26 @@ print(np.linalg.det(M))
 \end{problem}
 
 \begin{solution}
-	The solution goes here.
+	\noindent Computing each determinant with \texttt{np.linalg.det} in Colab:
+\begin{codingbox}
+sigmax = np.array([[0,  1], [1,  0]])
+sigmay = np.array([[0, -1j], [1j, 0]])
+sigmaz = np.array([[1,  0], [0, -1]])
+
+for name, M in [("x", sigmax), ("y", sigmay), ("z", sigmaz)]:
+    print(name, np.linalg.det(M).real)
+\end{codingbox}
+	\noindent prints \( -1 \) (shown as \( -1.0000 \)) for all three:
+	\[
+		\det \sigma_x = \det \sigma_y = \det \sigma_z = -1,
+	\]
+	confirming the hand calculation in \textbf{Problem 6}.
+	For \( \sigma_y \), \texttt{np.linalg.det} returns the complex value \( -1 + 0i \), whose real part is \( -1 \).
+	The full notebook is in \textbf{Appendix~1}.
 \end{solution}
 % ================================================================================ %
+
+\newpage
 
 % ================================================================================ %
 %                                    Problem 08                                    %
@@ -134,7 +324,32 @@ they are still orthonormal implies that the columns of \( A \) are orthonormal a
 \end{problem}
 
 \begin{solution}
-	The solution goes here.
+	\noindent Following the hint, take \( \{\ket{v_i}\} \) to be the standard basis, so \( \ket{v_i} = \mathbf{e}_i \) is the column vector with a \( 1 \) in the \( i \)-th entry and \( 0 \) elsewhere.
+	For an \( n \times n \) matrix \( A \),
+	\[
+		A\ket{v_i} = A\mathbf{e}_i = \mathbf{a}_i,
+	\]
+	the \( i \)-th column of \( A \). The hypothesis is that these transformed vectors stay orthonormal:
+	\[
+		\braket{A v_i \vert A v_j} = \mathbf{a}_i^{\dagger}\mathbf{a}_j = \delta_{ij}.
+	\]
+
+	\noindent But \( \mathbf{a}_i^{\dagger}\mathbf{a}_j = \sum_{k} \overline{A_{ki}}\,A_{kj} = \paren{A^{\dagger}A}_{ij} \),
+	so \( \paren{A^{\dagger}A}_{ij} = \delta_{ij} \) for every \( i, j \), i.e.
+	\[
+		A^{\dagger}A = I.
+	\]
+	Since \( A \) is square, a left inverse is also a right inverse, so \( AA^{\dagger} = I \) too. Hence \( A \) is unitary. \( \blacksquare \)
+
+	\myspace
+
+	\noindent The standard basis costs no generality: for \emph{any} orthonormal \( \{\ket{v_i}\} \),
+	\[
+		\bra{v_i}\paren{A^{\dagger}A - I}\ket{v_j}
+		= \braket{A v_i \vert A v_j} - \braket{v_i \vert v_j}
+		= \delta_{ij} - \delta_{ij} = 0
+	\]
+	for all \( i, j \), and an operator whose every matrix element in a basis vanishes is \( 0 \), giving \( A^{\dagger}A = I \) again.
 \end{solution}
 % ================================================================================ %
 
