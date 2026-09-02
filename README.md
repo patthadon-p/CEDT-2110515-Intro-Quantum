@@ -98,6 +98,28 @@ If you're using VS Code, open the repo with the [LaTeX Workshop](https://marketp
 
 ---
 
+## 📓 Notebook → Styled PDF
+
+For notebook-based assignments, `make nb-pdf` exports a `.ipynb` straight to PDF via `jupyter nbconvert`, styled with the same `CEDT-Assignment-style.sty` fonts/margins/header as the LaTeX write-ups (via a custom nbconvert template at `vendor/template/templates/nbconvert/cedt-assignment/`):
+
+```bash
+make nb-pdf NB=assignment-01/code/assignment-01-code.ipynb
+```
+
+The PDF is written next to the notebook, same as `jupyter nbconvert`'s default. Equivalent to running directly:
+
+```bash
+export TEXINPUTS="$(pwd):$(pwd)/vendor/template:$TEXINPUTS"
+jupyter nbconvert --to pdf \
+  --TemplateExporter.extra_template_basedirs=vendor/template/templates/nbconvert \
+  --template=cedt-assignment \
+  assignment-01/code/assignment-01-code.ipynb
+```
+
+`TEXINPUTS` is what lets the template find `CEDT-Assignment-style.sty` (in `vendor/template/`) and `course-config.tex` (at the repo root) — `nbconvert`'s PDF exporter always compiles in an isolated temp directory, so relative paths to either can never resolve there. `make nb-pdf` sets this up for you (via `JUPYTER := $(CURDIR)/.venv/bin/jupyter` in `vendor/template/Makefile.include`); only reach for the manual command if you need to run outside the repo root.
+
+---
+
 ## 🧹 Formatting
 
 [`latexindent`](https://github.com/cmhughes/latexindent.pl) (ships with TeX Live) reformats indentation only — it never touches wording, math, or numbers. Repo-specific rules live in `.latexindent.yaml` (keeps `codingbox` contents verbatim, indents `subproblems`/`subproblems_alpha` like normal lists).
