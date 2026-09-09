@@ -1,0 +1,469 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage{scrextend}
+\changefontsizes{9pt}
+\input{../course-config}
+\usepackage{../vendor/template/CEDT-Assignment-style}
+
+\begin{document}
+\subject
+\asgntitle{5}{}{Week 5}{\StudentID\ \StudentName}{\DefaultCollaborators}
+
+% ================================================================================ %
+%                                    Problem 01                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Finding Unitary Matrix by Hand}
+\par Construct the matrix for the transformation from the basis of \( \sigma_y \) to \( \sigma_x \).
+In other words, finding the unitary matrix to re-represent a vector in the \( \sigma_y \) eigenvector basis representation in the \( \sigma_x \) eigenvector basis representation.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The two eigenbases.} The normalized eigenvectors, with \( \sigma_x\ket{x_\pm} = \pm\ket{x_\pm} \) and \( \sigma_y\ket{y_\pm} = \pm\ket{y_\pm} \), are
+	\[
+		\ket{x_+} = \tfrac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ 1 \end{pmatrix}, \quad
+		\ket{x_-} = \tfrac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ -1 \end{pmatrix}, \qquad
+		\ket{y_+} = \tfrac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ i \end{pmatrix}, \quad
+		\ket{y_-} = \tfrac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ -i \end{pmatrix}.
+	\]
+
+	\noindent \textbf{What the matrix must do.} If \( \ket{\psi} \) has coordinates \( a_j = \braket{y_j \vert \psi} \) in the \( \sigma_y \) eigenbasis and \( b_i = \braket{x_i \vert \psi} \) in the \( \sigma_x \) eigenbasis, then inserting \( \sum_j \ket{y_j}\bra{y_j} = I \) gives
+	\[
+		b_i = \braket{x_i \vert \psi}
+		= \sum_j \braket{x_i \vert y_j}\,\braket{y_j \vert \psi}
+		= \sum_j U_{ij}\,a_j,
+		\qquad U_{ij} = \braket{x_i \vert y_j}.
+	\]
+
+	\noindent \textbf{Entries} (each \( \ket{x_i} \) is real, so \( \braket{x_i \vert y_j} = \tfrac{1}{2}\,x_i^{\top} y_j \)):
+	\begin{align*}
+		U_{++} & = \tfrac{1}{2}(1 + i), & U_{+-} & = \tfrac{1}{2}(1 - i), \\
+		U_{-+} & = \tfrac{1}{2}(1 - i), & U_{--} & = \tfrac{1}{2}(1 + i),
+	\end{align*}
+	so
+	\[
+		U = \frac{1}{2}\begin{pmatrix} 1 + i & 1 - i \\ 1 - i & 1 + i \end{pmatrix}.
+	\]
+
+	\noindent \textbf{Unitarity check.}
+	\[
+		U^{\dagger}U
+		= \frac{1}{4}\begin{pmatrix} 1 - i & 1 + i \\ 1 + i & 1 - i \end{pmatrix}
+		\begin{pmatrix} 1 + i & 1 - i \\ 1 - i & 1 + i \end{pmatrix}
+		= \frac{1}{4}\begin{pmatrix} 4 & 0 \\ 0 & 4 \end{pmatrix}
+		= I,
+	\]
+	so \( U \) is unitary, as any change between orthonormal bases must be.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 02                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Completeness of Basis}
+\par Show that the eigenvectors of \( \sigma_x \) form a complete basis.
+\par (\textit{Hint:} see the following equation.)
+\end{problem}
+
+\begin{solution}
+	\noindent The eigenvectors of \( \sigma_x \),
+	\[
+		\ket{+} = \tfrac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ 1 \end{pmatrix}, \qquad
+		\ket{-} = \tfrac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ -1 \end{pmatrix},
+	\]
+	are orthonormal: \( \braket{+ \vert +} = \braket{- \vert -} = 1 \) and \( \braket{+ \vert -} = \tfrac{1}{2}(1 - 1) = 0 \).
+	An orthonormal set is a complete basis of \( \C^2 \) exactly when it satisfies the completeness relation \( \sum_i \ket{i}\bra{i} = I \).
+
+	\noindent
+	\begin{minipage}[t]{0.46\textwidth}
+		\begin{align*}
+			\ket{+}\bra{+}
+			 & = \tfrac{1}{2}\begin{pmatrix} 1 \\ 1 \end{pmatrix}\begin{pmatrix} 1 & 1 \end{pmatrix} \\
+			 & = \tfrac{1}{2}\begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix}
+		\end{align*}
+	\end{minipage}%
+	\hfill \vrule \hfill
+	\begin{minipage}[t]{0.46\textwidth}
+		\begin{align*}
+			\ket{-}\bra{-}
+			 & = \tfrac{1}{2}\begin{pmatrix} 1 \\ -1 \end{pmatrix}\begin{pmatrix} 1 & -1 \end{pmatrix} \\
+			 & = \tfrac{1}{2}\begin{pmatrix} 1 & -1 \\ -1 & 1 \end{pmatrix}
+		\end{align*}
+	\end{minipage}
+
+	\myspace
+
+	\noindent Adding the two projectors,
+	\[
+		\ket{+}\bra{+} + \ket{-}\bra{-}
+		= \frac{1}{2}\begin{pmatrix} 2 & 0 \\ 0 & 2 \end{pmatrix}
+		= I.
+	\]
+	The identity therefore resolves over \( \{\ket{+}, \ket{-}\} \), so every \( \ket{\psi} \in \C^2 \) expands as
+	\( \ket{\psi} = I\ket{\psi} = \braket{+ \vert \psi}\ket{+} + \braket{- \vert \psi}\ket{-} \):
+	the eigenvectors of \( \sigma_x \) form a complete basis. \( \blacksquare \)
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 03                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Construction of Matrix}
+\par Construct the \( \sigma_x \) by using its eigenvalues and eigenvectors.
+\end{problem}
+
+\begin{solution}
+	\noindent The spectral decomposition rebuilds a matrix from its eigenvalues \( \lambda_i \) and eigen-projectors: \( \sigma_x = \sum_i \lambda_i \ket{x_i}\bra{x_i} \).
+	With eigenpairs \( (+1, \ket{+}) \) and \( (-1, \ket{-}) \) and the projectors from \textbf{Problem 2},
+	\begin{align*}
+		\sigma_x
+		 & = (+1)\,\ket{+}\bra{+} \;+\; (-1)\,\ket{-}\bra{-}         \\
+		 & = \frac{1}{2}\begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix}
+		- \frac{1}{2}\begin{pmatrix} 1 & -1 \\ -1 & 1 \end{pmatrix}  \\
+		 & = \frac{1}{2}\begin{pmatrix} 0 & 2 \\ 2 & 0 \end{pmatrix}
+		= \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix},
+	\end{align*}
+	which is exactly \( \sigma_x \). \( \blacksquare \)
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 04                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Colab Verification}
+\par Use Colab to verify the results from Problems 1 to 3.
+\end{problem}
+
+\begin{solution}
+	\noindent We reproduce Problems 1--3 in Colab: assemble \( U_{ij} = \braket{x_i \vert y_j} \) with \texttt{np.vdot} and test \( U^{\dagger}U = I \); form \( \sum_i \ket{x_i}\bra{x_i} \) and the spectral sum \( \sum_i \lambda_i \ket{x_i}\bra{x_i} \) with \texttt{np.outer}.
+	\begin{codingbox}
+xs = [np.array([1, 1]) / np.sqrt(2), np.array([1, -1]) / np.sqrt(2)]    # |x+>, |x->
+ys = [np.array([1, 1j]) / np.sqrt(2), np.array([1, -1j]) / np.sqrt(2)]  # |y+>, |y->
+
+U = np.array([[np.vdot(xi, yj) for yj in ys] for xi in xs])             # U_ij = <x_i|y_j>
+print(np.allclose(U.conj().T @ U, np.eye(2)))                                  # Problem 1
+
+completeness = sum(np.outer(xi, xi.conj()) for xi in xs)                       # Problem 2
+spectral     = sum(l * np.outer(xi, xi.conj()) for l, xi in zip((1, -1), xs))  # Problem 3
+print(np.allclose(completeness, np.eye(2)),
+      np.allclose(spectral, [[0, 1], [1, 0]]))
+\end{codingbox}
+	\noindent The notebook (\textbf{Appendix~1}) prints \texttt{True} for every check:
+	\( U = \tfrac{1}{2}\left(\begin{smallmatrix} 1+i & 1-i \\ 1-i & 1+i \end{smallmatrix}\right) \) is unitary,
+	\( \ket{+}\bra{+} + \ket{-}\bra{-} = I \), and \( (+1)\ket{+}\bra{+} + (-1)\ket{-}\bra{-} = \sigma_x \) --
+	confirming Problems 1, 2, and 3.
+\end{solution}
+% ================================================================================ %
+
+\newpage
+
+% ================================================================================ %
+%                                    Problem 05                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Computing Tensor Product}
+\par Let \( \displaystyle \ket{f} = \begin{pmatrix}
+	0 \\ 1
+\end{pmatrix}\) and \( \displaystyle \ket{g} = \begin{pmatrix}
+	\frac{1}{\sqrt{2}} \\ \frac{i}{\sqrt{2}}
+\end{pmatrix}\), find \( \ket{f}_1 \otimes \ket{g}_2 \) and \( \ket{g}_1 \otimes \ket{f}_2 \).
+Are they the same? Here you see the order is very important.
+\end{problem}
+
+\begin{solution}
+	\noindent Writing \( \ket{f} = (0, 1)^{\top} \) and \( \ket{g} = \paren{\tfrac{1}{\sqrt{2}}, \tfrac{i}{\sqrt{2}}}^{\top} \), the tensor product places one scaled copy of the second factor under each entry of the first:
+
+	\noindent
+	\begin{minipage}[t]{0.46\textwidth}
+		\[
+			\ket{f}_1 \otimes \ket{g}_2
+			= \begin{pmatrix} 0 \cdot \ket{g} \\ 1 \cdot \ket{g} \end{pmatrix}
+			= \begin{pmatrix} 0 \\ 0 \\ 1/\sqrt{2} \\ i/\sqrt{2} \end{pmatrix}
+		\]
+	\end{minipage}%
+	\hfill \vrule \hfill
+	\begin{minipage}[t]{0.46\textwidth}
+		\[
+			\ket{g}_1 \otimes \ket{f}_2
+			= \begin{pmatrix} \tfrac{1}{\sqrt{2}} \cdot \ket{f} \\ \tfrac{i}{\sqrt{2}} \cdot \ket{f} \end{pmatrix}
+			= \begin{pmatrix} 0 \\ 1/\sqrt{2} \\ 0 \\ i/\sqrt{2} \end{pmatrix}
+		\]
+	\end{minipage}
+
+	\myspace
+
+	\noindent They are \textbf{not} the same (compare the second entries, \( 0 \) against \( 1/\sqrt{2} \)).
+	The tensor product does not commute: the order of the factors records which subsystem is which, so \( \ket{f}\otimes\ket{g} \) and \( \ket{g}\otimes\ket{f} \) are genuinely different states.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 06                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Computing Tensor Products of Three Vectors}
+\par Find \( \displaystyle \begin{pmatrix}
+	0 \\ 1
+\end{pmatrix} \otimes \begin{pmatrix}
+	\frac{1}{\sqrt{2}} \\ \frac{i}{\sqrt{2}}
+\end{pmatrix} \otimes \begin{pmatrix}
+	0 \\ 1
+\end{pmatrix} \).
+What is the dimension of this space?
+\end{problem}
+
+\begin{solution}
+	\noindent Associating left to right, the first two factors give \( \paren{0,\; 0,\; \tfrac{1}{\sqrt{2}},\; \tfrac{i}{\sqrt{2}}}^{\top} \) (as in \textbf{Problem 5}).
+	Tensoring that \( 4 \)-vector with \( (0, 1)^{\top} \) sends each entry \( c \mapsto (0, c)^{\top} \):
+	\[
+		\begin{pmatrix} 0 \\ 1 \end{pmatrix} \otimes
+		\begin{pmatrix} 1/\sqrt{2} \\ i/\sqrt{2} \end{pmatrix} \otimes
+		\begin{pmatrix} 0 \\ 1 \end{pmatrix}
+		= \paren{ 0,\; 0,\; 0,\; 0,\; 0,\; \tfrac{1}{\sqrt{2}},\; 0,\; \tfrac{i}{\sqrt{2}} }^{\top}.
+	\]
+	\noindent The space is \( \C^2 \otimes \C^2 \otimes \C^2 \), of dimension \( 2 \times 2 \times 2 = 8 \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 07                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Distribution Law}
+\par Check the following equation:
+\[
+	\paren{ \ket{f} + \ket{e} } \otimes \ket{g} = \ket{f} \otimes \ket{g} + \ket{e} \otimes \ket{g}
+\]
+\[
+	\ket{g} \otimes \paren{ \ket{f} + \ket{e} } = \ket{g} \otimes \ket{f} + \ket{g} \otimes \ket{e}
+\]
+by substituting \( \displaystyle \ket{f} = \begin{pmatrix}
+	0 \\ 1
+\end{pmatrix} \), \( \displaystyle \ket{e} = \begin{pmatrix}
+	1 \\ 0
+\end{pmatrix} \), and \( \displaystyle \ket{g} = \begin{pmatrix}
+	\frac{1}{\sqrt{2}} \\ \frac{i}{\sqrt{2}}
+\end{pmatrix} \) to both sides.
+\end{problem}
+
+\begin{solution}
+	\noindent Let \( \ket{f} = (0,1)^{\top} \), \( \ket{e} = (1,0)^{\top} \), \( \ket{g} = (s, is)^{\top} \) with \( s = \tfrac{1}{\sqrt{2}} \), so \( \ket{f} + \ket{e} = (1,1)^{\top} \).
+
+	\noindent \textbf{Left distributivity.}
+	\begin{align*}
+		\text{LHS:}\quad \paren{\ket{f} + \ket{e}} \otimes \ket{g}
+		 & = \begin{pmatrix} 1 \\ 1 \end{pmatrix} \otimes \begin{pmatrix} s \\ is \end{pmatrix}
+		= \paren{s,\; is,\; s,\; is}^{\top},                                                    \\
+		\text{RHS:}\quad \ket{f}\otimes\ket{g} + \ket{e}\otimes\ket{g}
+		 & = \paren{0, 0, s, is}^{\top} + \paren{s, is, 0, 0}^{\top}
+		= \paren{s,\; is,\; s,\; is}^{\top}.
+	\end{align*}
+
+	\noindent \textbf{Right distributivity.}
+	\begin{align*}
+		\text{LHS:}\quad \ket{g} \otimes \paren{\ket{f} + \ket{e}}
+		 & = \begin{pmatrix} s \\ is \end{pmatrix} \otimes \begin{pmatrix} 1 \\ 1 \end{pmatrix}
+		= \paren{s,\; s,\; is,\; is}^{\top},                                                    \\
+		\text{RHS:}\quad \ket{g}\otimes\ket{f} + \ket{g}\otimes\ket{e}
+		 & = \paren{0, s, 0, is}^{\top} + \paren{s, 0, is, 0}^{\top}
+		= \paren{s,\; s,\; is,\; is}^{\top}.
+	\end{align*}
+
+	\noindent In each case LHS \( = \) RHS, so the tensor product distributes over vector addition from both sides.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 08                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Tensor Products using Colab}
+\par Use Colab to verify the results from Problems 5 to 7.
+For Problem 5, you may use this code
+\begin{codingbox}
+import numpy as np
+
+g = np.array([[0], [1]])
+h = np.array([[1/np.sqrt(2)], [1j/np.sqrt(2)]])
+
+print(np.kron(g, h))
+print(np.kron(h, g))
+\end{codingbox}
+\end{problem}
+
+\begin{solution}
+	\noindent Checking Problems 5--7 with \texttt{np.kron}:
+	\begin{codingbox}
+f = np.array([0, 1]); e = np.array([1, 0]); g = np.array([1, 1j]) / np.sqrt(2)
+
+print(np.kron(f, g), np.kron(g, f))                                    # Problem 5
+print(np.kron(np.kron(f, g), f).shape)                                 # Problem 6 -> (8,)
+print(np.allclose(np.kron(f + e, g), np.kron(f, g) + np.kron(e, g)))   # Problem 7 (left)
+print(np.allclose(np.kron(g, f + e), np.kron(g, f) + np.kron(g, e)))   # Problem 7 (right)
+\end{codingbox}
+	\noindent The notebook (\textbf{Appendix~1}) shows, with \( s = \tfrac{1}{\sqrt{2}} \),
+	\( \ket{f}\otimes\ket{g} = (0, 0, s, is)^{\top} \neq (0, s, 0, is)^{\top} = \ket{g}\otimes\ket{f} \) (Problem 5),
+	a three-fold product of shape \( (8,) \) (Problem 6),
+	and \texttt{True} for both distributive laws (Problem 7).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 09                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Inner Product of Tensor Products}
+\par Check the following equation:
+\[
+	\Bracket{h_1}{h_2}
+	= \Bracket{\sum_{j = 1}^{n_1} \ket{f_j} \otimes \ket{g_j}}{\sum_{l = 1}^{n_2} \ket{e_l} \otimes \ket{k_l}}
+	= \sum_{j = 1}^{n_1} \sum_{l = 1}^{n_2} \Bracket{f_j}{e_l} \Bracket{g_j}{k_l}
+\]
+by setting \( n_1 = n_2 = 1 \) (i.e. only one term) and \( \displaystyle \ket{f} = \begin{pmatrix}
+	1 \\ 1
+\end{pmatrix} \), \( \displaystyle \ket{e} = \begin{pmatrix}
+	0 \\ 1
+\end{pmatrix} \), \( \displaystyle \ket{g} = \begin{pmatrix}
+	i \\ i
+\end{pmatrix} \), and \( \displaystyle \ket{k} = \begin{pmatrix}
+	i \\ 1
+\end{pmatrix} \).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Why it holds.} For simple tensors the inner product on \( H_1 \otimes H_2 \) factorizes,
+	\[
+		\Bracket{a \otimes b}{c \otimes d}
+		= \paren{a \otimes b}^{\dagger}\paren{c \otimes d}
+		= \paren{a^{\dagger}c}\paren{b^{\dagger}d}
+		= \braket{a \vert c}\,\braket{b \vert d}.
+	\]
+	Expanding both sums by (conjugate-)linearity,
+	\[
+		\Bracket{\sum_{j = 1}^{n_1} \ket{f_j} \otimes \ket{g_j}}{\sum_{l = 1}^{n_2} \ket{e_l} \otimes \ket{k_l}}
+		= \sum_{j = 1}^{n_1} \sum_{l = 1}^{n_2} \Bracket{f_j \otimes g_j}{e_l \otimes k_l}
+		= \sum_{j = 1}^{n_1} \sum_{l = 1}^{n_2} \braket{f_j \vert e_l}\,\braket{g_j \vert k_l}.
+	\]
+
+	\noindent \textbf{Check with \( n_1 = n_2 = 1 \).} Here \( \ket{h_1} = \ket{f} \otimes \ket{g} \) and \( \ket{h_2} = \ket{e} \otimes \ket{k} \), with \( \ket{f} = (1,1)^{\top} \), \( \ket{e} = (0,1)^{\top} \), \( \ket{g} = (i,i)^{\top} \), \( \ket{k} = (i,1)^{\top} \), so
+	\[
+		\ket{h_1} = (i,\; i,\; i,\; i)^{\top}, \qquad
+		\ket{h_2} = (0,\; 0,\; i,\; 1)^{\top}.
+	\]
+
+	\noindent
+	\begin{minipage}[t]{0.46\textwidth}
+		\begin{align*}
+			\braket{h_1 \vert h_2}
+			 & = \begin{pmatrix} -i & -i & -i & -i \end{pmatrix}\begin{pmatrix} 0 \\ 0 \\ i \\ 1 \end{pmatrix} \\
+			 & = (-i)(i) + (-i)(1)                                                                             \\
+			 & = 1 - i
+		\end{align*}
+	\end{minipage}%
+	\hfill \vrule \hfill
+	\begin{minipage}[t]{0.46\textwidth}
+		\begin{align*}
+			\braket{f \vert e}                     & = (1)(0) + (1)(1) = 1,       \\
+			\braket{g \vert k}                     & = (-i)(i) + (-i)(1) = 1 - i, \\
+			\braket{f \vert e}\,\braket{g \vert k} & = (1)(1 - i) = 1 - i
+		\end{align*}
+	\end{minipage}
+
+	\myspace
+
+	\noindent Both routes give \( \braket{h_1 \vert h_2} = 1 - i \), so the equation checks out. \( \blacksquare \)
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 10                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Hand Calculation of Tensor Product}
+\par Let \( \displaystyle \ket{f} = \begin{pmatrix}
+	0 \\ 1
+\end{pmatrix} \) and \( \displaystyle \ket{g} = \begin{pmatrix}
+	\frac{1}{\sqrt{2}} \\ \frac{i}{\sqrt{2}}
+\end{pmatrix} \), find \( \sigma_x \ket{f}_1 \) and \( \sigma_x \ket{g}_2 \).
+Then find the tensor product of the resulting vector (i.e. \( \sigma_x \ket{f}_1 \otimes \sigma_x \ket{g}_2 \)).
+Now find \( \ket{f}_1 \otimes \ket{g}_2 \) and construct \( \sigma_x \otimes \sigma_x \).
+Show that \( \sigma_x \otimes \sigma_x \ket{f}_1 \otimes \sigma_x \ket{g}_2 \) gives the same result.
+\end{problem}
+
+\begin{solution}
+	\noindent Let \( s = \tfrac{1}{\sqrt{2}} \). \( \sigma_x \) swaps a vector's two entries, so
+	\[
+		\sigma_x\ket{f}_1 = \sigma_x \begin{pmatrix} 0 \\ 1 \end{pmatrix} = \begin{pmatrix} 1 \\ 0 \end{pmatrix},
+		\qquad
+		\sigma_x\ket{g}_2 = \sigma_x \begin{pmatrix} s \\ is \end{pmatrix} = \begin{pmatrix} is \\ s \end{pmatrix}.
+	\]
+
+	\noindent \textbf{Transform each factor, then tensor:}
+	\[
+		\sigma_x\ket{f}_1 \otimes \sigma_x\ket{g}_2
+		= \begin{pmatrix} 1 \\ 0 \end{pmatrix} \otimes \begin{pmatrix} is \\ s \end{pmatrix}
+		= \paren{is,\; s,\; 0,\; 0}^{\top}.
+	\]
+
+	\noindent \textbf{Tensor first, then transform:} from \textbf{Problem 5}, \( \ket{f}_1 \otimes \ket{g}_2 = \paren{0, 0, s, is}^{\top} \), and
+	\[
+		\sigma_x \otimes \sigma_x
+		= \begin{pmatrix} 0\,\sigma_x & 1\,\sigma_x \\ 1\,\sigma_x & 0\,\sigma_x \end{pmatrix}
+		= \begin{pmatrix}
+			0 & 0 & 0 & 1 \\
+			0 & 0 & 1 & 0 \\
+			0 & 1 & 0 & 0 \\
+			1 & 0 & 0 & 0
+		\end{pmatrix},
+	\]
+	which reverses the entry order of a \( 4 \)-vector, so
+	\[
+		\paren{\sigma_x \otimes \sigma_x}\paren{\ket{f}_1 \otimes \ket{g}_2}
+		= \begin{pmatrix}
+			0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \\ 0 & 1 & 0 & 0 \\ 1 & 0 & 0 & 0
+		\end{pmatrix}
+		\begin{pmatrix} 0 \\ 0 \\ s \\ is \end{pmatrix}
+		= \paren{is,\; s,\; 0,\; 0}^{\top}.
+	\]
+
+	\noindent Both give \( \paren{is, s, 0, 0}^{\top} \) -- the mixed-product property
+	\( \paren{\sigma_x \otimes \sigma_x}\paren{\ket{f} \otimes \ket{g}} = \paren{\sigma_x\ket{f}} \otimes \paren{\sigma_x\ket{g}} \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 11                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Tensor Product Calculation using Colab}
+\par Use Colab and the function \texttt{np.kron} to verify Problem 10.
+\end{problem}
+
+\begin{solution}
+	\noindent Verifying Problem 10 with \texttt{np.kron} for both the states and the operator:
+	\begin{codingbox*}
+sx = np.array([[0, 1], [1, 0]])
+f  = np.array([0, 1]); g = np.array([1, 1j]) / np.sqrt(2)
+
+lhs = np.kron(sx @ f, sx @ g)          # (sx|f>) (x) (sx|g>)
+rhs = np.kron(sx, sx) @ np.kron(f, g)  # (sx (x) sx)(|f> (x) |g>)
+print(lhs)
+print(np.allclose(lhs, rhs))
+\end{codingbox*}
+	\noindent The notebook (\textbf{Appendix~1}) gives \( \texttt{lhs} = \paren{is, s, 0, 0}^{\top} \) with \( s = \tfrac{1}{\sqrt{2}} \)
+	and \texttt{np.allclose(lhs, rhs)} \( = \) \texttt{True}: acting with \( \sigma_x \otimes \sigma_x \) on \( \ket{f} \otimes \ket{g} \)
+	reproduces \( \paren{\sigma_x\ket{f}} \otimes \paren{\sigma_x\ket{g}} \), confirming Problem 10.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                     Appendix                                     %
+% ================================================================================ %
+
+\myappendix{code/assignment-05-code.pdf}{Assignment 05 | Code Solution}
+
+% ================================================================================ %
+
+\end{document}
