@@ -1,4 +1,6 @@
 \documentclass[a4paper, 10pt]{article}
+\usepackage{scrextend}
+\changefontsizes{9pt}
 \input{../course-config}
 \usepackage{../vendor/template/CEDT-Assignment-style}
 
@@ -15,9 +17,9 @@
 But I want you to go through to practice the skill of finding eigenvectors.
 We can also measure the electron spin in \( \hat{y} \) direction by setting up an external magnetic field in the \( \hat{y} \) direction.
 It is given that the corresponding operator is \[ \sigma_y = \begin{pmatrix}
-	0 & -i \\
-	i & 0
-\end{pmatrix}. \] Again, we are using the \( \ket{0}/\ket{1} \) basis.
+		0 & -i \\
+		i & 0
+	\end{pmatrix}. \] Again, we are using the \( \ket{0}/\ket{1} \) basis.
 Find the eigenvalues and eigenvectors in the \( \ket{0}/\ket{1} \) basis.
 \end{problem}
 
@@ -69,7 +71,7 @@ Find the eigenvalues and eigenvectors in the \( \ket{0}/\ket{1} \) basis.
 		\end{pmatrix} = \frac{1}{\sqrt{2}}\paren{\ket{0} - i\ket{1}}
 	\]
 
-	\textbf{Check.}
+	\noindent \textbf{Check.}
 	\[
 		\sigma_y \ket{\lambda_1 = 1} = \frac{1}{\sqrt{2}}\begin{pmatrix}
 			0 & -i \\
@@ -93,6 +95,8 @@ Find the eigenvalues and eigenvectors in the \( \ket{0}/\ket{1} \) basis.
 	both of which confirm \( \sigma_y \ket{\lambda_k} = \lambda_k \ket{\lambda_k} \), as expected.
 \end{solution}
 % ================================================================================ %
+
+\newpage
 
 % ================================================================================ %
 %                                    Problem 02                                    %
@@ -127,11 +131,11 @@ print(eigenvectors)
 
 	\begin{enumerate}
 		\item  The first column, \( \begin{pmatrix} -0.7071i \\ 0.7071 \end{pmatrix} = -i \cdot \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ i \end{pmatrix} \),
-		is the hand-calculated eigenvector for \( \lambda_1 = 1 \) up to the global phase factor \( -i \),
-		which is physically irrelevant since an eigenvector is only defined up to a nonzero scalar multiple.
+		      is the hand-calculated eigenvector for \( \lambda_1 = 1 \) up to the global phase factor \( -i \),
+		      which is physically irrelevant since an eigenvector is only defined up to a nonzero scalar multiple.
 
 		\item The second column, \( \begin{pmatrix} 0.7071 \\ -0.7071i \end{pmatrix} \approx \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ -i \end{pmatrix} \),
-		matches the hand-calculated eigenvector for \( \lambda_2 = -1 \) exactly.
+		      matches the hand-calculated eigenvector for \( \lambda_2 = -1 \) exactly.
 	\end{enumerate}
 \end{solution}
 % ================================================================================ %
@@ -175,19 +179,21 @@ print(np.matmul(sigmay, sigmay))
 
 	Verifying with the provided Python code, the output is
 	\begin{align*}
-		\sigma_y &= \begin{pmatrix}
-			0 & -i \\
-			i & 0
-		\end{pmatrix} \\
-		\sigma_y^2 &= \begin{pmatrix}
-			1 & 0 \\
-			0 & 1
-		\end{pmatrix}
+		\sigma_y   & = \begin{pmatrix}
+			               0 & -i \\
+			               i & 0
+		               \end{pmatrix} \\
+		\sigma_y^2 & = \begin{pmatrix}
+			               1 & 0 \\
+			               0 & 1
+		               \end{pmatrix}
 	\end{align*}
-	
+
 	which matches the hand-calculated result \( \sigma_y^2 = I \).
 \end{solution}
 % ================================================================================ %
+
+\newpage
 
 % ================================================================================ %
 %                                    Problem 04                                    %
@@ -216,7 +222,7 @@ print(np.matmul(sigmay, sigmay))
 	\]
 
 	Verifying with Colab:
-\begin{codingbox}
+	\begin{codingbox}
 sigmaz = np.array([[1, 0], [0, -1]])
 
 print(sigmaz)
@@ -239,7 +245,7 @@ print(np.matmul(sigmaz, sigmaz))
 	By hand, the conjugate transpose of \( \sigma_y \) is obtained by transposing and then conjugating every entry:
 	\[
 		\sigma_y = \begin{pmatrix}
-			0  & -i \\
+			0 & -i \\
 			i & 0
 		\end{pmatrix}
 		\quad\Longrightarrow\quad
@@ -254,9 +260,9 @@ print(np.matmul(sigmaz, sigmaz))
 		\end{pmatrix} = \sigma_y
 	\]
 	Since \( \sigma_y^{*^T} = \sigma_y \), \( \sigma_y \) is Hermitian.
-	
+
 	Verifying with Colab:
-\begin{codingbox}
+	\begin{codingbox}
 sigmay_dagger = sigmay.conj().T
 
 print(sigmay_dagger)
@@ -267,6 +273,8 @@ print(np.allclose(sigmay_dagger, sigmay))
 	confirming \( \sigma_y \) is Hermitian.
 \end{solution}
 % ================================================================================ %
+
+\newpage
 
 % ================================================================================ %
 %                                    Problem 06                                    %
@@ -312,7 +320,7 @@ print(np.dot(sigmay, zerospin))
 	This is expected because, since \( \sigma_y \) is Hermitian (Problem 5), \( \bra{0}\sigma_y = \paren{\sigma_y\ket{0}}^{*^T} \) is the \emph{conjugate} transpose, not just the transpose, of \( \sigma_y\ket{0} \); as \( \sigma_y\ket{0} = i\ket{1} \) has a nonzero imaginary coefficient, conjugation flips its sign.
 
 	Verifying with Colab:
-\begin{codingbox}
+	\begin{codingbox}
 zerospin = np.array([[1], [0]])
 print(zerospin.shape)
 
