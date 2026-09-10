@@ -1,4 +1,6 @@
 \documentclass[a4paper, 10pt]{article}
+\usepackage{scrextend}
+\changefontsizes{9pt}
 \input{../course-config}
 \usepackage{../vendor/template/CEDT-Assignment-style}
 
@@ -75,7 +77,7 @@ print(v2)
 	\[
 		\abs{\ket{\vec{v_1}}} = \sqrt{|2|^2 + |1 + i|^2} = \sqrt{4 + (1^2 + 1^2)} = \sqrt{4 + 2} = \sqrt{6}
 	\]
-	
+
 	Thus, the normalized vector is:
 	\[
 		\ket{\vec{v_1}_{\text{normalized}}} = \frac{2}{\sqrt{6}} \ket{\uparrow} + \frac{1 + i}{\sqrt{6}} \ket{\downarrow}
@@ -97,7 +99,7 @@ print(v2)
 
 \begin{solution}
 	Using the following Python code:
-\begin{codingbox}
+	\begin{codingbox}
 v1 = np.array([[2], [1+1j]])
 v2 = np.round(v1 / np.linalg.norm(v1), 4)
 print(f"Normalized vector:\n{v2}")
@@ -188,9 +190,9 @@ To check your answer, convert it back to \( \ket{+}/\ket{-} \) using the equatio
 	We have \( \ket{+} = \frac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}} \) and \( \ket{-} = \frac{1}{\sqrt{2}}\paren{\ket{0} - \ket{1}} \).
 	Substituting \( \vec{v_1} = 1 \ket{+} + 2 \ket{-} \):
 	\begin{align*}
-		\vec{v_1} & =  1 \ket{+} + 2 \ket{-} \\
-		 & = 1 \cdot \frac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}} + 2 \cdot \frac{1}{\sqrt{2}}\paren{\ket{0} - \ket{1}}    \\
-		          & = \frac{1}{\sqrt{2}}\sqbracket{(1 + 2)\ket{0} + (1 - 2)\ket{1}}                                              \\
+		\vec{v_1} & =  1 \ket{+} + 2 \ket{-}                                                                                    \\
+		          & = 1 \cdot \frac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}} + 2 \cdot \frac{1}{\sqrt{2}}\paren{\ket{0} - \ket{1}} \\
+		          & = \frac{1}{\sqrt{2}}\sqbracket{(1 + 2)\ket{0} + (1 - 2)\ket{1}}                                             \\
 		\vec{v_1} & = \frac{3}{\sqrt{2}} \ket{0} - \frac{1}{\sqrt{2}} \ket{1}
 	\end{align*}
 
@@ -247,8 +249,8 @@ Use Google Colab to verify your answer.
 
 	\newpage
 
-	Using Python to verify:
-\begin{codingbox}
+	\noindent Using Python to verify:
+	\begin{codingbox*}
 import numpy as np
 
 # v1 = (1, 2) in the |0>/|1> basis
@@ -262,8 +264,8 @@ print("v1 in +/- basis (unnormalized):", v1_pm.ravel())
 
 v1_pm_normalized = np.round(v1_pm / np.linalg.norm(v1_pm), 4)
 print("v1 in +/- basis (normalized):", v1_pm_normalized.ravel())
-\end{codingbox}
-	which prints \( \begin{pmatrix} 0.9487 \\ -0.3162 \end{pmatrix} \), matching the hand-calculated result.
+\end{codingbox*}
+	\noindent which prints \( \begin{pmatrix} 0.9487 \\ -0.3162 \end{pmatrix} \), matching the hand-calculated result.
 \end{solution}
 % ================================================================================ %
 
@@ -310,10 +312,8 @@ Use Google Colab to verify your answer.
 		P(\ket{0}) = \abs{\frac{1}{\sqrt{5}}}^2 = \frac{1}{5} = 0.2
 	\]
 
-	\newpage
-
-	Using Python to verify:
-\begin{codingbox}
+	\noindent Using Python to verify:
+	\begin{codingbox*}
 import numpy as np
 
 v1 = np.array([[1], [2]])
@@ -322,7 +322,7 @@ print("v1 normalized in 0/1 basis:", v1_normalized.ravel())
 
 prob_0 = np.abs(v1_normalized[0, 0]) ** 2
 print("P(|0>):", prob_0)
-\end{codingbox}
+\end{codingbox*}
 	which prints \( \begin{pmatrix} 0.4472 \\ 0.8944 \end{pmatrix} \) and \( P(\ket{0}) = 0.2000 \), matching the hand-calculated result.
 \end{solution}
 % ================================================================================ %
