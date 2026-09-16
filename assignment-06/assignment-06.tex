@@ -1,0 +1,593 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage{scrextend}
+\changefontsizes{9pt}
+\input{../course-config}
+\usepackage{../vendor/template/CEDT-Assignment-style}
+
+\begin{document}
+\subject
+\asgntitle{6}{}{Week 6}{\StudentID\ \StudentName}{\DefaultCollaborators}
+
+% ================================================================================ %
+%                                    Problem 01                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Power of Quantum Register}
+\par At the time of writing, the whole world has less than \( 10^{21} \) byte of memory.
+If we need two bytes to store one coefficient of a quantum state
+(assume one for the real part and one for the imaginary part),
+what is the maximum size of the quantum register state the world's memory can store?
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{What has to be stored.} A register of \( n \) qubits lives in \( \C^{2^n} \), so a general state
+	\[
+		\ket{\psi} = \sum_{k = 0}^{2^n - 1} c_k \ket{k}
+	\]
+	is a list of \( 2^n \) complex coefficients. At two bytes each, the storage cost is
+	\[
+		B(n) = 2 \cdot 2^n = 2^{\,n+1} \; \text{bytes}.
+	\]
+
+	\noindent \textbf{Solving the constraint.} We need \( B(n) \le 10^{21} \), so
+	\[
+		2^{\,n+1} \le 10^{21}
+		\quad\Longleftrightarrow\quad
+		n + 1 \le \log_2 10^{21} = 21 \log_2 10 \approx 69.76
+		\quad\Longleftrightarrow\quad
+		n \le 68.76 .
+	\]
+	Since \( n \) must be an integer, \( n_{\max} = 68 \).
+
+	\noindent \textbf{Check.}
+	\[
+		B(68) = 2^{69} \approx 5.90 \times 10^{20} \le 10^{21}, \qquad
+		B(69) = 2^{70} \approx 1.18 \times 10^{21} > 10^{21} .
+	\]
+
+	\noindent The entire world's memory -- just under one zettabyte -- therefore stores the state of a register of at most \textbf{68 qubits} (and nothing else).
+
+	\begin{remark}
+		The bound is brutal because \( B(n) \) doubles with every extra qubit: going from \( 68 \) to \( 69 \) qubits would need a second Earth's worth of memory.
+		Storing the \emph{state vector} is what is expensive, not building the qubits -- a \( 68 \)-qubit chip is ordinary hardware, while writing down what it is doing is already beyond every computer on the planet.
+		This gap is exactly why quantum computers are worth building.
+	\end{remark}
+
+	\noindent The notebook (\textbf{Appendix~1}) confirms \( n_{\max} = \left\lfloor \log_2 \paren{10^{21} / 2} \right\rfloor = 68 \).
+\end{solution}
+% ================================================================================ %
+% ================================================================================ %
+%                                    Problem 02                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Bell States}
+\par Prove that all Bell states are entangled.
+\end{problem}
+
+\begin{proofbox}
+	\noindent \textbf{Setup.} The four Bell states are
+	\[
+		\ket{\phi^{\pm}} = \tfrac{1}{\sqrt{2}}\paren{\ket{00} \pm \ket{11}}, \qquad
+		\ket{\psi^{\pm}} = \tfrac{1}{\sqrt{2}}\paren{\ket{01} \pm \ket{10}} .
+	\]
+	A two-qubit state is \emph{separable} (i.e. not entangled) exactly when it can be written as a single tensor product of one-qubit states; it is \emph{entangled} otherwise.
+	Expanding a general product,
+	\[
+		\paren{a\ket{0} + b\ket{1}} \otimes \paren{c\ket{0} + d\ket{1}}
+		= ac\ket{00} + ad\ket{01} + bc\ket{10} + bd\ket{11},
+	\]
+	so \( \ket{\chi} = \sum_{i,j} c_{ij}\ket{ij} \) is separable if and only if \( c_{00} = ac \), \( c_{01} = ad \), \( c_{10} = bc \), \( c_{11} = bd \) for some \( a, b, c, d \in \C \).
+
+	\noindent \textbf{A criterion.} Any such factorization forces
+	\[
+		c_{00}c_{11} - c_{01}c_{10} = (ac)(bd) - (ad)(bc) = abcd - abcd = 0,
+	\]
+	that is, the coefficient matrix \( C = \begin{pmatrix} c_{00} & c_{01} \\ c_{10} & c_{11} \end{pmatrix} \) must be singular.
+	Contrapositively, \textbf{if \( \det C \ne 0 \) the state is entangled.}
+
+	\noindent \textbf{Applying it to the four Bell states.}
+	\begin{center}
+		\begin{tabular}{ccccccc}
+			\toprule
+			State                & \( c_{00} \)              & \( c_{01} \)              & \( c_{10} \)               & \( c_{11} \)               & \( \det C = c_{00}c_{11} - c_{01}c_{10} \) & entangled? \\
+			\midrule
+			\( \ket{\phi^{+}} \) & \( \tfrac{1}{\sqrt{2}} \) & \( 0 \)                   & \( 0 \)                    & \( \tfrac{1}{\sqrt{2}} \)  & \( +\tfrac{1}{2} \)                        & yes        \\
+			\( \ket{\phi^{-}} \) & \( \tfrac{1}{\sqrt{2}} \) & \( 0 \)                   & \( 0 \)                    & \( -\tfrac{1}{\sqrt{2}} \) & \( -\tfrac{1}{2} \)                        & yes        \\
+			\( \ket{\psi^{+}} \) & \( 0 \)                   & \( \tfrac{1}{\sqrt{2}} \) & \( \tfrac{1}{\sqrt{2}} \)  & \( 0 \)                    & \( -\tfrac{1}{2} \)                        & yes        \\
+			\( \ket{\psi^{-}} \) & \( 0 \)                   & \( \tfrac{1}{\sqrt{2}} \) & \( -\tfrac{1}{\sqrt{2}} \) & \( 0 \)                    & \( +\tfrac{1}{2} \)                        & yes        \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	Every determinant is \( \pm\tfrac{1}{2} \ne 0 \), so no Bell state is a product state: all four are entangled. \( \blacksquare \)
+
+	\myspace
+
+	\noindent \textbf{The same argument written out for \( \ket{\phi^{+}} \).} Suppose, for contradiction, that
+	\[
+		\tfrac{1}{\sqrt{2}}\paren{\ket{00} + \ket{11}} = \paren{a\ket{0} + b\ket{1}} \otimes \paren{c\ket{0} + d\ket{1}} .
+	\]
+	Matching coefficients gives \( ac = \tfrac{1}{\sqrt{2}} \), \( ad = 0 \), \( bc = 0 \), \( bd = \tfrac{1}{\sqrt{2}} \).
+	From \( ac \ne 0 \) we get \( a \ne 0 \) and \( c \ne 0 \); then \( ad = 0 \) forces \( d = 0 \) and \( bc = 0 \) forces \( b = 0 \),
+	so \( bd = 0 \ne \tfrac{1}{\sqrt{2}} \) -- a contradiction.
+	The other three states fail in exactly the same way (for \( \ket{\psi^{\pm}} \) the roles of the vanishing and non-vanishing pairs are swapped).
+
+	\begin{remark}
+		Entanglement entropy gives the same verdict quantitatively: tracing out one qubit of any Bell state leaves \( \rho_A = \tfrac{1}{2}I \), the maximally mixed state, so \( S = 1 \) bit -- the largest value a two-qubit state can reach (\textbf{Problem 6}).
+		A product state would instead give \( S = 0 \) (\textbf{Problem 5}).
+	\end{remark}
+\end{proofbox}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 03                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Profiting using Entanglement}
+\par There is a strange trillionaire living on Pluto.
+She invests based on the measurement of electron spin every month.
+If it is a spin up, she will invest in the gold on the Earth.
+If it is spin down, she will invest in silver on the Earth.
+An investor was able to entangle his electron with her electron to be measured next month secretly.
+Once the measurement is performed, the investor knows that his electron will collapse to the same spin states,
+and he will buy the corresponding commodity before anyone else who receives the result through a radio wave from Pluto.
+Is this really useful? In other words, is this a riskless investment for the investor on Earth?
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Short answer.} No. The correlation he is exploiting is real, but it is nothing more than a shared coin flip, and it is certainly not riskless.
+
+	\myspace
+
+	\noindent \textbf{What quantum mechanics does give him.} Say the pair is prepared in \( \ket{\phi^{+}} = \tfrac{1}{\sqrt{2}}\paren{\ket{\uparrow\uparrow} + \ket{\downarrow\downarrow}} \).
+	Whoever measures first gets \( \uparrow \) or \( \downarrow \) with probability \( \tfrac{1}{2} \) each, and the partner electron then agrees with certainty.
+	So yes -- by measuring his own electron he learns her outcome without waiting for the radio wave, which takes hours to cross the solar system.
+
+	\noindent \textbf{What it does not give him.} Nothing was \emph{transmitted}. His electron alone is described by the reduced density matrix
+	\[
+		\rho_A = \mathrm{Tr}_B \paren{\ket{\phi^{+}}\bra{\phi^{+}}} = \tfrac{1}{2}I,
+	\]
+	which is the same maximally mixed state whether or not she has already measured (\textbf{Problem 6}).
+	He cannot tell from his side \emph{when} -- or even \emph{whether} -- the measurement on Pluto has happened, and she cannot steer her outcome to encode a choice.
+	This is the no-signalling theorem: entanglement never carries information faster than light.
+
+	\noindent \textbf{So what is left is pre-shared randomness.} The trillionaire decides nothing; the electron does, at random.
+	The investor's ``advantage'' is exactly the advantage he would have had by tossing a fair coin on Earth, sealing the result in an envelope, and shipping her a copy before she left -- a purely classical arrangement with the same correlations.
+	Quantum mechanics only outperforms shared randomness when the two parties measure along \emph{different} axes (Bell-inequality experiments), which is not what is happening here.
+
+	\myspace
+
+	\noindent \textbf{Why it is not riskless.}
+	\begin{itemize}
+		\item \textbf{Knowing the trade is not knowing the return.} He learns \emph{which} commodity she buys, not what it will be worth. Gold can fall even after a trillionaire buys it, and the market risk -- the only risk an investor actually cares about -- is untouched.
+		\item \textbf{The measurement axes must agree.} Perfect \( \uparrow\uparrow / \downarrow\downarrow \) correlation holds only when both measure along the same direction. If she measures along \( \hat{x} \) while he measures along \( \hat{z} \), each of his outcomes is \( 50/50 \) and tells him nothing (\textbf{Assignment 4, Problem 3}). He must know her apparatus exactly.
+		\item \textbf{Decoherence.} One half of an entangled pair has to stay coherent for a month while travelling to Pluto. Any stray interaction -- a magnetic field, a collision, a measurement by someone else -- entangles the electron with its environment and degrades the correlation into noise. Worse, nothing in his own statistics reveals that this has happened: he still sees \( 50/50 \), so he would bet on a broken channel with full confidence.
+		\item \textbf{Order of measurement.} If he measures first, \emph{his} outcome is the random one and hers merely agrees, so he still has to assume her electron is untouched until then. One earlier measurement by anybody else breaks the link silently.
+	\end{itemize}
+
+	\noindent \textbf{Conclusion.} The scheme does deliver a bit of information before the radio wave arrives, but that bit is a fair coin flip that a classical sealed envelope would have supplied just as well, and it says nothing about prices.
+	Physically it is fragile, and financially it is not riskless at all.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 04                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Inner Product between Two Spaces}
+\par What is the inner product between the basis states of two electron spins?
+For example, what is the inner products of \( \ket{0}_1 \) and \( \ket{0}_0 \)?
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Short answer.} There is none: \( \braket{0_1 \vert 0_0} \) is \textbf{not defined}, because the two kets live in different Hilbert spaces.
+
+	\noindent \textbf{Why.} An inner product is a map \( \mathcal{H} \times \mathcal{H} \to \C \); both arguments must come from the \emph{same} space.
+	Electron \( 1 \)'s spin lives in \( \mathcal{H}_1 \cong \C^2 \) and electron \( 0 \)'s in \( \mathcal{H}_0 \cong \C^2 \).
+	These are isomorphic copies of \( \C^2 \), but they are not the same space, and no physical process identifies a vector of one with a vector of the other.
+	Writing \( \braket{0_1 \vert 0_0} = 1 \) because ``both look like \( (1,0)^{\top} \)'' is a category error: it treats a label as though it were a coordinate.
+
+	\noindent \textbf{What the symbol can mean instead.} A bra of space \( 1 \) meeting a ket of space \( 0 \) does not contract -- they act on different factors, so they simply commute and stand side by side,
+	\[
+		\bra{0}_1 \ket{0}_0 = \ket{0}_0 \bra{0}_1,
+	\]
+	and the right-hand side is a perfectly good \emph{operator}: a linear map \( \mathcal{H}_1 \to \mathcal{H}_0 \), not a number.
+
+	\noindent \textbf{What can be computed.} Two spaces are joined by the \emph{tensor} product, \( \mathcal{H}_1 \otimes \mathcal{H}_0 \), and the inner product there factorizes with each bra meeting the ket of its own space (\textbf{Assignment 5, Problem 9}):
+	\[
+		\Bracket{f_1 \otimes g_0}{e_1 \otimes k_0} = \braket{f \vert e}_1 \, \braket{g \vert k}_0 .
+	\]
+	Only then does a number come out, for instance
+	\[
+		\Bracket{0_1 \, 0_0}{0_1 \, 0_0} = \braket{0 \vert 0}_1 \braket{0 \vert 0}_0 = 1 \cdot 1 = 1,
+		\qquad
+		\Bracket{0_1 \, 0_0}{0_1 \, 1_0} = \braket{0 \vert 0}_1 \braket{0 \vert 1}_0 = 1 \cdot 0 = 0 .
+	\]
+
+	\noindent \textbf{Moral.} States of different subsystems combine with \( \otimes \), never with \( \braket{\cdot \vert \cdot} \).
+	In particular \( \ket{0}_1 \) and \( \ket{0}_0 \) are neither orthogonal nor parallel -- those words have no meaning across two spaces.
+	The four two-qubit basis states \( \ket{00}, \ket{01}, \ket{10}, \ket{11} \) \emph{are} orthonormal, but that is a statement inside the single space \( \mathcal{H}_1 \otimes \mathcal{H}_0 \).
+\end{solution}
+% ================================================================================ %
+
+\newpage
+
+% ================================================================================ %
+%                                    Problem 05                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Entanglement Entropy of a Product State}
+\par Find the density matrix of \( \displaystyle \frac{1}{2} \paren{\ket{00} + \ket{01} + \ket{10} + \ket{11}} \).
+Then find its entanglement entropy.
+\par \textit{Hint:} It should be zero because it is a product state.
+Can you also factorize it into the product of two vectors in the \( \mathbb{C}^2 \) space?
+\par \textit{Note that:} its density matrix is not diagonal.
+Try to diagonalize it first before taking the logarithmic values.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The density matrix.} With \( \ket{\psi} = \tfrac{1}{2}\paren{\ket{00} + \ket{01} + \ket{10} + \ket{11}} = \tfrac{1}{2}\paren{1, 1, 1, 1}^{\top} \),
+	\[
+		\rho = \ket{\psi}\bra{\psi}
+		= \frac{1}{2}\begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix}
+		\cdot \frac{1}{2}\begin{pmatrix} 1 & 1 & 1 & 1 \end{pmatrix}
+		= \frac{1}{4}\begin{pmatrix}
+			1 & 1 & 1 & 1 \\
+			1 & 1 & 1 & 1 \\
+			1 & 1 & 1 & 1 \\
+			1 & 1 & 1 & 1
+		\end{pmatrix}.
+	\]
+
+	\noindent \textbf{Factorization.} Grouping by the first qubit,
+	\[
+		\ket{\psi}
+		= \tfrac{1}{2}\sqbracket{ \ket{0}\paren{\ket{0} + \ket{1}} + \ket{1}\paren{\ket{0} + \ket{1}} }
+		= \tfrac{1}{2}\paren{\ket{0} + \ket{1}} \otimes \paren{\ket{0} + \ket{1}}
+		= \ket{+} \otimes \ket{+},
+	\]
+	with \( \ket{+} = \tfrac{1}{\sqrt{2}}(1, 1)^{\top} \). It is indeed a product state, so \( \rho = \paren{\ket{+}\bra{+}} \otimes \paren{\ket{+}\bra{+}} \).
+
+	\noindent \textbf{Reduced density matrix.} Writing \( \rho \) in \( 2 \times 2 \) blocks labelled by the \( A \) indices, with \( J = \begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix} \),
+	\[
+		\rho = \frac{1}{4}\begin{pmatrix} J & J \\ J & J \end{pmatrix},
+		\qquad
+		\paren{\rho_A}_{aa'} = \mathrm{Tr}\paren{\text{block}_{aa'}} = \tfrac{1}{4}\mathrm{Tr}\, J = \tfrac{1}{2},
+	\]
+	so
+	\[
+		\rho_A = \mathrm{Tr}_B\paren{\rho} = \frac{1}{2}\begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix} = \ket{+}\bra{+},
+	\]
+	exactly the first factor -- as it must be for a product state. Note it is \textbf{not} diagonal.
+
+	\noindent \textbf{Diagonalize before taking the logarithm.} The characteristic equation of \( \rho_A \) is
+	\[
+		\det\paren{\rho_A - \lambda I} = \paren{\tfrac{1}{2} - \lambda}^2 - \tfrac{1}{4} = \lambda^2 - \lambda = 0
+		\quad\Longrightarrow\quad
+		\lambda_1 = 1, \; \lambda_2 = 0,
+	\]
+	with eigenvectors \( \ket{+} \) and \( \ket{-} \). Hence \( \rho_A = U \, \mathrm{diag}(1, 0) \, U^{\dagger} \) with \( U = \tfrac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} \), and the logarithm acts on the eigenvalues only.
+
+	\noindent \textbf{Entanglement entropy.}
+	\[
+		S = -\mathrm{Tr}\paren{\rho_A \log_2 \rho_A}
+		= -\sum_i \lambda_i \log_2 \lambda_i
+		= -\paren{1 \cdot \log_2 1} - \paren{0 \cdot \log_2 0}
+		= 0 - 0 = 0,
+	\]
+	using the standard convention \( 0 \log_2 0 := \lim_{x \to 0^{+}} x \log_2 x = 0 \).
+
+	\noindent The entropy vanishes, matching the hint: \( \rho_A = \ket{+}\bra{+} \) is a \emph{pure} state, so qubit \( A \) is in a definite state of its own and knows nothing about qubit \( B \).
+	The notebook (\textbf{Appendix~1}) reproduces \( \rho \), the factorization \( \ket{\psi} = \ket{+} \otimes \ket{+} \), the eigenvalues \( \{1, 0\} \), and \( S = 0 \).
+
+	\begin{remark}
+		This is why the diagonalization matters. Taking logarithms of the entries of \( \rho_A \) would mean evaluating \( \log_2 \tfrac{1}{2} \) four times and give a nonzero (and meaningless) number.
+		In the eigenbasis, \( \log_2 \rho_A = \mathrm{diag}(0, -\infty) \), but the divergent entry is multiplied by the eigenvalue \( 0 \) and contributes nothing.
+	\end{remark}
+\end{solution}
+% ================================================================================ %
+
+\newpage
+
+% ================================================================================ %
+%                                    Problem 06                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Partial Tracing}
+\par Find the entanglement entropy of \( \ket{\phi^-} \) but trace the \( B \) space.
+You should get the same answer. The equation now becomes:
+\[
+	S_B = - \mathrm{Tr}_A \paren{ \rho_A \log_2 \rho_A }, \; \text{where} \; \rho_A = \mathrm{Tr}_B \paren{\rho}
+\]
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The density matrix.} With \( \ket{\phi^-} = \tfrac{1}{\sqrt{2}}\paren{\ket{00} - \ket{11}} \),
+	\[
+		\rho = \ket{\phi^-}\bra{\phi^-}
+		= \tfrac{1}{2}\paren{ \ket{00}\bra{00} - \ket{00}\bra{11} - \ket{11}\bra{00} + \ket{11}\bra{11} }
+		= \frac{1}{2}\begin{pmatrix}
+			1  & 0 & 0 & -1 \\
+			0  & 0 & 0 & 0  \\
+			0  & 0 & 0 & 0  \\
+			-1 & 0 & 0 & 1
+		\end{pmatrix}.
+	\]
+
+	\noindent \textbf{Tracing out \( B \).} The partial trace over \( B \) contracts only the second slot,
+	\[
+		\rho_A = \mathrm{Tr}_B\paren{\rho} = \sum_{b \in \{0, 1\}} \paren{I \otimes \bra{b}} \rho \paren{I \otimes \ket{b}},
+		\quad\text{so}\quad
+		\mathrm{Tr}_B \paren{ \ket{a b}\bra{a' b'} } = \ket{a}\bra{a'} \braket{b' \vert b} = \delta_{b b'} \ket{a}\bra{a'} .
+	\]
+	The cross terms have \( b \ne b' \) and die, e.g.\ \( \mathrm{Tr}_B\paren{\ket{00}\bra{11}} = \delta_{01}\ket{0}\bra{1} = 0 \).
+	Only the diagonal terms survive:
+	\[
+		\rho_A = \tfrac{1}{2}\paren{ \ket{0}\bra{0} + \ket{1}\bra{1} }
+		= \frac{1}{2}\begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}
+		= \frac{1}{2}I .
+	\]
+
+	\noindent \textbf{Entanglement entropy.} \( \rho_A \) is already diagonal, with eigenvalues \( \lambda_1 = \lambda_2 = \tfrac{1}{2} \), so \( \log_2 \rho_A = \mathrm{diag}\paren{-1, -1} \) and
+	\[
+		S_B = -\mathrm{Tr}_A\paren{\rho_A \log_2 \rho_A}
+		= -\sum_i \lambda_i \log_2 \lambda_i
+		= -\paren{ \tfrac{1}{2}\log_2 \tfrac{1}{2} + \tfrac{1}{2}\log_2 \tfrac{1}{2} }
+		= -2 \cdot \tfrac{1}{2} \cdot (-1)
+		= 1 \; \text{bit}.
+	\]
+
+	\noindent \textbf{Same answer as tracing \( A \).} Tracing the other space gives \( \rho_B = \mathrm{Tr}_A\paren{\rho} = \tfrac{1}{2}I \) by the identical calculation, so \( S_A = S_B = 1 \).
+	This is no coincidence: for a \emph{pure} bipartite state the Schmidt decomposition \( \ket{\chi} = \sum_k \sqrt{p_k}\,\ket{u_k}_A \otimes \ket{v_k}_B \) makes \( \rho_A \) and \( \rho_B \) share the same nonzero spectrum \( \{p_k\} \), hence the same entropy.
+	Entanglement is a property of the \emph{pair}; it cannot matter which half you look through.
+
+	\noindent Getting \( \rho_A = \tfrac{1}{2}I \), the maximally mixed state, means qubit \( A \) on its own is completely random -- \( S = 1 \) bit is the largest value a single qubit can carry, so \( \ket{\phi^-} \) is maximally entangled (compare \( S = 0 \) for the product state of \textbf{Problem 5}).
+	The notebook (\textbf{Appendix~1}) confirms \( \rho_A = \tfrac{1}{2}I \), eigenvalues \( \{ \tfrac{1}{2}, \tfrac{1}{2} \} \), and \( S_A = S_B = 1 \).
+\end{solution}
+% ================================================================================ %
+
+\newpage
+
+% ================================================================================ %
+%                                    Problem 07                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Unitarity of the NOT Gate}
+\par Use hand calculation and colab to show that a 2-qubit NOT gate is unitary.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The gate.} A NOT gate on a \( 2 \)-qubit register flips both qubits, so it is \( X \otimes X \) with \( X = \sigma_x = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} \):
+	\[
+		X \otimes X
+		= \begin{pmatrix} 0 \cdot X & 1 \cdot X \\ 1 \cdot X & 0 \cdot X \end{pmatrix}
+		= \begin{pmatrix}
+			0 & 0 & 0 & 1 \\
+			0 & 0 & 1 & 0 \\
+			0 & 1 & 0 & 0 \\
+			1 & 0 & 0 & 0
+		\end{pmatrix},
+	\]
+	which maps \( \ket{00} \leftrightarrow \ket{11} \) and \( \ket{01} \leftrightarrow \ket{10} \), as a double NOT should.
+
+	\noindent \textbf{Hand calculation.} The matrix is real and symmetric, so \( \paren{X \otimes X}^{\dagger} = X \otimes X \) and unitarity reduces to squaring it:
+	\[
+		\paren{X \otimes X}^{\dagger}\paren{X \otimes X}
+		= \begin{pmatrix}
+			0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \\ 0 & 1 & 0 & 0 \\ 1 & 0 & 0 & 0
+		\end{pmatrix}
+		\begin{pmatrix}
+			0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \\ 0 & 1 & 0 & 0 \\ 1 & 0 & 0 & 0
+		\end{pmatrix}
+		= \begin{pmatrix}
+			1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1
+		\end{pmatrix}
+		= I_4 ,
+	\]
+	since row \( i \) of the first factor picks out row \( 5-i \) of the second, which has its single \( 1 \) back in column \( i \).
+	The same holds for \( \paren{X \otimes X}\paren{X \otimes X}^{\dagger} \), so \( X \otimes X \) is unitary. \( \blacksquare \)
+
+	\noindent \textbf{Without writing any matrix.} The mixed-product property \( \paren{A \otimes B}\paren{C \otimes D} = AC \otimes BD \) and \( \paren{A \otimes B}^{\dagger} = A^{\dagger} \otimes B^{\dagger} \) give it in one line:
+	\[
+		\paren{X \otimes X}^{\dagger}\paren{X \otimes X}
+		= \paren{X^{\dagger} \otimes X^{\dagger}}\paren{X \otimes X}
+		= X^{\dagger}X \otimes X^{\dagger}X
+		= I \otimes I = I_4 ,
+	\]
+	using \( X^{\dagger}X = X^2 = I \) (\textbf{Assignment 3}). A tensor product of unitaries is always unitary, which is why single-qubit gates can be applied in parallel.
+
+	\noindent \textbf{Colab.} The notebook (\textbf{Appendix~1}) builds \( X \otimes X \) with \texttt{np.kron} and checks both products against \( I_4 \):
+	\begin{codingbox*}
+X = np.array([[0, 1], [1, 0]])
+NOT2 = np.kron(X, X)
+
+print(np.allclose(NOT2.conj().T @ NOT2, np.eye(4)),
+      np.allclose(NOT2 @ NOT2.conj().T, np.eye(4)))
+\end{codingbox*}
+	\noindent which prints \texttt{True True}, confirming the hand calculation.
+
+	\begin{remark}
+		\( X \otimes X \) is both Hermitian and unitary, so it is its own inverse: applying NOT twice returns the register to its original state, exactly as classical NOT does.
+	\end{remark}
+\end{solution}
+% ================================================================================ %
+
+\newpage
+
+% ================================================================================ %
+%                                    Problem 08                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Unitarity of the CNOT Gate}
+\par Use hand calculation and colab to show that the CNOT gate is unitary.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The gate.} CNOT flips the target qubit when the control qubit is \( 1 \) and does nothing otherwise. Taking the first (most significant) qubit as the control,
+	\[
+		\ket{00} \mapsto \ket{00}, \quad
+		\ket{01} \mapsto \ket{01}, \quad
+		\ket{10} \mapsto \ket{11}, \quad
+		\ket{11} \mapsto \ket{10},
+		\qquad
+		\mathrm{CNOT} = \begin{pmatrix}
+			1 & 0 & 0 & 0 \\
+			0 & 1 & 0 & 0 \\
+			0 & 0 & 0 & 1 \\
+			0 & 0 & 1 & 0
+		\end{pmatrix}.
+	\]
+
+	\noindent \textbf{Hand calculation.} The matrix is real and symmetric, so \( \mathrm{CNOT}^{\dagger} = \mathrm{CNOT}^{\top} = \mathrm{CNOT} \), and
+	\[
+		\mathrm{CNOT}^{\dagger}\,\mathrm{CNOT}
+		= \begin{pmatrix}
+			1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0
+		\end{pmatrix}
+		\begin{pmatrix}
+			1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0
+		\end{pmatrix}
+		= \begin{pmatrix}
+			1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1
+		\end{pmatrix}
+		= I_4 :
+	\]
+	the upper block is \( I_2 \) squared, and the lower block is \( \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}^2 = I_2 \).
+	The same product in the other order gives \( I_4 \) as well, so CNOT is unitary. \( \blacksquare \)
+
+	\noindent \textbf{In block form.} Writing the gate as ``identity on the target if the control is \( \ket{0} \), \( X \) on the target if it is \( \ket{1} \)'',
+	\[
+		\mathrm{CNOT} = \ket{0}\bra{0} \otimes I + \ket{1}\bra{1} \otimes X,
+	\]
+	and since \( \ket{0}\bra{0} \) and \( \ket{1}\bra{1} \) are orthogonal projectors (\( \braket{0 \vert 1} = 0 \)), the cross terms vanish:
+	\[
+		\mathrm{CNOT}^{\dagger}\,\mathrm{CNOT}
+		= \ket{0}\bra{0} \otimes I^{\dagger}I + \ket{1}\bra{1} \otimes X^{\dagger}X
+		= \paren{ \ket{0}\bra{0} + \ket{1}\bra{1} } \otimes I
+		= I \otimes I = I_4 .
+	\]
+
+	\noindent \textbf{Why this was inevitable.} CNOT merely permutes the four basis states \( \ket{00}, \ket{01}, \ket{10}, \ket{11} \), so its columns are the standard basis vectors in the order \( \mathbf{e}_1, \mathbf{e}_2, \mathbf{e}_4, \mathbf{e}_3 \) -- still orthonormal.
+	A matrix that maps an orthonormal basis to an orthonormal basis is unitary (\textbf{Assignment 4, Problem 8}).
+	Every reversible classical gate becomes a unitary quantum gate this way.
+
+	\noindent \textbf{Colab.} The notebook (\textbf{Appendix~1}) checks both products:
+	\begin{codingbox*}
+CNOT = np.array([[1, 0, 0, 0],
+                 [0, 1, 0, 0],
+                 [0, 0, 0, 1],
+                 [0, 0, 1, 0]])
+
+print(np.allclose(CNOT.conj().T @ CNOT, np.eye(4)),
+      np.allclose(CNOT @ CNOT.conj().T, np.eye(4)))
+\end{codingbox*}
+	\noindent which prints \texttt{True True}, confirming the hand calculation.
+\end{solution}
+% ================================================================================ %
+
+\newpage
+
+% ================================================================================ %
+%                                    Problem 09                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Implementation of a Quantum Circuit}
+\par Use IBM-Q, by choosing ``IBM Quantum Composer'' to implement a 2-qubit circuit in which a 1-qubit NOT gate is applied
+to the MSB and then a CNOT gate is applied to the two qubits with the MSB as the control qubit.
+Refer to Assignment 1, Problem 3 for how to construct a circuit.
+Firstly, based on what you have learned, what result do you expect?
+Add measurement to check if you get the desired result.
+\par \textit{Hint:} since the input begins with \( \ket{00} \), the output is 100\% \( \ket{11} \).
+\par \textit{Note that:} in IBM-Q, the bottom qubit is the MSB.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The circuit.} In the Composer the bottom wire is the MSB, so the \( X \) gate and the control dot both go on \( q_1 \), and the CNOT target is \( q_0 \):
+
+	\begin{center}
+		\begin{tikzpicture}[>=Stealth, thick]
+			% wires -- bottom qubit is the MSB in IBM-Q
+			\draw (0, 1.2) -- (5.4, 1.2);
+			\draw (0, 0) -- (5.4, 0);
+			\node[left] at (0, 1.2) {\small \( q_0 \) (LSB): \( \ket{0} \)};
+			\node[left] at (0, 0) {\small \( q_1 \) (MSB): \( \ket{0} \)};
+
+			% NOT (X) on the MSB
+			\draw[fill=white] (1.0, -0.35) rectangle (1.7, 0.35);
+			\node at (1.35, 0) {\( X \)};
+
+			% CNOT: control on the MSB, target on the LSB
+			\draw (2.9, 0) -- (2.9, 1.2);
+			\fill (2.9, 0) circle (0.09);
+			\draw (2.9, 1.2) circle (0.18);
+			\draw (2.72, 1.2) -- (3.08, 1.2);
+			\draw (2.9, 1.02) -- (2.9, 1.38);
+
+			% measurements
+			\draw[fill=white] (4.2, 0.85) rectangle (4.9, 1.55);
+			\draw (4.35, 1.05) arc (180:0:0.2);
+			\draw[->] (4.55, 1.05) -- (4.72, 1.4);
+			\draw[fill=white] (4.2, -0.35) rectangle (4.9, 0.35);
+			\draw (4.35, -0.15) arc (180:0:0.2);
+			\draw[->] (4.55, -0.15) -- (4.72, 0.2);
+
+			\node[right] at (5.5, 1.2) {\small \( c_0 = 1 \)};
+			\node[right] at (5.5, 0) {\small \( c_1 = 1 \)};
+		\end{tikzpicture}
+	\end{center}
+
+	\noindent \textbf{Expected result (before running).} Write the register as \( \ket{q_1 q_0} \), MSB first, starting from \( \ket{00} \).
+
+	\begin{align*}
+		\text{NOT on the MSB:} \qquad \paren{X \otimes I}\ket{00}
+		 & = \paren{X\ket{0}} \otimes \paren{I\ket{0}} = \ket{1} \otimes \ket{0} = \ket{10}, \\
+		\text{then CNOT (control} = 1\text{):} \qquad \mathrm{CNOT}\ket{10}
+		 & = \ket{1} \otimes \paren{X\ket{0}} = \ket{1} \otimes \ket{1} = \ket{11}.
+	\end{align*}
+
+	\noindent In column form, with the matrices of \textbf{Problems 7 and 8},
+	\begin{align*}
+		\mathrm{CNOT}\paren{X \otimes I}\ket{00}
+		 & = \begin{pmatrix}
+			     1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0
+		     \end{pmatrix}
+		\begin{pmatrix}
+			0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \\ 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0
+		\end{pmatrix}
+		\begin{pmatrix} 1 \\ 0 \\ 0 \\ 0 \end{pmatrix}                       \\
+		 & = \begin{pmatrix}
+			     1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0
+		     \end{pmatrix}
+		\begin{pmatrix} 0 \\ 0 \\ 1 \\ 0 \end{pmatrix}
+		= \begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix}
+		= \ket{11} .
+	\end{align*}
+
+	\noindent The output is the basis state \( \ket{11} \), not a superposition, so the measurement is deterministic:
+	\[
+		\mathrm{P}\paren{\ket{11}} = \abs{\braket{11 \vert \psi}}^2 = 1 = 100\%,
+		\qquad
+		\mathrm{P}\paren{\ket{00}} = \mathrm{P}\paren{\ket{01}} = \mathrm{P}\paren{\ket{10}} = 0 .
+	\]
+	Adding the two measurement operations and running the job returns the bit string \texttt{11} in every shot, matching the hint.
+	The notebook (\textbf{Appendix~1}) reproduces the same circuit numerically and prints \( \mathrm{P}(\ket{11}) = 100.00\% \).
+
+	% A screenshot of the Composer run can be dropped in here, e.g.
+	% \fig*[0.7\linewidth]{images/p9-answer.png}{}{}
+
+	\begin{remark}
+		This is the classical logic ``set the control, then copy it onto the target'' done reversibly -- no superposition is ever created, which is why the histogram has a single bar.
+		Had a Hadamard replaced the \( X \), the same CNOT would have produced the Bell state \( \ket{\phi^{+}} \) of \textbf{Problem 2} and a \( 50/50 \) histogram over \texttt{00} and \texttt{11}.
+		On real hardware a few percent of the shots still land on the other three strings, from gate and readout errors rather than from the physics.
+	\end{remark}
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                     Appendix                                     %
+% ================================================================================ %
+
+\myappendix{code/assignment-06-code.pdf}{Assignment 06 | Code Solution}
+
+% ================================================================================ %
+
+\end{document}
