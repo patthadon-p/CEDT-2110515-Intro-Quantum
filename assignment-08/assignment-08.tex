@@ -1,0 +1,640 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage{scrextend}
+\changefontsizes{9pt}
+\input{../course-config}
+\usepackage{../vendor/template/CEDT-Assignment-style}
+
+\begin{document}
+\subject
+\asgntitle{8}{}{Week 9}{\StudentID\ \StudentName}{\DefaultCollaborators}
+
+% ================================================================================ %
+%                                    Problem 01                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{No-Cloning Theorem}
+\par We may also prove the No-Cloning Theorem using another method (i.e. by contradiction).
+We know
+\[
+	L \paren{\ket{a}_A \ket{0}_B} = \ket{a}_A \ket{a}_B,
+	L \paren{\ket{b}_A \ket{0}_B} = \ket{b}_A \ket{b}_B
+\]
+and also
+\[
+	L \paren{\frac{1}{\sqrt{2}} \paren{\ket{a}_A + \ket{b}_A} \ket{0}_B} = \frac{1}{\sqrt{2}} \paren{\ket{a}_A + \ket{b}_A} \frac{1}{\sqrt{2}} \paren{\ket{a}_B + \ket{b}_B}
+\]
+by definition, where \( \ket{a} \) and \( \ket{b} \) are arbitrary normalized states.
+Expand the last equation and evaluate \( L \paren{\ket{a}_A \ket{0}_B + \ket{b}_A \ket{0}_B} \)
+to show that there is contradiction (that \( \ket{a} \) and \( \ket{b} \) cannot be generalized states)
+and thus cloning of a general state is impossible.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Cloning by definition.} If \( L \) clones every state, it must produce the right-hand side of the last equation. Expanding it,
+	\begin{align*}
+		L\paren{\tfrac{1}{\sqrt{2}}\paren{\ket{a}_A + \ket{b}_A}\ket{0}_B}
+		 & = \tfrac{1}{\sqrt{2}}\paren{\ket{a}_A + \ket{b}_A} \tfrac{1}{\sqrt{2}}\paren{\ket{a}_B + \ket{b}_B}              \\
+		 & = \tfrac{1}{2}\paren{\ket{a}_A\ket{a}_B + \ket{a}_A\ket{b}_B + \ket{b}_A\ket{a}_B + \ket{b}_A\ket{b}_B}. \tag{1}
+	\end{align*}
+
+	\noindent \textbf{Cloning by linearity.} \( L \) is an operator (a matrix), so it is linear. The input can also be written as \( \tfrac{1}{\sqrt{2}}\paren{\ket{a}_A\ket{0}_B + \ket{b}_A\ket{0}_B} \), and distributing \( L \) over the sum uses only the first two equations:
+	\begin{align*}
+		L\paren{\tfrac{1}{\sqrt{2}}\paren{\ket{a}_A\ket{0}_B + \ket{b}_A\ket{0}_B}}
+		 & = \tfrac{1}{\sqrt{2}}\paren{L\paren{\ket{a}_A\ket{0}_B} + L\paren{\ket{b}_A\ket{0}_B}} \\
+		 & = \tfrac{1}{\sqrt{2}}\paren{\ket{a}_A\ket{a}_B + \ket{b}_A\ket{b}_B}. \tag{2}
+	\end{align*}
+	Both lines describe \( L \) acting on the \emph{same} input state, so (1) and (2) must be equal.
+
+	\noindent \textbf{The contradiction.} The prefactor \( \tfrac{1}{\sqrt{2}} \) normalizes \( \ket{a} + \ket{b} \) when \( \ket{a} \) and \( \ket{b} \) are orthonormal, e.g.\ \( \ket{a} = \ket{0} \), \( \ket{b} = \ket{1} \).
+	Then \( \ket{aa}, \ket{ab}, \ket{ba}, \ket{bb} \) are the linearly independent basis states \( \ket{00}, \ket{01}, \ket{10}, \ket{11} \), so (1) and (2) are equal only if every coefficient matches:
+	\begin{center}
+		\begin{tabular}{ccc}
+			\toprule
+			term           & (1) by definition  & (2) by linearity          \\
+			\midrule
+			\( \ket{aa} \) & \( \tfrac{1}{2} \) & \( \tfrac{1}{\sqrt{2}} \) \\
+			\( \ket{ab} \) & \( \tfrac{1}{2} \) & \( 0 \)                   \\
+			\( \ket{ba} \) & \( \tfrac{1}{2} \) & \( 0 \)                   \\
+			\( \ket{bb} \) & \( \tfrac{1}{2} \) & \( \tfrac{1}{\sqrt{2}} \) \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	No coefficient matches. The cross terms \( \ket{ab} + \ket{ba} \) are the clearest problem: a true clone needs them, but linearity can never produce them.
+	As vectors, (1) is \( \tfrac{1}{2}(1, 1, 1, 1)^{\top} = \ket{+}\ket{+} \), a product state, while (2) is \( \tfrac{1}{\sqrt{2}}(1, 0, 0, 1)^{\top} = \tfrac{1}{\sqrt{2}}\paren{\ket{00} + \ket{11}} \), an entangled state.
+	So an \( L \) that clones \( \ket{a} \) and \( \ket{b} \) \emph{cannot} also clone their superposition. That contradicts the assumption that \( L \) clones arbitrary states \( \ket{a} \), \( \ket{b} \), and every superposition of them.
+	Hence no operator clones a general state. \( \blacksquare \)
+
+	\begin{remark}
+		The argument does not need \( \ket{a} \perp \ket{b} \). A cloner must be unitary, so it preserves inner products:
+		\[
+			\braket{a \vert b}
+			= \paren{\bra{a}\bra{0}}\paren{\ket{b}\ket{0}}
+			= \paren{\bra{a}\bra{0}} L^{\dagger} L \paren{\ket{b}\ket{0}}
+			= \paren{\bra{a}\bra{a}}\paren{\ket{b}\ket{b}}
+			= \braket{a \vert b}^2 ,
+		\]
+		so \( \braket{a \vert b} \in \{0, 1\} \). One cloner can only copy states that are identical or orthogonal, i.e.\ the states of \emph{one} basis (see \textbf{Problem 3}).
+	\end{remark}
+	The notebook (\textbf{Appendix~1}) uses CNOT as a concrete \( L \). It copies \( \ket{0} \) and \( \ket{1} \) perfectly, but \( \mathrm{CNOT}\ket{+}\ket{0} = \tfrac{1}{\sqrt{2}}\paren{\ket{00} + \ket{11}} \neq \ket{+}\ket{+} \), exactly as (2) predicts.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 02                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Quantum Teleportation of a Superposition State}
+\begin{subproblems_alpha}
+	\item Figure 1 shows the simplified version of quantum teleportation.
+	      The state to be teleported is \( \ket{+} \). Explain why this is the state to be teleported?
+	\item Construct the matrix (\( 4 \times 4 \)) from the left to Alice's first measurement.
+	\item Explain the simulation results and why quantum teleportation is successful.
+	\item Note that the MSB contains not just 0 but also 1 in the final output.
+	      Why the two Hadamard gates do not cancel each other? \\
+	      \textbf{\textit{Hints:}} Look at the matrix constructed.
+\end{subproblems_alpha}
+
+\fig*[0.8\linewidth]{images/figure-1.png}{}{}
+
+\begin{center}
+	{\footnotesize Figure 1 Quantum teleportation circuit corresponds to Pic. 20 in Chapter 18 with \( \ket{\psi} = \ket{0} \)}
+\end{center}
+\end{problem}
+
+\begin{solution}
+	\noindent Throughout, Alice's qubit \( q_1 \) is the MSB and Bob's qubit \( q_0 \) is the LSB, so states read \( \ket{q_1 q_0} = \ket{\text{Alice}, \text{Bob}} \) and the bit string is \( c_1 c_0 \).
+
+	\noindent \textbf{(a) Why \( \ket{+} \) is teleported.} Every qubit starts in \( \ket{0} \). The \( H \) gate on Alice's qubit, \emph{before} the Step~1 line, is not part of the protocol. It \emph{prepares} the state to be sent:
+	\[
+		\ket{\psi}_A = H\ket{0} = \tfrac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}} = \ket{+},
+		\qquad\text{i.e.\ } \alpha = \beta = \tfrac{1}{\sqrt{2}} \text{ in Pic.~20.}
+	\]
+	Without that \( H \), Alice would send \( \ket{0} \), a basis state that could simply be measured and sent classically (\textbf{Problem 6.3}).
+	The \( H \) turns the input into a genuine superposition, so the circuit tests real teleportation.
+
+	\noindent \textbf{(b) The matrix up to Alice's measurement.} The gates are \( H \) on Alice, then CNOT with Alice as control (Step~1), then \( H \) on Alice (Step~2). The first gate goes on the right:
+	\[
+		M = \paren{H \otimes I}\,\mathrm{CNOT}\,\paren{H \otimes I},
+		\quad
+		H \otimes I = \frac{1}{\sqrt{2}}\begin{pmatrix}
+			1 & 0 & 1  & 0  \\
+			0 & 1 & 0  & 1  \\
+			1 & 0 & -1 & 0  \\
+			0 & 1 & 0  & -1
+		\end{pmatrix},
+		\quad
+		\mathrm{CNOT} = \begin{pmatrix}
+			1 & 0 & 0 & 0 \\
+			0 & 1 & 0 & 0 \\
+			0 & 0 & 0 & 1 \\
+			0 & 0 & 1 & 0
+		\end{pmatrix}.
+	\]
+	Multiplying by CNOT on the left exchanges rows 3 and 4; then \( H \otimes I \) adds and subtracts rows \( (1, 3) \) and \( (2, 4) \):
+	\[
+		\mathrm{CNOT}\paren{H \otimes I}
+		= \frac{1}{\sqrt{2}}\begin{pmatrix}
+			1 & 0 & 1  & 0  \\
+			0 & 1 & 0  & 1  \\
+			0 & 1 & 0  & -1 \\
+			1 & 0 & -1 & 0
+		\end{pmatrix},
+		\qquad
+		M = \frac{1}{2}\begin{pmatrix}
+			1  & 1  & 1  & -1 \\
+			1  & 1  & -1 & 1  \\
+			1  & -1 & 1  & 1  \\
+			-1 & 1  & 1  & 1
+		\end{pmatrix}.
+	\]
+	Acting on the initial state \( \ket{00} \) picks out the first column:
+	\[
+		M\ket{00}
+		= \tfrac{1}{2}\paren{\ket{00} + \ket{01} + \ket{10} - \ket{11}}
+		= \tfrac{1}{\sqrt{2}}\paren{\ket{0}_A\ket{+}_B + \ket{1}_A\ket{-}_B}.
+	\]
+	This is the Step~2 equation of Pic.~20 with \( \alpha = \beta = \tfrac{1}{\sqrt{2}} \): \( \ket{\pm}_A \) has become \( \ket{0}_A \) / \( \ket{1}_A \) because of the second \( H \).
+
+	\noindent \textbf{(c) Simulation results.} Figure~1 was built in Qiskit and run on the \texttt{AerSimulator} with 1024 shots. The composer's conditional ``\( == 2 \)'' becomes an \texttt{if\_test} on the whole register:
+	\begin{codingbox*}
+qc.h(1)                       # prepare |+> on Alice
+qc.cx(1, 0)                   # Step 1
+qc.h(1); qc.measure(1, 1)     # Step 2: measure Alice in the |+>/|-> basis -> c1
+with qc.if_test((c, 2)):      # Step 3: Z on Bob if c == (10)_2
+    qc.z(0)
+qc.measure(0, 0)              # Bob -> c0
+\end{codingbox*}
+	\begin{center}
+		\begin{tabular}{lcccc}
+			\toprule
+			counts (1024 shots)                               & \texttt{00} & \texttt{01} & \texttt{10} & \texttt{11} \\
+			\midrule
+			Figure 1                                          & 251         & 253         & 263         & 257         \\
+			Figure 1, \( H \) on Bob before measuring (check) & 504         & 0           & 520         & 0           \\
+			check, but \emph{without} the conditional \( Z \) & 521         & 0           & 0           & 503         \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	\fig*[0.8\linewidth]{images/problem-2-answer.png}{}{}
+	\noindent The four outcomes appear about equally often (\( \approx 256 \) each), as in Figure~1. From (b):
+	\begin{itemize}
+		\item Alice reads \( c_1 = 0 \) or \( 1 \) with probability \( \tfrac{1}{2} \) each. For \( c_1 = 0 \), Bob already holds \( \ket{+} \). For \( c_1 = 1 \), he holds \( \ket{-} \), and the conditional \( Z \) (\( c = 10_2 = 2 \)) turns it into \( Z\ket{-} = \ket{+} \).
+		\item Bob therefore holds \( \ket{+} \) \emph{whatever} Alice measured. Measuring \( \ket{+} \) in the \( \ket{0}/\ket{1} \) basis gives \( c_0 = 0 \) or \( 1 \) with probability \( \abs{\braket{0 \vert +}}^2 = \tfrac{1}{2} \).
+	\end{itemize}
+	The two bits are independent, so each of the four strings has probability \( \tfrac{1}{4} \). Teleportation succeeds because Bob's final state is \( \ket{+} \), the state Alice started with, for both of Alice's outcomes. The only extra help needed is one classical bit.
+
+	\begin{remark}
+		A 50/50 histogram alone cannot prove that Bob holds \( \ket{+} \): \( \ket{-} \), or a random mix of \( \ket{0} \) and \( \ket{1} \), would look the same.
+		The check in the table adds \( H \) on Bob before his measurement. Since \( H\ket{+} = \ket{0} \), Bob reads \( c_0 = 0 \) in \emph{every} shot, which confirms \( \ket{+} \).
+		Removing the conditional \( Z \) makes Bob's bit copy Alice's (\texttt{00}/\texttt{11}): without the classical message, Bob holds \( \ket{-} \) half of the time.
+	\end{remark}
+
+	\noindent \textbf{(d) Why the two \( H \) gates do not cancel.} If they cancelled, the circuit up to the measurement would just be the CNOT (or \( I \)). Then the MSB, which starts in \( \ket{0} \), would stay \( \ket{0} \), and Alice would always read \( 0 \).
+	The matrix of (b) shows otherwise. \( M \neq \mathrm{CNOT} \), and the first column of \( M \) has amplitude \( \tfrac{1}{2} \) on both \( \ket{10} \) and \( \ket{11} \), so \( \mathrm{P}(\text{MSB} = 1) = \tfrac{1}{4} + \tfrac{1}{4} = \tfrac{1}{2} \).
+	The reason is that the CNOT sits between the two \( H \)'s and does not commute with \( H \otimes I \). Writing \( \mathrm{CNOT} = \ket{0}\bra{0} \otimes I + \ket{1}\bra{1} \otimes X \),
+	\[
+		M = H\ket{0}\bra{0}H \otimes I + H\ket{1}\bra{1}H \otimes X = \ket{+}\bra{+} \otimes I + \ket{-}\bra{-} \otimes X,
+	\]
+	which is a CNOT controlled in the \( \ket{+}/\ket{-} \) basis, not the identity. Only with nothing in between would \( \paren{H \otimes I}\paren{H \otimes I} = H^2 \otimes I = I \).
+	Physically, the CNOT entangles Alice's qubit with Bob's, \( \tfrac{1}{\sqrt{2}}\paren{\ket{00} + \ket{11}} \). After that, Alice's qubit on its own is no longer \( \ket{+} \), so the second \( H \) has no \( \ket{+} \) to turn back into \( \ket{0} \).
+\end{solution}
+% ================================================================================ %
+
+\newpage
+
+% ================================================================================ %
+%                                    Problem 03                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{No-Cloning Theorem and Heisenberg Uncertainty Principle}
+\par If the state is a basis state, it is possible to clone.
+For any arbitrary state, it must be a basis state of another basis.
+Can we clone it? How is it related to the Heisenberg Uncertainty Principle? Please discuss.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Every state is a basis state of some basis.} For \( \ket{\psi} = \alpha\ket{0} + \beta\ket{1} \), the state \( \ket{\psi^{\perp}} = \beta^{*}\ket{0} - \alpha^{*}\ket{1} \) is orthogonal to it, so \( \{\ket{\psi}, \ket{\psi^{\perp}}\} \) is an orthonormal basis.
+	For example, \( \ket{+} \) is a superposition in the \( \ket{0}/\ket{1} \) basis but a basis state of \( \{\ket{+}, \ket{-}\} \).
+
+	\noindent \textbf{Can we clone it? Only if we already know that basis.} If we know \( \ket{\psi} \) belongs to \( \{\ket{\psi}, \ket{\psi^{\perp}}\} \), we can measure in that basis without disturbing it, then prepare a copy. Equivalently, we can build the cloner for that basis.
+	With \( U\ket{0} = \ket{\psi} \) and \( U\ket{1} = \ket{\psi^{\perp}} \), the gate \( L_U = \paren{U \otimes U}\,\mathrm{CNOT}\,\paren{U^{\dagger} \otimes U^{\dagger}} \) (blank state \( U\ket{0} \)) clones \( \ket{\psi} \) and \( \ket{\psi^{\perp}} \).
+	By the remark in \textbf{Problem 1}, though, one cloner only works for mutually orthogonal states. \( L_U \) fails on every state outside its own basis.
+	The notebook (\textbf{Appendix~1}) shows this: CNOT clones \( \ket{0}, \ket{1} \) but not \( \ket{\pm} \), while the \( \ket{\pm} \)-cloner \( \paren{H \otimes H}\mathrm{CNOT}\paren{H \otimes H} \) clones \( \ket{\pm} \) but not \( \ket{0}, \ket{1} \).
+	For an \emph{unknown} state, the basis it belongs to is exactly the unknown information (\( \alpha \), \( \beta \)), so there is no way to choose the right cloner. Saying ``it is a basis state of some basis'' does not help, and no-cloning still holds.
+
+	\noindent \textbf{Relation to the Heisenberg Uncertainty Principle.} The \( \ket{0}/\ket{1} \) and \( \ket{+}/\ket{-} \) bases are the eigenbases of \( \sigma_z \) and \( \sigma_x \). These observables do not commute (\( [\sigma_z, \sigma_x] = 2i\sigma_y \)), so no state has a sharp value of both.
+	A state that is certain in one basis is completely random in the other: \( \abs{\braket{+ \vert 0}}^2 = \abs{\braket{- \vert 0}}^2 = \tfrac{1}{2} \).
+	A measurement in one basis also disturbs the result in the other. This is why ``read, then copy'' only works for basis states: reading a superposition collapses it.
+	\begin{itemize}
+		\item \textbf{Cloning would break the uncertainty principle.} With a perfect cloner, we could make many copies of one unknown \( \ket{\psi} \), measure \( \sigma_z \) on some, \( \sigma_x \) on others, and \( \sigma_y \) on the rest. That would give \( \alpha \) and \( \beta \) to any precision, i.e.\ sharp knowledge of complementary observables from a single system, without the disturbance the uncertainty principle requires.
+		\item \textbf{The uncertainty principle makes cloning impossible.} The cloner for one basis is the measurement in that basis written as a gate. On a state of the complementary basis it must disturb the state, as \( \mathrm{CNOT}\ket{+}\ket{0} \) did in \textbf{Problem 1}, producing entanglement instead of a copy.
+	\end{itemize}
+	The two results describe the same fact: information encoded in complementary bases cannot be read, or copied, at the same time. This is also what makes quantum key distribution secure, because an eavesdropper who does not know the basis cannot copy the qubits without disturbing them.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 04                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Entanglement}
+\par Derive the following equation using matrix.
+\[
+	\frac{1}{\sqrt{2}} \paren{\alpha\ket{000} + \beta\ket{110} + \alpha\ket{011} + \beta\ket{101}}
+	= \frac{1}{\sqrt{2}} \paren{\alpha\ket{000} + \beta\ket{101} + \alpha\ket{011} + \beta\ket{110}}
+\]
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Setting.} The equation is the 3-qubit state at the end of Step~1a of the full teleportation circuit (Pic.~21/22). The qubits are ordered \( \ket{A\;BB\;B} = \ket{q_2 q_1 q_0} \), with Alice's \( A \) as the MSB, and the basis is \( \ket{000}, \ket{001}, \dots, \ket{111} \).
+
+	\noindent \textbf{Initial state and Bob's Bell pair.} Bob turns \( \ket{0}_{BB}\ket{0}_B \) into \( \tfrac{1}{\sqrt{2}}\paren{\ket{00} + \ket{11}} \) with \( H \) on \( BB \) followed by a CNOT from \( BB \) to \( B \). As a matrix, \( \mathrm{CNOT}\paren{H \otimes I}\ket{00} = \tfrac{1}{\sqrt{2}}(1, 0, 0, 1)^{\top} \) (first column of \( \mathrm{CNOT}\paren{H \otimes I} \) in \textbf{Problem 2}). Including Alice's qubit,
+	\begin{align*}
+		\ket{\Psi} = \ket{\psi}_A \otimes \tfrac{1}{\sqrt{2}}\paren{\ket{00} + \ket{11}}
+		 & = \begin{pmatrix} \alpha \\ \beta \end{pmatrix} \otimes \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ 0 \\ 0 \\ 1 \end{pmatrix}
+		= \frac{1}{\sqrt{2}}\paren{\alpha, 0, 0, \alpha, \beta, 0, 0, \beta}^{\top}                                                 \\
+		 & = \tfrac{1}{\sqrt{2}}\paren{\alpha\ket{000} + \alpha\ket{011} + \beta\ket{100} + \beta\ket{111}}.
+	\end{align*}
+
+	\noindent \textbf{Alice's CNOT.} \( A \) is the control and \( BB \) is the target:
+	\( U = \ket{0}\bra{0} \otimes I \otimes I + \ket{1}\bra{1} \otimes X \otimes I \).
+	The upper-left \( 4 \times 4 \) block (\( A = 0 \)) is \( I \). The lower-right block (\( A = 1 \)) is \( X \otimes I \), which exchanges \( \ket{1\,0\,y} \leftrightarrow \ket{1\,1\,y} \):
+	\[
+		U\ket{\Psi}
+		= \begin{pmatrix}
+			1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+			0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+			0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+			0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+			0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+			0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+			0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+			0 & 0 & 0 & 0 & 0 & 1 & 0 & 0
+		\end{pmatrix}
+		\frac{1}{\sqrt{2}}\begin{pmatrix} \alpha \\ 0 \\ 0 \\ \alpha \\ \beta \\ 0 \\ 0 \\ \beta \end{pmatrix}
+		= \frac{1}{\sqrt{2}}\begin{pmatrix} \alpha \\ 0 \\ 0 \\ \alpha \\ 0 \\ \beta \\ \beta \\ 0 \end{pmatrix}
+		\begin{matrix} \ket{000} \\ \ket{001} \\ \ket{010} \\ \ket{011} \\ \ket{100} \\ \ket{101} \\ \ket{110} \\ \ket{111} \end{matrix}
+	\]
+	Rows 5--8 are permuted: the \( \beta \) of \( \ket{100} \) moves to \( \ket{110} \), and the \( \beta \) of \( \ket{111} \) moves to \( \ket{101} \).
+
+	\noindent \textbf{Reading off the result.} The non-zero entries are at \( \ket{000} \) and \( \ket{011} \) (\( \alpha \)) and at \( \ket{101} \) and \( \ket{110} \) (\( \beta \)), so
+	\[
+		U\ket{\Psi}
+		= \tfrac{1}{\sqrt{2}}\paren{\alpha\ket{000} + \beta\ket{110} + \alpha\ket{011} + \beta\ket{101}}
+		= \tfrac{1}{\sqrt{2}}\paren{\alpha\ket{000} + \beta\ket{101} + \alpha\ket{011} + \beta\ket{110}}.
+	\]
+	Both sides of the equation are this same vector. The left side lists each term where it came from (\( \ket{100} \to \ket{110} \), \( \ket{111} \to \ket{101} \)); the right side only reorders the two \( \beta \) terms. \( \blacksquare \)
+	The state is entangled: Alice's qubit and Bob's two qubits can no longer be factored apart, which Step~1b uses.
+	The notebook (\textbf{Appendix~1}) repeats the whole calculation symbolically with \( 8 \times 8 \) SymPy matrices.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 05                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Classical Register and Conditional Gate}
+\begin{subproblems_alpha}
+	\item Reproduce the result in Figs. 2 and 3.
+	      \fig*[0.8\linewidth]{images/figure-2.png}{}{}
+
+	      \begin{center}
+		      {\footnotesize Figure 2 Implementation of the full quantum teleportation algorithm}
+	      \end{center}
+
+	      \fig*[0.8\linewidth]{images/figure-3.png}{}{}
+
+	      \begin{center}
+		      {
+			      \footnotesize Figure 3 Simulation results of the circuit in Fig. 1 with \( \ket{\psi} = \ket{0} \) (left) and \( \ket{\psi} = \ket{1} \) (right). \\
+			      The circuit to create \( \ket{\psi} = \ket{1} \) is shown as the inset
+		      }
+	      \end{center}
+	\item Store the Step 1b measurement result in the 0\textsuperscript{th} classical qubit
+	      and store Step 3 measurement result in the 1\textsuperscript{st} classical qubit.
+	      How should we modify the conditional CNOT and Z-gates in Step 1b and Step 3 so it will produce the same result? \\
+	      \textbf{\textit{Hints:}} The classical bit we want to inspect now is the 1\textsuperscript{st} qubit.
+\end{subproblems_alpha}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{(a) Reproducing Figures 2 and 3.} Figure~2 was rebuilt in Qiskit gate by gate (\( q_2 \) = Alice, \( q_1 \) = ancillary \( BB \), \( q_0 \) = Bob, 3-bit register \( c \)) and run on the \texttt{AerSimulator} with 1024 shots.
+	The composer's conditional gates compare the \emph{whole} register with a number. In Qiskit~2.x this is written as \texttt{with qc.if\_test((c, value))}:
+	\begin{codingbox*}
+qc.h(1); qc.cx(1, 0); qc.cx(2, 1)    # Step 1a  (+ qc.x(2) first for |psi> = |1>)
+qc.measure(1, 1)                     # Step 1b: BB -> c1
+with qc.if_test((c, 2)): qc.x(0)     #          X on Bob if c == (010)_2
+qc.h(2); qc.measure(2, 2)            # Step 2:  Alice in the |+>/|-> basis -> c2
+with qc.if_test((c, 4)): qc.z(0)     # Step 3:  Z on Bob if c == (100)_2
+with qc.if_test((c, 6)): qc.z(0)     #               or c == (110)_2
+qc.measure(0, 0)                     #          Bob -> c0
+\end{codingbox*}
+	\begin{center}
+		\begin{tabular}{lcccccccc}
+			\toprule
+			counts (1024 shots)        & \texttt{000} & \texttt{001} & \texttt{010} & \texttt{011} & \texttt{100} & \texttt{101} & \texttt{110} & \texttt{111} \\
+			\midrule
+			\( \ket{\psi} = \ket{0} \) & 251          & 0            & 263          & 0            & 253          & 0            & 257          & 0            \\
+			\( \ket{\psi} = \ket{1} \) & 0            & 251          & 0            & 263          & 0            & 253          & 0            & 257          \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	\fig*[0.8\linewidth]{images/problem-5a-answer.png}{}{}
+	\noindent This is Figure~3. For \( \ket{\psi} = \ket{0} \) only \texttt{000}, \texttt{010}, \texttt{100}, \texttt{110} appear; for \( \ket{\psi} = \ket{1} \) only \texttt{001}, \texttt{011}, \texttt{101}, \texttt{111}. Each appears about 256 times.
+	Bob's bit \( c_0 \) always equals the teleported state. The bits \( c_1 \) (Step~1b) and \( c_2 \) (Step~2) are fair coin flips: they carry no information about \( \ket{\psi} \) (\textbf{Problem 6.1}).
+	The conditions work because of the order in which the bits are written:
+	\begin{itemize}
+		\item At Step~1b only \( c_1 \) has been written, so \( c = (0\,c_1\,0)_2 \), and \( c = 2 \) exactly when \( BB \) was measured as \( 1 \).
+		\item At Step~3, \( c = (c_2\,c_1\,0)_2 \). Bob needs \( Z \) whenever \( c_2 = 1 \), whatever \( c_1 \) is, which takes two tests: \( c = (100)_2 = 4 \) and \( c = (110)_2 = 6 \). They are never both true, so \( Z \) is applied at most once.
+	\end{itemize}
+
+	\noindent \textbf{(b) Moving the bits.} Now Step~1b writes \( c_0 \), Step~3 (Bob) writes \( c_1 \), and Step~2 still writes \( c_2 \). Each condition must be rewritten for the register value present \emph{at that moment}:
+	\begin{center}
+		\begin{tabular}{lccc}
+			\toprule
+			gate                    & register \( c \) then & old              & new                                  \\
+			\midrule
+			Step 1b: \( X \) on Bob & \( (0\,0\,c_0)_2 \)   & \( 2 \)          & \( (001)_2 = 1 \)                    \\
+			Step 3: \( Z \) on Bob  & \( (c_2\,0\,c_0)_2 \) & \( 4 \), \( 6 \) & \( (100)_2 = 4 \), \( (101)_2 = 5 \) \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	The bit to inspect for the \( X \) gate moves from \( c_1 \) to \( c_0 \), so \( 2 \to 1 \). For the \( Z \) gate the free bit (Step~1b's result) also moves from \( c_1 \) to \( c_0 \), so the second test changes from \( 6 \) to \( 5 \). The test \( c == 4 \) stays the same.
+	Re-running with these changes (\texttt{measure(1, 0)}, \texttt{if\_test((c, 1))}, \texttt{if\_test((c, 4))}, \texttt{if\_test((c, 5))}, \texttt{measure(0, 1)}):
+	\begin{center}
+		\begin{tabular}{lcccccccc}
+			\toprule
+			counts (1024 shots)        & \texttt{000} & \texttt{001} & \texttt{010} & \texttt{011} & \texttt{100} & \texttt{101} & \texttt{110} & \texttt{111} \\
+			\midrule
+			\( \ket{\psi} = \ket{0} \) & 251          & 263          & 0            & 0            & 253          & 257          & 0            & 0            \\
+			\( \ket{\psi} = \ket{1} \) & 0            & 0            & 251          & 263          & 0            & 0            & 253          & 257          \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	\fig*[0.8\linewidth]{images/problem-5b-answer.png}{}{}
+	\noindent The teleportation result is the same: Bob's bit, now \( c_1 \), always equals \( \ket{\psi} \). Exchanging the labels \( c_0 \leftrightarrow c_1 \) gives exactly the counts of (a), which the notebook checks.
+
+	\begin{remark}
+		The conditions must change. If only the bits are moved and the conditions stay \( 2 \) and \( 4, 6 \), the \( X \) gate never fires (\( c_1 \) is still empty at Step~1b) and \( c = 6 \) can never happen.
+		The notebook shows that Bob then gets the wrong result in half of the shots for \( \ket{\psi} = \ket{1} \).
+		The notebook also teleports three random states \( R_z(\varphi)R_y(\theta)\ket{0} \) with both versions and undoes the preparation on Bob. Bob gets back \( \ket{0} \) every time, so the circuit works for general states, not only \( \ket{0} \) and \( \ket{1} \).
+	\end{remark}
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 06                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Quantum Teleportation vs. Hypothetical Teleportation}
+\par\noindent Go through the quantum teleportation one more time and answer the following questions:
+\begin{subproblems}
+	\item Why the state of the original electron is destroyed? How is it related to the no-cloning theorem?
+	\item If you want to quantum teleport myself to Moon or Mars and back to the Earth, how should you prepare for that?
+	\item If Alice's state was \( \ket{0} \), do we need quantum teleportation to transfer the state to Bob? Do we violate the no-cloning theorem?
+\end{subproblems}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{1. Why the original state is destroyed.} Alice's qubit is changed twice. First, the CNOT entangles it with Bob's (or the ancillary) qubit, so on its own it is no longer in \( \ket{\psi} \).
+	Then Alice measures it in Step~2. It collapses to \( \ket{0} \) or \( \ket{1} \), each with probability \( \tfrac{1}{2} \) whatever \( \alpha \) and \( \beta \) are, so what remains on Alice's side says nothing about \( \ket{\psi} \).
+	The amplitudes now exist only in Bob's qubit, once he applies the correction. The notebook (\textbf{Appendix~1}) checks this: for either measurement result Alice holds \( \ket{0} \) or \( \ket{1} \), while Bob holds \( \ket{\psi} \).
+	This is required by the no-cloning theorem. If Alice still had \( \ket{\psi} \) after Bob received it, there would be two copies of an unknown state, which \textbf{Problem 1} proves impossible. Teleportation can only \emph{move} a state (``cut and paste''), never \emph{copy} it (``copy and paste'').
+
+	\noindent \textbf{2. Teleporting yourself to the Moon or Mars and back.} Following the full protocol (Figure~2), I would prepare:
+	\begin{itemize}
+		\item \textbf{Raw material at the destination.} Like Bob's \( \ket{0}_B \), the Mars lab needs enough identical particles, in a known initial state, to hold every quantum degree of freedom of my body (more than \( 10^{27} \) atoms). Teleportation sends the \emph{state}, not the matter.
+		\item \textbf{Entanglement shared in advance.} Like Step~1a, one Bell pair per qubit to be teleported. One half (the ancillary \( BB \)) is carried to Earth, at normal speed, long before the trip, and stored without decoherence. Each pair is used up in one teleportation, so the return trip needs a \emph{second} supply of pairs shared between Mars and Earth, and new raw material on Earth, arranged before I leave. Otherwise I cannot come back.
+		\item \textbf{A classical channel.} Two classical bits per qubit (Steps~1b and~2) must reach Mars before Bob's lab can apply the \( X \)/\( Z \) corrections. Light takes about \( 1.3 \) s to the Moon and 3--22 minutes to Mars, so the trip is \emph{not} faster than light. Until the bits arrive, the copy on Mars is in a scrambled state.
+		\item \textbf{Near-perfect gates and measurements.} The protocol measures every particle of my body on Earth and corrects every particle on Mars. Any gate or readout error ends up in the reconstructed person.
+		\item \textbf{Accepting that the Earth original is destroyed.} By point~1, the particles left on Earth end in random basis states: the original ``me'' is gone. The person on Mars is me only if a person \emph{is} their quantum state. The same is true on the way back, with the Mars body left behind as raw material.
+	\end{itemize}
+
+	\noindent \textbf{3. If Alice's state is \( \ket{0} \).} No, quantum teleportation is not needed. \( \ket{0} \) is a basis state, so Alice can measure it without changing it (or she already knows it). She sends the classical bit ``0'', and Bob prepares \( \ket{0} \); in fact his qubit already starts in \( \ket{0}_B \).
+	This does not violate the no-cloning theorem, even though both of them end up holding \( \ket{0} \). The theorem forbids copying an \emph{arbitrary, unknown} state. As shown in \textbf{Problem 1} and on the slides, basis states \emph{can} be cloned; CNOT does it: \( \mathrm{CNOT}\ket{0}\ket{0} = \ket{0}\ket{0} \).
+	Teleportation is only needed when the state is an unknown superposition, which can neither be read nor copied.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 07                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Other Forms of \( f(x) \)}
+\par Here is what we did in \( f_A \) as below:
+
+\[ U_f \ket{0}\ket{0} = \ket{0}\ket{0 \oplus f(0)} = \ket{0}\ket{0 \oplus 0} = \ket{0}\ket{0} \]
+\[ U_f \ket{0}\ket{1} = \ket{0}\ket{1 \oplus f(0)} = \ket{0}\ket{1 \oplus 0} = \ket{0}\ket{1} \]
+\[ U_f \ket{1}\ket{0} = \ket{1}\ket{0 \oplus f(1)} = \ket{1}\ket{0 \oplus 0} = \ket{1}\ket{0} \]
+\[ U_f \ket{1}\ket{1} = \ket{1}\ket{1 \oplus f(1)} = \ket{1}\ket{1 \oplus 0} = \ket{1}\ket{1} \]
+
+where,
+
+\[ f_A(0) = 0 \text{ and } f_A(1) = 0 \]
+\[ f_B(0) = 0 \text{ and } f_B(1) = 1 \]
+\[ f_C(0) = 1 \text{ and } f_C(1) = 0 \]
+\[ f_D(0) = 1 \text{ and } f_D(1) = 1 \]
+
+Repeat what we did in \( f_A \) for \( f_B \), \( f_C \), and \( f_D \).
+\end{problem}
+
+\begin{solution}
+	\noindent The oracle keeps \( x \) (MSB) and replaces \( y \) (LSB) by \( y \oplus f(x) \). XOR with \( 0 \) leaves \( y \) alone, and XOR with \( 1 \) flips it.
+	In each matrix, column \( \ket{xy} \) is the image \( U_f\ket{xy} \) (order \( 00, 01, 10, 11 \)).
+
+	\noindent \textbf{\( f_B \): \( f_B(0) = 0 \), \( f_B(1) = 1 \).}
+	\begin{align*}
+		U_f\ket{0}\ket{0} & = \ket{0}\ket{0 \oplus f(0)} = \ket{0}\ket{0 \oplus 0} = \ket{0}\ket{0} &
+		U_f\ket{1}\ket{0} & = \ket{1}\ket{0 \oplus f(1)} = \ket{1}\ket{0 \oplus 1} = \ket{1}\ket{1}   \\
+		U_f\ket{0}\ket{1} & = \ket{0}\ket{1 \oplus f(0)} = \ket{0}\ket{1 \oplus 0} = \ket{0}\ket{1} &
+		U_f\ket{1}\ket{1} & = \ket{1}\ket{1 \oplus f(1)} = \ket{1}\ket{1 \oplus 1} = \ket{1}\ket{0}
+	\end{align*}
+	\( y \) flips only when \( x = 1 \), so \( U_{f_B} = \begin{pmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \end{pmatrix} = \mathrm{CNOT} \), with \( x \) as the control.
+
+	\noindent \textbf{\( f_C \): \( f_C(0) = 1 \), \( f_C(1) = 0 \).}
+	\begin{align*}
+		U_f\ket{0}\ket{0} & = \ket{0}\ket{0 \oplus f(0)} = \ket{0}\ket{0 \oplus 1} = \ket{0}\ket{1} &
+		U_f\ket{1}\ket{0} & = \ket{1}\ket{0 \oplus f(1)} = \ket{1}\ket{0 \oplus 0} = \ket{1}\ket{0}   \\
+		U_f\ket{0}\ket{1} & = \ket{0}\ket{1 \oplus f(0)} = \ket{0}\ket{1 \oplus 1} = \ket{0}\ket{0} &
+		U_f\ket{1}\ket{1} & = \ket{1}\ket{1 \oplus f(1)} = \ket{1}\ket{1 \oplus 0} = \ket{1}\ket{1}
+	\end{align*}
+	\( y \) flips only when \( x = 0 \), so \( U_{f_C} = \begin{pmatrix} 0 & 1 & 0 & 0 \\ 1 & 0 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{pmatrix} = \paren{X \otimes I}\,\mathrm{CNOT}\,\paren{X \otimes I} \), a CNOT that fires on \( x = 0 \).
+
+	\noindent \textbf{\( f_D \): \( f_D(0) = 1 \), \( f_D(1) = 1 \).}
+	\begin{align*}
+		U_f\ket{0}\ket{0} & = \ket{0}\ket{0 \oplus f(0)} = \ket{0}\ket{0 \oplus 1} = \ket{0}\ket{1} &
+		U_f\ket{1}\ket{0} & = \ket{1}\ket{0 \oplus f(1)} = \ket{1}\ket{0 \oplus 1} = \ket{1}\ket{1}   \\
+		U_f\ket{0}\ket{1} & = \ket{0}\ket{1 \oplus f(0)} = \ket{0}\ket{1 \oplus 1} = \ket{0}\ket{0} &
+		U_f\ket{1}\ket{1} & = \ket{1}\ket{1 \oplus f(1)} = \ket{1}\ket{1 \oplus 1} = \ket{1}\ket{0}
+	\end{align*}
+	\( y \) always flips, so \( U_{f_D} = \begin{pmatrix} 0 & 1 & 0 & 0 \\ 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \end{pmatrix} = I \otimes X \), a NOT gate on the LSB.
+
+	\noindent \textbf{Summary.} Together with \( U_{f_A} = I \), the two constant functions act on \( y \) the same way for both values of \( x \) (\( I \) or \( I \otimes X \)). The two balanced functions act differently depending on \( x \): they are controlled gates.
+	The notebook (\textbf{Appendix~1}) builds all four matrices from \( \ket{x}\ket{y \oplus f(x)} \) and checks them against \( I \), CNOT, \( \paren{X \otimes I}\mathrm{CNOT}\paren{X \otimes I} \), and \( I \otimes X \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 08                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Creation of Superposition}
+\par Repeat Eq. \( \paren{HH}\paren{IX}\ket{0}\ket{0} = \paren{HH}\ket{0}\ket{1} = \ket{+}\ket{-} \) using matrix.
+\end{problem}
+
+\begin{solution}
+	\noindent The first factor of every tensor product acts on the MSB, the basis order is \( \ket{00}, \ket{01}, \ket{10}, \ket{11} \), and the gate applied first is written on the right.
+
+	\noindent \textbf{Step 1: \( \paren{I \otimes X}\ket{0}\ket{0} \).} Each entry of \( I \) multiplies a copy of \( X \):
+	\[
+		\paren{I \otimes X}\ket{00}
+		= \begin{pmatrix} X & 0 \\ 0 & X \end{pmatrix}\begin{pmatrix} 1 \\ 0 \\ 0 \\ 0 \end{pmatrix}
+		= \begin{pmatrix}
+			0 & 1 & 0 & 0 \\
+			1 & 0 & 0 & 0 \\
+			0 & 0 & 0 & 1 \\
+			0 & 0 & 1 & 0
+		\end{pmatrix}\begin{pmatrix} 1 \\ 0 \\ 0 \\ 0 \end{pmatrix}
+		= \begin{pmatrix} 0 \\ 1 \\ 0 \\ 0 \end{pmatrix}
+		= \ket{0}\ket{1}.
+	\]
+
+	\noindent \textbf{Step 2: \( \paren{H \otimes H}\ket{0}\ket{1} \).} Using \( H \otimes H \) from \textbf{Assignment 7, Problem 7},
+	\[
+		\paren{H \otimes H}\ket{01}
+		= \frac{1}{2}\begin{pmatrix}
+			1 & 1  & 1  & 1  \\
+			1 & -1 & 1  & -1 \\
+			1 & 1  & -1 & -1 \\
+			1 & -1 & -1 & 1
+		\end{pmatrix}\begin{pmatrix} 0 \\ 1 \\ 0 \\ 0 \end{pmatrix}
+		= \frac{1}{2}\begin{pmatrix} 1 \\ -1 \\ 1 \\ -1 \end{pmatrix}.
+	\]
+
+	\noindent \textbf{Comparison with \( \ket{+}\ket{-} \).}
+	\[
+		\ket{+} \otimes \ket{-}
+		= \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ 1 \end{pmatrix} \otimes \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ -1 \end{pmatrix}
+		= \frac{1}{2}\begin{pmatrix} 1 \cdot (1, -1) \\ 1 \cdot (1, -1) \end{pmatrix}
+		= \frac{1}{2}\begin{pmatrix} 1 \\ -1 \\ 1 \\ -1 \end{pmatrix},
+	\]
+	which is the same vector. Hence
+	\[
+		\paren{HH}\paren{IX}\ket{0}\ket{0} = \paren{HH}\ket{0}\ket{1} = \tfrac{1}{2}\paren{\ket{00} - \ket{01} + \ket{10} - \ket{11}} = \ket{+}\ket{-}. \qquad \blacksquare
+	\]
+	The whole Step~1 as one matrix is \( \paren{H \otimes H}\paren{I \otimes X} \): the columns of \( H \otimes H \) with the pairs \( (1, 2) \) and \( (3, 4) \) exchanged. Its first column is again \( \tfrac{1}{2}(1, -1, 1, -1)^{\top} \), as the notebook (\textbf{Appendix~1}) shows.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 09                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Hadamard Gate Applied to 2-Qubit Basis State}
+\par Creating the superposition in Step 1 in Fig. 4 after the NOT-gate is equivalent to applying a 2-qubit Hadamard gate to state \( \ket{01} \).
+Show that you can get the result in the below equation by using Eq. \( H^{\otimes n} \ket{y} = \frac{1}{2^{n/2}} \sum_{x = 0}^{2^n - 1} (-1)^{x \cdot y} \ket{x} \).
+
+\begin{align*}
+	\ket{+}\ket{-} & = \frac{1}{\sqrt{2}} \paren{\ket{0} + \ket{1}} \frac{1}{\sqrt{2}} \paren{\ket{0} - \ket{1}} \\
+	               & = \frac{1}{2} \paren{\ket{00} - \ket{01} + \ket{10} - \ket{11}}
+\end{align*}
+
+\fig*[0.8\linewidth]{images/figure-4.png}{}{}
+
+\begin{center}
+	{
+		\footnotesize Figure 4 The Deutsch algorithm circuit.
+		The top is the convention we have been using (IBM-Q) with MSB at the top and the bottom one is the other version often seen in other books.
+		Both are using little-endian convention
+	}
+\end{center}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Reading off \( n \) and \( y \).} Step~1 applies \( H \otimes H = H^{\otimes 2} \) to \( \ket{01} \), so \( n = 2 \) and \( y = 01_2 = 1 \), i.e.\ \( (y_1, y_0) = (0, 1) \). The prefactor is \( 1/2^{n/2} = \tfrac{1}{2} \), and the sum runs over \( x = 0, \dots, 3 \).
+
+	\noindent \textbf{The signs.} The bitwise product is \( x \cdot y = x_1 y_1 \oplus x_0 y_0 = x_1 \cdot 0 \oplus x_0 \cdot 1 = x_0 \): only the LSB of \( x \) matters.
+	\begin{center}
+		\begin{tabular}{ccccc}
+			\toprule
+			\( x \) & \( x_1 x_0 \) & \( x \cdot y = x_1 \cdot 0 \oplus x_0 \cdot 1 \) & \( (-1)^{x \cdot y} \) & term            \\
+			\midrule
+			\( 0 \) & \( 00 \)      & \( 0 \oplus 0 = 0 \)                             & \( +1 \)               & \( +\ket{00} \) \\
+			\( 1 \) & \( 01 \)      & \( 0 \oplus 1 = 1 \)                             & \( -1 \)               & \( -\ket{01} \) \\
+			\( 2 \) & \( 10 \)      & \( 0 \oplus 0 = 0 \)                             & \( +1 \)               & \( +\ket{10} \) \\
+			\( 3 \) & \( 11 \)      & \( 0 \oplus 1 = 1 \)                             & \( -1 \)               & \( -\ket{11} \) \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+
+	\noindent \textbf{Result.}
+	\begin{align*}
+		H^{\otimes 2}\ket{01}
+		 & = \frac{1}{2}\sum_{x = 0}^{3} (-1)^{x \cdot 01}\ket{x}
+		= \frac{1}{2}\paren{\ket{00} - \ket{01} + \ket{10} - \ket{11}}                               \\
+		 & = \frac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}} \frac{1}{\sqrt{2}}\paren{\ket{0} - \ket{1}}
+		= \ket{+}\ket{-},
+	\end{align*}
+	which is the given equation. The minus signs sit exactly on the strings with \( x_0 = 1 \): the LSB, which was \( \ket{1} \), becomes \( \ket{-} \), while the MSB, which was \( \ket{0} \), becomes \( \ket{+} \) and contributes no sign. This agrees with the matrix calculation of \textbf{Problem 8}, as the notebook (\textbf{Appendix~1}) checks.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 10                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Non-Constant Function in the Deutsch algorithm}
+\par Repeat the following example for a balanced function.
+Note that in the example, \( f(x) \) is a constant function that always gives ``0''.
+
+\[ U_f \ket{0}\ket{0} = \ket{0}\ket{0 \oplus f(0)} = \ket{0}\ket{0 \oplus 0} = \ket{0}\ket{0} \]
+\[ U_f \ket{0}\ket{1} = \ket{0}\ket{1 \oplus f(0)} = \ket{0}\ket{1 \oplus 0} = \ket{0}\ket{1} \]
+\[ U_f \ket{1}\ket{0} = \ket{1}\ket{0 \oplus f(1)} = \ket{1}\ket{0 \oplus 0} = \ket{1}\ket{0} \]
+\[ U_f \ket{1}\ket{1} = \ket{1}\ket{1 \oplus f(1)} = \ket{1}\ket{1 \oplus 0} = \ket{1}\ket{1} \]
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The oracle.} Take the balanced function \( f_B \): \( f(0) = 0 \), \( f(1) = 1 \). Then
+	\begin{align*}
+		U_f\ket{0}\ket{0} & = \ket{0}\ket{0 \oplus f(0)} = \ket{0}\ket{0 \oplus 0} = \ket{0}\ket{0} \\
+		U_f\ket{0}\ket{1} & = \ket{0}\ket{1 \oplus f(0)} = \ket{0}\ket{1 \oplus 0} = \ket{0}\ket{1} \\
+		U_f\ket{1}\ket{0} & = \ket{1}\ket{0 \oplus f(1)} = \ket{1}\ket{0 \oplus 1} = \ket{1}\ket{1} \\
+		U_f\ket{1}\ket{1} & = \ket{1}\ket{1 \oplus f(1)} = \ket{1}\ket{1 \oplus 1} = \ket{1}\ket{0}
+	\end{align*}
+	Unlike the constant example, the oracle is no longer the identity. It exchanges \( \ket{10} \leftrightarrow \ket{11} \), so it is a CNOT with \( x \) as control (\textbf{Problem 7}).
+
+	\noindent \textbf{The oracle in the Deutsch algorithm.} Feeding in \( \ket{+}\ket{-} = \tfrac{1}{2}\paren{\ket{00} - \ket{01} + \ket{10} - \ket{11}} \) (\textbf{Problems 8, 9}) and using the four lines above term by term,
+	\begin{align*}
+		U_f\ket{+}\ket{-}
+		 & = \tfrac{1}{2}\paren{U_f\ket{00} - U_f\ket{01} + U_f\ket{10} - U_f\ket{11}}
+		= \tfrac{1}{2}\paren{\ket{00} - \ket{01} + \ket{11} - \ket{10}}                \\
+		 & = \tfrac{1}{2}\paren{\ket{0} - \ket{1}}\paren{\ket{0} - \ket{1}}
+		= \ket{-}\ket{-}.
+	\end{align*}
+	The constant oracle left \( \ket{+}\ket{-} \) unchanged. The balanced oracle leaves the LSB as \( \ket{-} \) but flips the MSB from \( \ket{+} \) to \( \ket{-} \): the \( -1 \) is ``kicked back'' onto the input qubit.
+	Step~3 applies \( H \) to the MSB, \( H\ket{-} = \ket{1} \), so the measurement gives \( 1 \) with certainty, i.e.\ ``balanced'', after a single use of the oracle.
+
+	\noindent \textbf{Simulation.} Running the Deutsch circuit of Figure~4 (1024 shots on the \texttt{AerSimulator}) with each oracle of \textbf{Problem 7} built from gates gives
+	\begin{center}
+		\begin{tabular}{lcccc}
+			\toprule
+			oracle                  & \( f_A \) (constant) & \( f_B \) (balanced) & \( f_C \) (balanced) & \( f_D \) (constant) \\
+			\midrule
+			MSB measured \texttt{0} & 1024                 & 0                    & 0                    & 1024                 \\
+			MSB measured \texttt{1} & 0                    & 1024                 & 1024                 & 0                    \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	The balanced \( f_B \) (and \( f_C \)) gives \texttt{1} in every shot, while the constant functions give \texttt{0}, as predicted.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                     Appendix                                     %
+% ================================================================================ %
+
+\myappendix{code/assignment-08-code.pdf}{Assignment 08 | Code Solution}
+
+% ================================================================================ %
+
+\end{document}
