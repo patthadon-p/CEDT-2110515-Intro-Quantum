@@ -1,0 +1,930 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage{scrextend}
+\changefontsizes{9pt}
+\input{../course-config}
+\usepackage{../vendor/template/CEDT-Assignment-style}
+
+\begin{document}
+\subject
+\asgntitle{9}{}{Week 10}{\StudentID\ \StudentName}{\DefaultCollaborators}
+
+% ================================================================================ %
+%                                    Problem 01                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{The General Form of XOR Quantum Oracle}
+\par Assume \( x = 5 \), \( f(5) = 3 \), \( n = 3 \), and \( m = 3 \),
+find the corresponding input and output basis vectors of the XOR quantum oracle corresponding to \( f(x) \).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Setting.} With \( n = 3 \) and \( m = 3 \), the XOR oracle acts on \( n + m = 6 \) qubits. The query \( \ket{x}_3 \) is the 3 MSB and the auxiliary register \( \ket{y}_3 \) is the 3 LSB.
+	As in the lecture example, the auxiliary qubits start in \( \ket{0}_3 \).
+
+	\myspace
+
+	\noindent \textbf{Input basis vector.}
+	\[
+		\ket{x}_3\ket{y}_3 = \ket{5}_3\ket{0}_3 = \ket{101}\ket{000} = \ket{101000} \quad (= \ket{40}_6).
+	\]
+
+	\noindent \textbf{Output basis vector.} \( U_f \) keeps the 3 MSB and XORs \( f(5) = 3 = (011)_2 \) into the 3 LSB:
+	\begin{align*}
+		U_f\ket{5}_3\ket{0}_3 & = \ket{5}_3\ket{0 \oplus f(5)}_3 = \ket{5}_3\ket{0 \oplus 3}_3 \\
+		                      & = \ket{101}\ket{000 \oplus 011} = \ket{101}\ket{011}           \\
+		                      & = \ket{101011} \quad (= \ket{43}_6).
+	\end{align*}
+	For a general auxiliary input the output is \( \ket{101}\ket{y \oplus 011} \). Feeding \( \ket{101011} \) back in gives \( \ket{101}\ket{011 \oplus 011} = \ket{101000} \), the input, as expected from \( U_fU_f = I \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 02                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Unitarity of XOR Quantum Oracle}
+\par Prove that the XOR quantum oracle is unitary.
+Prove it using the same methodology we used for the phase quantum oracle.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Method.} For the phase oracle we showed that the transformed basis vectors are still orthonormal, so \( U_f \) is unitary. We do the same here.
+	Take two basis vectors of the \( (n + m) \)-qubit space, \( \ket{x}_n\ket{y}_m \) and \( \ket{x'}_n\ket{y'}_m \). Their inner product is
+	\[
+		\paren{\bra{x}_n\bra{y}_m}\paren{\ket{x'}_n\ket{y'}_m} = \braket{x \vert x'}\braket{y \vert y'} = \delta_{xx'}\,\delta_{yy'} .
+	\]
+	After the oracle they become \( \ket{x}_n\ket{y \oplus f(x)}_m \) and \( \ket{x'}_n\ket{y' \oplus f(x')}_m \). These are again basis vectors, so their coefficients are real and no complex conjugate appears. The new inner product is
+	\[
+		\braket{x \vert x'}\,\braket{y \oplus f(x) \vert y' \oplus f(x')} .
+	\]
+	\begin{itemize}
+		\item \textbf{If \( x \neq x' \):} \( \braket{x \vert x'} = 0 \), so the inner product is still \( 0 \), whatever \( f(x) \) and \( f(x') \) are.
+		\item \textbf{If \( x = x' \):} then \( f(x) = f(x') = c \), one fixed \( m \)-bit string. Bit-wise XOR with a fixed \( c \) is one-to-one, because \( y \oplus c = y' \oplus c \Rightarrow y = y' \) (XOR both sides with \( c \)).
+		      So \( \braket{y \oplus c \vert y' \oplus c} = \delta_{yy'} \), and the inner product is \( 1 \) if \( y = y' \) and \( 0 \) otherwise.
+	\end{itemize}
+	In both cases \( \braket{x \vert x'}\braket{y \oplus f(x) \vert y' \oplus f(x')} = \delta_{xx'}\delta_{yy'} \), the same as before. The \( 2^{n + m} \) basis vectors are mapped to \( 2^{n + m} \) orthonormal vectors, so the columns of \( U_f \) are orthonormal, i.e.\ \( U_f^{\dagger}U_f = I^{\otimes(n + m)} \). By linearity the inner product of \emph{any} two states is preserved too. Hence the XOR oracle is unitary.
+
+	\begin{remark}
+		The proof never needs \( f \) to be one-to-one. Several inputs \( x \) may give the same \( f(x) \), and the XOR oracle is still unitary because it keeps \( \ket{x} \) in the output.
+		That is why the auxiliary register is added. The notebook (\textbf{Appendix~1}) builds \( U_f \) for five random, non-injective \( f : \{0, 1\}^3 \to \{0, 1\}^3 \) and confirms \( U_f^{\dagger}U_f = I \) and \( U_fU_f = I \) (\( 64 \times 64 \)) for each.
+	\end{remark}
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 03                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Construction of SWAP-gate}
+\par Construct the matrix for SWAP gate using the following equation:
+\[
+	U = \sum_{i = 0}^{N - 1} \sum_{j = 0}^{N - 1} \bra{j} U \ket{i} \ket{j} \bra{i}
+\]
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Definition.} SWAP exchanges the two qubits: \( \mathrm{SWAP}\ket{q_1 q_0} = \ket{q_0 q_1} \). On the basis vectors,
+	\[
+		\mathrm{SWAP}\ket{00} = \ket{00}, \quad \mathrm{SWAP}\ket{01} = \ket{10}, \quad \mathrm{SWAP}\ket{10} = \ket{01}, \quad \mathrm{SWAP}\ket{11} = \ket{11}.
+	\]
+
+	\noindent \textbf{Matrix elements.} With \( N = 4 \), there are 16 terms \( \bra{j}\mathrm{SWAP}\ket{i}\ket{j}\bra{i} \). By orthonormality, only four are non-zero:
+	\begin{align*}
+		\bra{00}\mathrm{SWAP}\ket{00} & = \braket{00 \vert 00} = 1, & \bra{10}\mathrm{SWAP}\ket{01} & = \braket{10 \vert 10} = 1,  \\
+		\bra{01}\mathrm{SWAP}\ket{10} & = \braket{01 \vert 01} = 1, & \bra{11}\mathrm{SWAP}\ket{11} & = \braket{11 \vert 11} = 1 .
+	\end{align*}
+
+	\noindent \textbf{Sum of outer products.}
+	\begin{align*}
+		\mathrm{SWAP} & = \ket{00}\bra{00} + \ket{10}\bra{01} + \ket{01}\bra{10} + \ket{11}\bra{11}                       \\
+		              & = \begin{pmatrix} 1 \\ 0 \\ 0 \\ 0 \end{pmatrix}\begin{pmatrix} 1 & 0 & 0 & 0 \end{pmatrix}
+		+ \begin{pmatrix} 0 \\ 0 \\ 1 \\ 0 \end{pmatrix}\begin{pmatrix} 0 & 1 & 0 & 0 \end{pmatrix}                       \\
+		              & \quad + \begin{pmatrix} 0 \\ 1 \\ 0 \\ 0 \end{pmatrix}\begin{pmatrix} 0 & 0 & 1 & 0 \end{pmatrix}
+		+ \begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix}\begin{pmatrix} 0 & 0 & 0 & 1 \end{pmatrix}                       \\
+		              & = \begin{pmatrix}
+			                  1 & 0 & 0 & 0 \\
+			                  0 & 0 & 0 & 0 \\
+			                  0 & 0 & 0 & 0 \\
+			                  0 & 0 & 0 & 0
+		                  \end{pmatrix}
+		+ \begin{pmatrix}
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 0 & 0 \\
+			  0 & 1 & 0 & 0 \\
+			  0 & 0 & 0 & 0
+		  \end{pmatrix}
+		+ \begin{pmatrix}
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 1 & 0 \\
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 0 & 0
+		  \end{pmatrix}
+		+ \begin{pmatrix}
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 0 & 1
+		  \end{pmatrix}                                                                                                  \\
+		              & = \begin{pmatrix}
+			                  1 & 0 & 0 & 0 \\
+			                  0 & 0 & 1 & 0 \\
+			                  0 & 1 & 0 & 0 \\
+			                  0 & 0 & 0 & 1
+		                  \end{pmatrix}.
+	\end{align*}
+	The notebook (\textbf{Appendix~1}) builds the same sum numerically and checks it against Qiskit's \texttt{SwapGate}.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 04                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Deutsch Algorithm}
+\par Find the quantum oracle for \( f_C \) and \( f_D \) in the following equation:
+
+\[
+	f_A(0) = 0, \text{ and } f_A(1) = 0
+\]
+\[
+	f_B(0) = 0, \text{ and } f_B(1) = 1
+\]
+\[
+	f_C(0) = 1, \text{ and } f_C(1) = 0
+\]
+\[
+	f_D(0) = 1, \text{ and } f_D(1) = 1
+\]
+Implement them on IBM-Q.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Setting.} In the Deutsch algorithm, \( n = m = 1 \): the query \( x \) is the MSB \( q_1 \), the auxiliary \( y \) is the LSB \( q_0 \), and \( U_f\ket{x}\ket{y} = \ket{x}\ket{y \oplus f(x)} \).
+	Each oracle is built with \( U = \sum_{i, j} \bra{j}U\ket{i}\ket{j}\bra{i} \), as was done for \( f_B \) in the lecture.
+
+	\myspace
+
+	\noindent \textbf{Oracle for \( f_C \)} (\( f_C(0) = 1 \), \( f_C(1) = 0 \)). The basis vectors transform as
+	\begin{align*}
+		U_f\ket{0}\ket{0} & = \ket{0}\ket{0 \oplus 1} = \ket{0}\ket{1}, & U_f\ket{0}\ket{1} & = \ket{0}\ket{1 \oplus 1} = \ket{0}\ket{0}, \\
+		U_f\ket{1}\ket{0} & = \ket{1}\ket{0 \oplus 0} = \ket{1}\ket{0}, & U_f\ket{1}\ket{1} & = \ket{1}\ket{1 \oplus 0} = \ket{1}\ket{1}.
+	\end{align*}
+
+	The only non-zero elements are \( \bra{01}U_f\ket{00} = \bra{00}U_f\ket{01} = \bra{10}U_f\ket{10} = \bra{11}U_f\ket{11} = 1 \), so
+	\[
+		U_{f_C} = \ket{01}\bra{00} + \ket{00}\bra{01} + \ket{10}\bra{10} + \ket{11}\bra{11}
+		= \begin{pmatrix}
+			0 & 1 & 0 & 0 \\
+			1 & 0 & 0 & 0 \\
+			0 & 0 & 1 & 0 \\
+			0 & 0 & 0 & 1
+		\end{pmatrix}.
+	\]
+
+	It flips the LSB only when \( x = 0 \). Since \( f_C(x) = 1 \oplus x \), \( y \oplus f_C(x) = (y \oplus x) \oplus 1 \): a CNOT (\( y \to y \oplus x \)) followed by \( X \) on the LSB. Check:
+	\[
+		(I \otimes X)\,\mathrm{CNOT}
+		= \begin{pmatrix} X & 0 \\ 0 & X \end{pmatrix}\begin{pmatrix} I & 0 \\ 0 & X \end{pmatrix}
+		= \begin{pmatrix} X & 0 \\ 0 & I \end{pmatrix} = U_{f_C}.
+	\]
+
+	\noindent \textbf{Oracle for \( f_D \)} (\( f_D(0) = f_D(1) = 1 \)). Now every basis vector has its LSB flipped:
+	\[
+		U_f\ket{0}\ket{0} = \ket{0}\ket{1}, \quad U_f\ket{0}\ket{1} = \ket{0}\ket{0}, \quad U_f\ket{1}\ket{0} = \ket{1}\ket{1}, \quad U_f\ket{1}\ket{1} = \ket{1}\ket{0},
+	\]
+	\[
+		U_{f_D} = \ket{01}\bra{00} + \ket{00}\bra{01} + \ket{11}\bra{10} + \ket{10}\bra{11}
+		= \begin{pmatrix}
+			0 & 1 & 0 & 0 \\
+			1 & 0 & 0 & 0 \\
+			0 & 0 & 0 & 1 \\
+			0 & 0 & 1 & 0
+		\end{pmatrix} = I \otimes X ,
+	\]
+	i.e.\ just an \( X \) gate on the auxiliary qubit. For completeness, \( U_{f_A} = I \) (no gate) and \( U_{f_B} = \mathrm{CNOT} \) (lecture).
+
+	\myspace
+
+	\noindent \textbf{Implementation.} The four oracles were placed in the Deutsch circuit (auxiliary \( \ket{1} \to \ket{-} \), query \( \ket{0} \to \ket{+} \), oracle, \( H \) on the query, measure the query).
+	The circuits were run with Qiskit's \texttt{AerSimulator}, 1024 shots each, instead of on IBM-Q hardware: once ideal, and once with the noise model of the IBM processor \texttt{ibm\_marrakesh} (Qiskit's \texttt{FakeMarrakesh}, a snapshot of the device's calibration data).
+
+	\myspace
+
+	\begin{codingbox*}
+qc.x(0); qc.h([0, 1])          # auxiliary |->, query |+>
+qc.cx(1, 0); qc.x(0)           # U_fC   (U_fD: qc.x(0) only)
+qc.h(1); qc.measure(1, 0)      # 0 = constant, 1 = balanced
+\end{codingbox*}
+	\begin{center}
+		\begin{tabular}{lcccc}
+			\toprule
+			query measured \texttt{0} / \texttt{1} & \( f_A \) (constant) & \( f_B \) (balanced) & \( f_C \) (balanced) & \( f_D \) (constant) \\
+			\midrule
+			ideal simulator                        & 1024 / 0             & 0 / 1024             & 0 / 1024             & 1024 / 0             \\
+			\texttt{ibm\_marrakesh} noise model    & 1020 / 4             & 10 / 1014            & 10 / 1014            & 1020 / 4             \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	\fig*[0.6\linewidth]{images/problem-4-answer.png}{}{}
+	\noindent The balanced \( f_C \) gives \texttt{1} and the constant \( f_D \) gives \texttt{0}, with one oracle call each. The noisy runs are still more than 98\% correct.
+	The query qubit ends in \( \ket{f(0) \oplus f(1)} \) up to a global phase, so \( f_C \) behaves like \( f_B \) and \( f_D \) behaves like \( f_A \): the extra \( X \) on the auxiliary qubit only adds a global phase \( -1 \), because \( X\ket{-} = -\ket{-} \).
+	The notebook also checks that each gate circuit has exactly the matrix derived above.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 05                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Rotation of \( \ket{\Phi} \)}
+\par Make a table to show the angles between the rotated \( \ket{\Phi} \) and \( \ket{a} \)
+and between the rotated \( \ket{\Phi} \) and \( \ket{a_\perp} \) after applying \( V \), \( WV \), \( VWV \), \( WVWV \), \dots
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Rules.} All the vectors lie in the plane of \( \ket{a_\perp} \) and \( \ket{a} \) (Pic.~29). Let \( \alpha \) be the angle of a vector measured from \( \ket{a_\perp} \) towards \( \ket{a} \). Then its angle to \( \ket{a} \) is \( 90^\circ - \alpha \).
+	\begin{itemize}
+		\item \( \ket{\Phi} \) starts at \( \alpha = \theta \), with \( \sin\theta = 1/\sqrt{N} \).
+		\item \( V \) reflects about \( \ket{a_\perp} \): \( \alpha \to -\alpha \).
+		\item \( W \) reflects about \( \ket{\Phi} \), which sits at \( \theta \): \( \alpha \to 2\theta - \alpha \).
+	\end{itemize}
+	Starting from \( (2k + 1)\theta \), \( V \) gives \( -(2k + 1)\theta \), and then \( W \) gives \( 2\theta + (2k + 1)\theta = (2k + 3)\theta \). Each \( WV \) therefore adds \( 2\theta \).
+	\begin{center}
+		\renewcommand{\arraystretch}{1.25}
+		\begin{tabular}{lcccc}
+			\toprule
+			state                   & angle to \( \ket{a_\perp} \) & angle to \( \ket{a} \)          & \( N = 4 \): to \( \ket{a_\perp} \) & \( N = 4 \): to \( \ket{a} \) \\
+			\midrule
+			\( \ket{\Phi} \)        & \( \theta \)                 & \( 90^\circ - \theta \)         & \( 30^\circ \)                      & \( 60^\circ \)                \\
+			\( V\ket{\Phi} \)       & \( -\theta \)                & \( 90^\circ + \theta \)         & \( -30^\circ \)                     & \( 120^\circ \)               \\
+			\( WV\ket{\Phi} \)      & \( 3\theta \)                & \( 90^\circ - 3\theta \)        & \( 90^\circ \)                      & \( 0^\circ \)                 \\
+			\( VWV\ket{\Phi} \)     & \( -3\theta \)               & \( 90^\circ + 3\theta \)        & \( -90^\circ \)                     & \( 180^\circ \)               \\
+			\( WVWV\ket{\Phi} \)    & \( 5\theta \)                & \( 90^\circ - 5\theta \)        & \( 150^\circ \)                     & \( -60^\circ \)               \\
+			\( VWVWV\ket{\Phi} \)   & \( -5\theta \)               & \( 90^\circ + 5\theta \)        & \( -150^\circ \)                    & \( 240^\circ \)               \\
+			\( WVWVWV\ket{\Phi} \)  & \( 7\theta \)                & \( 90^\circ - 7\theta \)        & \( 210^\circ \)                     & \( -120^\circ \)              \\
+			\( \vdots \)            & \( \vdots \)                 & \( \vdots \)                    & \( \vdots \)                        & \( \vdots \)                  \\
+			\( (WV)^k\ket{\Phi} \)  & \( (2k + 1)\theta \)         & \( 90^\circ - (2k + 1)\theta \) &                                     &                               \\
+			\( V(WV)^k\ket{\Phi} \) & \( -(2k + 1)\theta \)        & \( 90^\circ + (2k + 1)\theta \) &                                     &                               \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	The angles are signed: a negative angle to \( \ket{a} \) means the vector has rotated \emph{past} \( \ket{a} \). The unsigned angle between two lines is the absolute value reduced to \( [0^\circ, 180^\circ] \).
+	The probability of measuring \( a \) after \( k \) iterations is \( \sin^2\!\paren{(2k + 1)\theta} \). It is largest when \( (2k + 1)\theta \approx 90^\circ \), i.e.\ \( k \approx \tfrac{\pi}{4\theta} - \tfrac{1}{2} \approx \tfrac{\pi}{4}\sqrt{N} \) for large \( N \).
+	For \( N = 4 \), \( \theta = 30^\circ \), so a single \( WV \) lands exactly on \( \ket{a} \), and a second one over-rotates to \( 150^\circ \) (\textbf{Problem 11}).
+	The notebook (\textbf{Appendix~1}) checks every \( N = 4 \) entry against the actual state vectors.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 06                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Another Form of \( V \)}
+\par Show that \( V = I - 2 \ket{a}\bra{a} \).
+Compare this to \( W \) in equation \( W = 2\ket{\Phi}\bra{\Phi} - I \).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{\( V = I - 2\ket{a}\bra{a} \).} Two operators are equal if they act the same way on every basis vector \( \ket{x} \). By definition \( V\ket{x} = (-1)^{f(x)}\ket{x} \), with \( f(a) = 1 \) and \( f(x) = 0 \) for \( x \neq a \). On the other side,
+	\[
+		\paren{I - 2\ket{a}\bra{a}}\ket{x} = \ket{x} - 2\ket{a}\braket{a \vert x} = \ket{x} - 2\delta_{ax}\ket{a}
+		= \begin{cases}
+			\ket{x},  & x \neq a \\
+			-\ket{a}, & x = a
+		\end{cases}
+		= (-1)^{f(x)}\ket{x} = V\ket{x}.
+	\]
+	The two agree on every basis vector, so \( V = I - 2\ket{a}\bra{a} \). \( \blacksquare \) For example, \( n = 2 \), \( a = 1 \) gives \( I - 2\ket{01}\bra{01} = \mathrm{diag}(1, -1, 1, 1) \), the \( U_f \) of the lecture.
+
+	\noindent \textbf{Comparison with \( W = 2\ket{\Phi}\bra{\Phi} - I \).}
+	\begin{itemize}
+		\item \textbf{Same form, opposite sign.} \( V = -\paren{2\ket{a}\bra{a} - I} \) and \( W = +\paren{2\ket{\Phi}\bra{\Phi} - I} \). Both are built from the projector onto one unit vector (\( \ket{a} \) or \( \ket{\Phi} \)), and they differ by an overall sign.
+		\item \textbf{What they reflect about.} \( W \) keeps \( \ket{\Phi} \) and negates everything orthogonal to it: it reflects about \( \ket{\Phi} \). \( V \) does the opposite with \( \ket{a} \): it negates \( \ket{a} \) and keeps everything orthogonal to it, including \( \ket{a_\perp} \). In the plane of Pic.~29, that is a reflection about \( \ket{a_\perp} \).
+		\item \textbf{Global phase.} Since \( -\paren{2\ket{a}\bra{a} - I} \) and \( 2\ket{a}\bra{a} - I \) differ only by the factor \( -1 \), \( V \) is, up to a global phase, also ``a reflection about \( \ket{a} \)'' of the same form as \( W \). Likewise \( W = -\paren{I - 2\ket{\Phi}\bra{\Phi}} \).
+		\item \textbf{How they are built.} \( W = H^{\otimes n}\paren{2\ket{0}_n\bra{0}_n - I}H^{\otimes n} \), because \( H^{\otimes n}\ket{0}_n = \ket{\Phi} \). \( V \) needs the oracle: \( \ket{a} \) is the unknown answer, so \( I - 2\ket{a}\bra{a} \) is exactly the information hidden in \( f \).
+	\end{itemize}
+	The notebook (\textbf{Appendix~1}) checks \( V = I - 2\ket{a}\bra{a} \) for all four \( a \) with \( n = 2 \), and \( W = H^{\otimes 2}\paren{2\ket{00}\bra{00} - I}H^{\otimes 2} = -\paren{I - 2\ket{\Phi}\bra{\Phi}} \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 07                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Numerical Substitution I}
+\par If \( n = 2 \) and \( a = 3 \), find \( \ket{\Phi} \), \( \ket{a} \), and \( \ket{a_\perp} \).
+\end{problem}
+
+\begin{solution}
+	\noindent With \( n = 2 \) there are \( N = 2^2 = 4 \) entries, encoded as \( \ket{00}, \ket{01}, \ket{10}, \ket{11} \). The target \( a = 3 = (11)_2 \).
+	\begin{align*}
+		\ket{\Phi}    & = \frac{1}{\sqrt{2^n}}\sum_{x = 0}^{2^n - 1}\ket{x} = \frac{1}{2}\paren{\ket{00} + \ket{01} + \ket{10} + \ket{11}} = \frac{1}{2}\begin{pmatrix} 1 & 1 & 1 & 1 \end{pmatrix}^{\top},                  \\
+		\ket{a}       & = \ket{3} = \ket{11} = \begin{pmatrix} 0 & 0 & 0 & 1 \end{pmatrix}^{\top},                                                                                                                           \\
+		\ket{a_\perp} & = \frac{1}{\sqrt{2^n - 1}}\sum_{x = 0, x \neq a}^{2^n - 1}\ket{x} = \frac{1}{\sqrt{3}}\paren{\ket{00} + \ket{01} + \ket{10}} = \frac{1}{\sqrt{3}}\begin{pmatrix} 1 & 1 & 1 & 0 \end{pmatrix}^{\top}.
+	\end{align*}
+	Check: \( \braket{a \vert a_\perp} = 0 \), and \( \cos\theta = \braket{a_\perp \vert \Phi} = \tfrac{1}{\sqrt{3}} \cdot \tfrac{1}{2} \cdot 3 = \tfrac{\sqrt{3}}{2} \), so \( \theta = \tfrac{\pi}{6} \), the same as for \( a = 1 \).
+	\( \theta \) depends only on \( N \), not on which entry is the target.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 08                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Numerical Substitution II}
+\par Continue from Problem 7, express \( V\ket{\Phi} \) as a linear combination of \( \ket{\Phi} \) and \( \ket{\Phi_\perp} \).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{\( \ket{\Phi_\perp} \).} In the plane of Pic.~29, \( \ket{\Phi} = \cos\theta\ket{a_\perp} + \sin\theta\ket{a} \), and \( \ket{\Phi_\perp} \) is \( 90^\circ \) ahead of it, towards \( \ket{a} \):
+	\begin{align*}
+		\ket{\Phi_\perp} & = -\sin\theta\ket{a_\perp} + \cos\theta\ket{a}
+		= -\frac{1}{2}\cdot\frac{1}{\sqrt{3}}\paren{\ket{00} + \ket{01} + \ket{10}} + \frac{\sqrt{3}}{2}\ket{11} \\
+		                 & = \frac{1}{2\sqrt{3}}\paren{-\ket{00} - \ket{01} - \ket{10} + 3\ket{11}}.
+	\end{align*}
+	It is normalized, \( \tfrac{1 + 1 + 1 + 9}{12} = 1 \), and \( \braket{\Phi \vert \Phi_\perp} = \tfrac{1}{2}\cdot\tfrac{1}{2\sqrt{3}}(-1 - 1 - 1 + 3) = 0 \).
+
+	\noindent \textbf{\( V\ket{\Phi} \).} \( V = I - 2\ket{11}\bra{11} = \mathrm{diag}(1, 1, 1, -1) \) flips the sign of \( \ket{a} = \ket{11} \):
+	\[
+		V\ket{\Phi} = \frac{1}{2}\paren{\ket{00} + \ket{01} + \ket{10} - \ket{11}}.
+	\]
+	The coefficients follow from inner products with the orthonormal pair \( \ket{\Phi}, \ket{\Phi_\perp} \):
+	\begin{align*}
+		\braket{\Phi \vert V\Phi}       & = \tfrac{1}{2}\cdot\tfrac{1}{2}\paren{1 + 1 + 1 - 1} = \tfrac{1}{2},                                          \\
+		\braket{\Phi_\perp \vert V\Phi} & = \tfrac{1}{2\sqrt{3}}\cdot\tfrac{1}{2}\paren{-1 - 1 - 1 - 3} = -\tfrac{6}{4\sqrt{3}} = -\tfrac{\sqrt{3}}{2}.
+	\end{align*}
+	Therefore
+	\[
+		\boxed{\,V\ket{\Phi} = \frac{1}{2}\ket{\Phi} - \frac{\sqrt{3}}{2}\ket{\Phi_\perp} = \cos 2\theta\,\ket{\Phi} - \sin 2\theta\,\ket{\Phi_\perp}\,}
+	\]
+	with \( 2\theta = 60^\circ \). Check: \( \tfrac{1}{4}(1, 1, 1, 1) - \tfrac{1}{4}(-1, -1, -1, 3) = \tfrac{1}{2}(1, 1, 1, -1) = V\ket{\Phi} \).
+	Geometrically, \( V \) moved \( \ket{\Phi} \) from \( +\theta \) to \( -\theta \), i.e.\ \( 2\theta \) clockwise from \( \ket{\Phi} \), as in Pic.~29.
+	\( W \) then reflects about \( \ket{\Phi} \) by negating the \( \ket{\Phi_\perp} \) coefficient: \( WV\ket{\Phi} = \tfrac{1}{2}\ket{\Phi} + \tfrac{\sqrt{3}}{2}\ket{\Phi_\perp} = \ket{11} = \ket{a} \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 09                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Computational Complexity}
+\par If algorithm A has a complexity of \( O(e^N) \) and algorithm B has a complexity of \( O(2N) \).
+What type of speedup does algorithm B have over algorithm A?
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Exponential speedup.} Constant factors do not matter in complexity, so \( O(2N) = O(N) \): algorithm B is linear and algorithm A is exponential.
+	Write A's cost as \( T_A \sim e^N \). Then \( N = \ln T_A \), so B's cost is \( T_B \sim N = \ln T_A \): B needs only about the \emph{logarithm} of A's time.
+	This is exactly the lecture's definition of an exponential speedup (from \( O(N) \) to \( O(\log N) \)). Here it is from \( O(e^N) \) to \( O(\log e^N) = O(N) \).
+	\begin{center}
+		\begin{tabular}{rrrr}
+			\toprule
+			\( N \) & \( e^N \)                & \( 2N \) & \( e^N / 2N \)           \\
+			\midrule
+			5       & 148                      & 10       & 15                       \\
+			10      & \( 2.2 \times 10^{4} \)  & 20       & \( 1.1 \times 10^{3} \)  \\
+			20      & \( 4.9 \times 10^{8} \)  & 40       & \( 1.2 \times 10^{7} \)  \\
+			40      & \( 2.4 \times 10^{17} \) & 80       & \( 2.9 \times 10^{15} \) \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	The advantage itself grows exponentially with \( N \). It is not a quadratic speedup: that would be \( T_B \sim \sqrt{T_A} = e^{N/2} \), which is what Grover's algorithm gives over classical search (\( O(\sqrt{N}) \) vs.\ \( O(N) \)).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 10                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Construction of Oracle}
+\par Derive Eq. (1) using Eq. (2) by substituting Eq. (3)
+\begin{align}
+	U_f        & = \begin{pmatrix}
+		               1 & 0  & 0 & 0 \\
+		               0 & -1 & 0 & 0 \\
+		               0 & 0  & 1 & 0 \\
+		               0 & 0  & 0 & 1
+	               \end{pmatrix}                                                              \\
+	U          & = \sum_{i = 0}^{N - 1} \sum_{j = 0}^{N - 1} \bra{j} U \ket{i} \ket{j} \bra{i} \\
+	V\ket{x}_n & = (-1)^{f(x)} \ket{x}_n
+\end{align}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Setting.} As in the lecture's example, \( n = 2 \) and \( a = 1 \), so \( f(01) = 1 \) and \( f(x) = 0 \) otherwise. The oracle \( U_f = V \) is defined by Eq.~(3): \( V\ket{x}_2 = (-1)^{f(x)}\ket{x}_2 \).
+
+	\myspace
+
+	\noindent \textbf{Matrix elements.} Substituting Eq.~(3) into \( \bra{j}V\ket{i} \),
+	\[
+		\bra{j}V\ket{i} = \bra{j}(-1)^{f(i)}\ket{i} = (-1)^{f(i)}\braket{j \vert i} = (-1)^{f(i)}\delta_{ij},
+	\]
+	so only the four diagonal terms of Eq.~(2) survive:
+	\begin{align*}
+		\bra{00}V\ket{00} & = (-1)^{f(0)}\braket{00 \vert 00} = (-1)^0 = 1,  &
+		\bra{01}V\ket{01} & = (-1)^{f(1)}\braket{01 \vert 01} = (-1)^1 = -1,   \\
+		\bra{10}V\ket{10} & = (-1)^{f(2)}\braket{10 \vert 10} = (-1)^0 = 1,  &
+		\bra{11}V\ket{11} & = (-1)^{f(3)}\braket{11 \vert 11} = (-1)^0 = 1 .
+	\end{align*}
+	\noindent \textbf{Sum of outer products.}
+	\begin{align*}
+		U_f & = \sum_{i = 0}^{3}\sum_{j = 0}^{3}\bra{j}V\ket{i}\ket{j}\bra{i}
+		= \ket{00}\bra{00} - \ket{01}\bra{01} + \ket{10}\bra{10} + \ket{11}\bra{11} \\
+		    & = \begin{pmatrix}
+			        1 & 0 & 0 & 0 \\
+			        0 & 0 & 0 & 0 \\
+			        0 & 0 & 0 & 0 \\
+			        0 & 0 & 0 & 0
+		        \end{pmatrix}
+		- \begin{pmatrix}
+			  0 & 0 & 0 & 0 \\
+			  0 & 1 & 0 & 0 \\
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 0 & 0
+		  \end{pmatrix}
+		+ \begin{pmatrix}
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 1 & 0 \\
+			  0 & 0 & 0 & 0
+		  \end{pmatrix}
+		+ \begin{pmatrix}
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 0 & 0 \\
+			  0 & 0 & 0 & 1
+		  \end{pmatrix}                                                            \\
+		    & = \begin{pmatrix}
+			        1 & 0  & 0 & 0 \\
+			        0 & -1 & 0 & 0 \\
+			        0 & 0  & 1 & 0 \\
+			        0 & 0  & 0 & 1
+		        \end{pmatrix},
+	\end{align*}
+	which is Eq.~(1). \( \blacksquare \) In general, the phase oracle is always diagonal, \( U_f = \sum_x (-1)^{f(x)}\ket{x}\bra{x} \), because it never mixes basis vectors; it only changes their sign.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 11                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Rotation of \( WV\ket{\Phi} \)}
+\par Perform another \( WV \) operation to the wavefunction obtained in the below equation.
+Is it over-rotated?
+\begin{align*}
+	H^{\otimes 2} & \paren{ 2\ket{0}_2\bra{0}_2 - I } H^{\otimes 2} \paren{ V\ket{\Phi} }                                        \\
+	              & = \frac{1}{2} \begin{pmatrix}
+		                              1 & 1  & 1  & 1  \\
+		                              1 & -1 & 1  & -1 \\
+		                              1 & 1  & -1 & -1 \\
+		                              1 & -1 & -1 & 1
+	                              \end{pmatrix} \begin{pmatrix}
+		                                            1 & 0  & 0  & 0  \\
+		                                            0 & -1 & 0  & 0  \\
+		                                            0 & 0  & -1 & 0  \\
+		                                            0 & 0  & 0  & -1
+	                                            \end{pmatrix} \times \frac{1}{2} \begin{pmatrix}
+		                                                                             1 & 1  & 1  & 1  \\
+		                                                                             1 & -1 & 1  & -1 \\
+		                                                                             1 & 1  & -1 & -1 \\
+		                                                                             1 & -1 & -1 & 1
+	                                                                             \end{pmatrix} \times \frac{1}{2} \begin{pmatrix}
+		                                                                                                              1  \\
+		                                                                                                              -1 \\
+		                                                                                                              1  \\
+		                                                                                                              1
+	                                                                                                              \end{pmatrix} \\
+	              & = \frac{1}{4} \begin{pmatrix}
+		                              1 & 1  & 1  & 1  \\
+		                              1 & -1 & 1  & -1 \\
+		                              1 & 1  & -1 & -1 \\
+		                              1 & -1 & -1 & 1
+	                              \end{pmatrix} \begin{pmatrix}
+		                                            1 & 0  & 0  & 0  \\
+		                                            0 & -1 & 0  & 0  \\
+		                                            0 & 0  & -1 & 0  \\
+		                                            0 & 0  & 0  & -1
+	                                            \end{pmatrix} \begin{pmatrix}
+		                                                          1  \\
+		                                                          1  \\
+		                                                          -1 \\
+		                                                          1
+	                                                          \end{pmatrix}                                                     \\
+	              & = \frac{1}{4} \begin{pmatrix}
+		                              1 & 1  & 1  & 1  \\
+		                              1 & -1 & 1  & -1 \\
+		                              1 & 1  & -1 & -1 \\
+		                              1 & -1 & -1 & 1
+	                              \end{pmatrix} \begin{pmatrix}
+		                                            1  \\
+		                                            -1 \\
+		                                            1  \\
+		                                            -1
+	                                            \end{pmatrix} = \begin{pmatrix}
+		                                                            0 \\
+		                                                            1 \\
+		                                                            0 \\
+		                                                            0
+	                                                            \end{pmatrix} = \ket{01} = \ket{a}
+\end{align*}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Starting point.} After one \( WV \) the state is \( \ket{01} = \ket{a} \).
+
+	\myspace
+
+	\noindent \textbf{Second \( V \).} \( V = \mathrm{diag}(1, -1, 1, 1) \) flips the sign of \( \ket{01} \):
+	\[
+		V\ket{01} = -\ket{01} = \begin{pmatrix} 0 & -1 & 0 & 0 \end{pmatrix}^{\top}.
+	\]
+	\noindent \textbf{Second \( W \).}
+	\begin{align*}
+		 & H^{\otimes 2}\paren{2\ket{0}_2\bra{0}_2 - I}H^{\otimes 2}\paren{-\ket{01}} \\
+		 & = \frac{1}{2}\begin{pmatrix}
+			                1 & 1  & 1  & 1  \\
+			                1 & -1 & 1  & -1 \\
+			                1 & 1  & -1 & -1 \\
+			                1 & -1 & -1 & 1
+		                \end{pmatrix}
+		\begin{pmatrix}
+			1 & 0  & 0  & 0  \\
+			0 & -1 & 0  & 0  \\
+			0 & 0  & -1 & 0  \\
+			0 & 0  & 0  & -1
+		\end{pmatrix}
+		\frac{1}{2}\begin{pmatrix}
+			           1 & 1  & 1  & 1  \\
+			           1 & -1 & 1  & -1 \\
+			           1 & 1  & -1 & -1 \\
+			           1 & -1 & -1 & 1
+		           \end{pmatrix}
+		\begin{pmatrix} 0 \\ -1 \\ 0 \\ 0 \end{pmatrix}                               \\
+		 & = \frac{1}{4}\begin{pmatrix}
+			                1 & 1  & 1  & 1  \\
+			                1 & -1 & 1  & -1 \\
+			                1 & 1  & -1 & -1 \\
+			                1 & -1 & -1 & 1
+		                \end{pmatrix}
+		\begin{pmatrix}
+			1 & 0  & 0  & 0  \\
+			0 & -1 & 0  & 0  \\
+			0 & 0  & -1 & 0  \\
+			0 & 0  & 0  & -1
+		\end{pmatrix}
+		\begin{pmatrix} -1 \\ 1 \\ -1 \\ 1 \end{pmatrix}
+		= \frac{1}{4}\begin{pmatrix}
+			             1 & 1  & 1  & 1  \\
+			             1 & -1 & 1  & -1 \\
+			             1 & 1  & -1 & -1 \\
+			             1 & -1 & -1 & 1
+		             \end{pmatrix}
+		\begin{pmatrix} -1 \\ -1 \\ 1 \\ -1 \end{pmatrix}                             \\
+		 & = \frac{1}{4}\begin{pmatrix} -2 \\ 2 \\ -2 \\ -2 \end{pmatrix}
+		= \frac{1}{2}\paren{-\ket{00} + \ket{01} - \ket{10} - \ket{11}}.
+	\end{align*}
+	\noindent \textbf{Yes, it is over-rotated.} The probability of measuring the answer has dropped from \( 1 \) to \( \abs{\tfrac{1}{2}}^2 = \tfrac{1}{4} \), the same as a random guess. All four outcomes are now equally likely.
+	Geometrically, with \( \ket{a_\perp} = \tfrac{1}{\sqrt{3}}\paren{\ket{00} + \ket{10} + \ket{11}} \),
+	\[
+		\paren{WV}^2\ket{\Phi} = -\tfrac{\sqrt{3}}{2}\ket{a_\perp} + \tfrac{1}{2}\ket{a} = \cos 150^\circ\ket{a_\perp} + \sin 150^\circ\ket{a},
+	\]
+	i.e.\ the vector is at \( 5\theta = 150^\circ \), \( 60^\circ \) \emph{past} \( \ket{a} \) (\textbf{Problem 5}). Every \( WV \) rotates by a fixed \( 2\theta = 60^\circ \), so with \( N = 4 \) it must be applied exactly once.
+	More iterations do not help. This is also why the lecture's estimate \( \tfrac{\pi}{4}\sqrt{4} \approx 1.6 \) has to be rounded \emph{down} here. The notebook (\textbf{Appendix~1}) reproduces this state, and \textbf{Problem 15} shows the uniform histogram after two iterations.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 12                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Numerical Substitution of Grover's Algorithm}
+\par Repeat what we did in the numerical substitution with \( a = 3 \).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Vectors.} From \textbf{Problem 7}, with \( n = 2 \) and \( a = 3 \): \( \ket{a} = \ket{11} \), \( \ket{a_\perp} = \tfrac{1}{\sqrt{3}}\paren{\ket{00} + \ket{01} + \ket{10}} \), \( \ket{\Phi} = \tfrac{1}{2}\paren{\ket{00} + \ket{01} + \ket{10} + \ket{11}} \), and \( \cos\theta = \tfrac{\sqrt{3}}{2} \), so \( \theta = \tfrac{\pi}{6} \).
+
+	\myspace
+
+	\noindent \textbf{Construction of the oracle.} \( U_f\ket{11} = (-1)^{f(3)}\ket{11} = -\ket{11} \), and every other basis vector is unchanged. By \textbf{Problem 10},
+	\[
+		U_f = \ket{00}\bra{00} + \ket{01}\bra{01} + \ket{10}\bra{10} - \ket{11}\bra{11}
+		= \begin{pmatrix}
+			1 & 0 & 0 & 0  \\
+			0 & 1 & 0 & 0  \\
+			0 & 0 & 1 & 0  \\
+			0 & 0 & 0 & -1
+		\end{pmatrix} = \mathrm{CZ} = U_{CPS, \pi}.
+	\]
+	For \( a = 1 \) the lecture needed \( X \) gates around the CZ to move the \( -1 \) from \( \ket{11} \) to \( \ket{01} \). For \( a = 3 \) both bits are already \( 1 \), so the oracle is the CZ gate alone.
+	In general, an \( X \) is placed on every qubit where the bit of \( a \) is \( 0 \).
+
+	\myspace
+
+	\noindent \textbf{Grover diffusion operator.} It does not depend on \( a \): \( W = H^{\otimes 2}\paren{2\ket{0}_2\bra{0}_2 - I}H^{\otimes 2} \), with \( 2\ket{0}_2\bra{0}_2 - I = \mathrm{diag}(1, -1, -1, -1) = U_{CPS, \pi}\paren{Z \otimes Z} \).
+	The circuit is \( H^{\otimes 2} \), then CZ (the oracle), then \( H^{\otimes 2} \), \( Z \otimes Z \), CZ, \( H^{\otimes 2} \).
+
+	\myspace
+
+	\noindent \textbf{Evolution of the wavefunction.}
+	\begin{align*}
+		H^{\otimes 2}\ket{00} & = \tfrac{1}{2}\begin{pmatrix} 1 & 1 & 1 & 1 \end{pmatrix}^{\top} = \ket{\Phi},                                                         \\
+		V\ket{\Phi}           & = \begin{pmatrix}
+			                          1 & 0 & 0 & 0  \\
+			                          0 & 1 & 0 & 0  \\
+			                          0 & 0 & 1 & 0  \\
+			                          0 & 0 & 0 & -1
+		                          \end{pmatrix}\frac{1}{2}\begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix} = \frac{1}{2}\begin{pmatrix} 1 \\ 1 \\ 1 \\ -1 \end{pmatrix},
+	\end{align*}
+	\begin{align*}
+		 & H^{\otimes 2}\paren{2\ket{0}_2\bra{0}_2 - I}H^{\otimes 2}\paren{V\ket{\Phi}}                                                       \\
+		 & = \frac{1}{2}\begin{pmatrix}
+			                1 & 1  & 1  & 1  \\
+			                1 & -1 & 1  & -1 \\
+			                1 & 1  & -1 & -1 \\
+			                1 & -1 & -1 & 1
+		                \end{pmatrix}
+		\begin{pmatrix}
+			1 & 0  & 0  & 0  \\
+			0 & -1 & 0  & 0  \\
+			0 & 0  & -1 & 0  \\
+			0 & 0  & 0  & -1
+		\end{pmatrix}
+		\frac{1}{2}\begin{pmatrix}
+			           1 & 1  & 1  & 1  \\
+			           1 & -1 & 1  & -1 \\
+			           1 & 1  & -1 & -1 \\
+			           1 & -1 & -1 & 1
+		           \end{pmatrix}
+		\frac{1}{2}\begin{pmatrix} 1 \\ 1 \\ 1 \\ -1 \end{pmatrix}                                                                            \\
+		 & = \frac{1}{4}\begin{pmatrix}
+			                1 & 1  & 1  & 1  \\
+			                1 & -1 & 1  & -1 \\
+			                1 & 1  & -1 & -1 \\
+			                1 & -1 & -1 & 1
+		                \end{pmatrix}
+		\begin{pmatrix}
+			1 & 0  & 0  & 0  \\
+			0 & -1 & 0  & 0  \\
+			0 & 0  & -1 & 0  \\
+			0 & 0  & 0  & -1
+		\end{pmatrix}
+		\begin{pmatrix} 1 \\ 1 \\ 1 \\ -1 \end{pmatrix}
+		= \frac{1}{4}\begin{pmatrix}
+			             1 & 1  & 1  & 1  \\
+			             1 & -1 & 1  & -1 \\
+			             1 & 1  & -1 & -1 \\
+			             1 & -1 & -1 & 1
+		             \end{pmatrix}
+		\begin{pmatrix} 1 \\ -1 \\ -1 \\ 1 \end{pmatrix}                                                                                      \\
+		 & = \frac{1}{4}\begin{pmatrix} 0 \\ 0 \\ 0 \\ 4 \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix} = \ket{11} = \ket{a}.
+	\end{align*}
+	As for \( a = 1 \), one \( WV \) rotates \( \ket{\Phi} \) from \( \theta = \tfrac{\pi}{6} \) by \( 2\theta = \tfrac{\pi}{3} \) to \( \tfrac{\pi}{2} \), exactly onto \( \ket{a} = \ket{11} \). A measurement gives \( 11 \) with certainty.
+	Only the oracle changed. \( \ket{\Phi} \), \( W \), \( \theta \), and the number of iterations are the same for every target. The notebook (\textbf{Appendix~1}) repeats each step numerically.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 13                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Construction of CZ Gate}
+\par Using matrix multiplication, prove that the circuit in the CZ block in Fig. 1 indeed works as a CZ gate.
+
+\fig*[0.9\linewidth]{images/figure-1.png}{}{}
+
+\begin{center}
+	{
+		\footnotesize Figure 1 Circuit corresponds to the Grover's algorithm implemented in IBM-Q. \\
+		The hardware result is shown on the right.
+	}
+\end{center}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The block.} Inside each CZ box of Figure~1, \( q_0 \) (LSB, top wire) gets \( H \), then a CNOT with control \( q_1 \) (MSB) and target \( q_0 \), then \( H \) again; \( q_1 \) only sees \( I \).
+	With the MSB as the first tensor factor, and the first gate on the right,
+	\[
+		U_{\text{block}} = \paren{I \otimes H}\,\mathrm{CNOT}\,\paren{I \otimes H}, \quad
+		I \otimes H = \frac{1}{\sqrt{2}}\begin{pmatrix}
+			1 & 1  & 0 & 0  \\
+			1 & -1 & 0 & 0  \\
+			0 & 0  & 1 & 1  \\
+			0 & 0  & 1 & -1
+		\end{pmatrix}, \
+		\mathrm{CNOT} = \begin{pmatrix}
+			1 & 0 & 0 & 0 \\
+			0 & 1 & 0 & 0 \\
+			0 & 0 & 0 & 1 \\
+			0 & 0 & 1 & 0
+		\end{pmatrix}.
+	\]
+	\noindent \textbf{Matrix multiplication.} CNOT on the left exchanges rows 3 and 4:
+	\[
+		\mathrm{CNOT}\paren{I \otimes H} = \frac{1}{\sqrt{2}}\begin{pmatrix}
+			1 & 1  & 0 & 0  \\
+			1 & -1 & 0 & 0  \\
+			0 & 0  & 1 & -1 \\
+			0 & 0  & 1 & 1
+		\end{pmatrix},
+	\]
+	\begin{align*}
+		\paren{I \otimes H}\mathrm{CNOT}\paren{I \otimes H}
+		 & = \frac{1}{2}\begin{pmatrix}
+			                1 & 1  & 0 & 0  \\
+			                1 & -1 & 0 & 0  \\
+			                0 & 0  & 1 & 1  \\
+			                0 & 0  & 1 & -1
+		                \end{pmatrix}
+		\begin{pmatrix}
+			1 & 1  & 0 & 0  \\
+			1 & -1 & 0 & 0  \\
+			0 & 0  & 1 & -1 \\
+			0 & 0  & 1 & 1
+		\end{pmatrix}
+		= \frac{1}{2}\begin{pmatrix}
+			             2 & 0 & 0 & 0  \\
+			             0 & 2 & 0 & 0  \\
+			             0 & 0 & 2 & 0  \\
+			             0 & 0 & 0 & -2
+		             \end{pmatrix}       \\
+		 & = \begin{pmatrix}
+			     1 & 0 & 0 & 0  \\
+			     0 & 1 & 0 & 0  \\
+			     0 & 0 & 1 & 0  \\
+			     0 & 0 & 0 & -1
+		     \end{pmatrix} = \mathrm{CZ}.
+	\end{align*}
+	So the block is a CZ gate. \( \blacksquare \) In block form the reason is clear: \( \mathrm{CNOT} = \ket{0}\bra{0} \otimes I + \ket{1}\bra{1} \otimes X \), so
+	\[
+		\paren{I \otimes H}\mathrm{CNOT}\paren{I \otimes H} = \ket{0}\bra{0} \otimes H I H + \ket{1}\bra{1} \otimes H X H = \ket{0}\bra{0} \otimes I + \ket{1}\bra{1} \otimes Z = \mathrm{CZ},
+	\]
+	because \( HXH = Z \): the Hadamards turn a bit flip into a phase flip.
+
+	\myspace
+
+	\noindent \textbf{In the rest of Figure~1.} In the \( U_f = V \) box the CZ is sandwiched by \( X \) on \( q_1 \): \( \paren{X \otimes I}\mathrm{CZ}\paren{X \otimes I} = \mathrm{diag}(1, -1, 1, 1) \), the oracle for \( a = 1 \) (Eq.~(1) of \textbf{Problem 10}).
+	In the diffusion box, \( \mathrm{CZ}\paren{Z \otimes Z} = \mathrm{diag}(1, -1, -1, -1) = 2\ket{0}_2\bra{0}_2 - I \).
+	Figure~1's hardware histogram shows mostly \texttt{01} (about 800 of 1024), plus some \texttt{00}. The ideal output is \texttt{01} only, so the rest is hardware noise. The notebook (\textbf{Appendix~1}) checks all three products and compares the block with Qiskit's \texttt{cz}.
+\end{solution}
+% ================================================================================ %
+
+\newpage
+
+% ================================================================================ %
+%                                    Problem 14                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Write Your Own Grover's Algorithm Simulator}
+\par In the numerical substitution part, we have derived the matrices for all gates.
+Please use Google Colab to write a simulator to simulate the quantum circuit.
+The minimal function of your simulator should perform the matrix multiplications and give the correct output wavefunction.
+You may also add measurement using a random variable to see the statistics
+(although if you do it right, it always gives \( \ket{01} \)).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The simulator.} The notebook (\textbf{Appendix~1}, Section~14) implements a small state-vector simulator, \texttt{MatrixSimulator}, using only NumPy matrix multiplication, so it runs unchanged in Google Colab.
+	\begin{itemize}
+		\item The state of \( n \) qubits is a \( 2^n \) column vector, starting at \( \ket{0}_n \). Qubit 0 is the LSB, and the MSB is the first tensor factor (IBM-Q convention).
+		\item A one-qubit gate on qubit \( k \) is expanded to the full space as \( I \otimes \dots \otimes U \otimes \dots \otimes I \). CNOT is built from projectors, \( \ket{0}\bra{0}_c \otimes I + \ket{1}\bra{1}_c \otimes X_t \).
+		\item Every gate multiplies the state on the left, \( \ket{\psi} \to U\ket{\psi} \), and the state after each step is stored.
+		\item A measurement samples \( 1024 \) outcomes from the probabilities \( \abs{\psi_x}^2 \) with a random generator (\texttt{numpy.random.Generator.choice}).
+	\end{itemize}
+	\begin{codingbox*}
+sim = MatrixSimulator(2)
+sim.layer({0: H, 1: H}, "H (x) H")                 # |Phi>
+sim.layer({1: X}, "oracle: X")                     # U_f = (X(x)I) CZ (X(x)I),  CZ = (I(x)H) CNOT (I(x)H)
+sim.layer({0: H}, ...); sim.apply(sim.cnot(1, 0), ...); sim.layer({0: H}, ...)
+sim.layer({1: X}, "oracle: X")
+sim.layer({0: H, 1: H}, ...); sim.layer({0: Z, 1: Z}, ...)                       # W
+sim.layer({0: H}, ...); sim.apply(sim.cnot(1, 0), ...); sim.layer({0: H}, ...)
+sim.layer({0: H, 1: H}, ...)
+counts = sim.measure(1024, rng)
+\end{codingbox*}
+
+	\myspace
+
+	\noindent \textbf{Output wavefunction.} Running Figure~1 gate by gate (\( a = 1 \)) gives the following states, in the basis \( \ket{00}, \ket{01}, \ket{10}, \ket{11} \):
+	\begin{center}
+		\begin{tabular}{ll}
+			\toprule
+			after                                & state                                       \\
+			\midrule
+			\( H \otimes H \)                    & \( \tfrac{1}{2}(1, 1, 1, 1) = \ket{\Phi} \) \\
+			oracle \( U_f = V \)                 & \( \tfrac{1}{2}(1, -1, 1, 1) \)             \\
+			\( H \otimes H \)                    & \( \tfrac{1}{2}(1, 1, -1, 1) \)             \\
+			\( \mathrm{CZ}\paren{Z \otimes Z} \) & \( \tfrac{1}{2}(1, -1, 1, -1) \)            \\
+			\( H \otimes H \)                    & \( (0, 1, 0, 0) = \ket{01} \)               \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	These match the numerical substitution of the lecture step by step. Inside each CZ block the intermediate states are, for example, \( \tfrac{1}{\sqrt{2}}(1, 0, 1, 0) \to \tfrac{1}{\sqrt{2}}(1, 0, 0, 1) \) in the oracle (full trace in the appendix).
+
+	\myspace
+
+	\noindent \textbf{Measurement.} Sampling 1024 shots gives \texttt{01} every time (figure below). Running the simulator with the oracle for each of \( a = 0, 1, 2, 3 \) gives \texttt{00}, \texttt{01}, \texttt{10}, \texttt{11} in all 1024 shots, respectively.
+	Each final state vector was also compared with Qiskit's \texttt{Statevector} of the same circuit, and they agree.
+	\fig*[0.45\linewidth]{images/problem-14-answer.png}{}{}
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 15                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Implement Grover's Algorithm with XOR Gate}
+\par Implement the circuit in Fig. 2 on IBM-Q.
+You need to first construct the corresponding XOR oracle. Set \( a = 1 \).
+Note that this is a 3-qubit circuit due to the addition of the auxiliary bit.
+
+\fig*[0.8\linewidth]{images/figure-2.png}{}{}
+
+\begin{center}
+	{
+		\footnotesize Figure 2 Circuit to implement the Grover's algorithm with a XOR quantum oracle, \( U_f \).
+	}
+\end{center}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Setting.} \( n = 2 \) query qubits hold \( x \) (\( q_2 \) = MSB, \( q_1 \)), and \( m = 1 \) auxiliary qubit \( y \) is the LSB \( q_0 \), as in Figure~2. The basis vectors are \( \ket{x}_2\ket{y}_1 = \ket{q_2 q_1 q_0} \), and \( a = 1 \), so \( f(01) = 1 \) and \( f(x) = 0 \) otherwise.
+
+	\myspace
+
+	\noindent \textbf{Construction of the XOR oracle.} From \( U_f\ket{x}_2\ket{y} = \ket{x}_2\ket{y \oplus f(x)} \), only \( x = 01 \) changes:
+	\[
+		U_f\ket{01}\ket{0} = \ket{01}\ket{0 \oplus 1} = \ket{01}\ket{1}, \qquad U_f\ket{01}\ket{1} = \ket{01}\ket{1 \oplus 1} = \ket{01}\ket{0},
+	\]
+	and \( U_f\ket{x}\ket{y} = \ket{x}\ket{y} \) for \( x \in \{00, 10, 11\} \). With \( U = \sum_{i, j}\bra{j}U\ket{i}\ket{j}\bra{i} \), the non-zero elements are \( \bra{011}U_f\ket{010} = \bra{010}U_f\ket{011} = 1 \) and the six diagonal ones for the other basis vectors:
+	\[
+		U_f = \sum_{i \notin \{010, 011\}}\ket{i}\bra{i} + \ket{011}\bra{010} + \ket{010}\bra{011}
+		= \begin{pmatrix}
+			1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+			0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+			0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+			0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+			0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+			0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+			0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+			0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
+		\end{pmatrix}.
+	\]
+	It flips \( q_0 \) only when \( q_2 = 0 \) and \( q_1 = 1 \). That is a Toffoli gate (controls \( q_2, q_1 \), target \( q_0 \)) whose \( q_2 \) control is made to fire on \( 0 \) by \( X \) gates before and after: \( U_f = \paren{X \otimes I \otimes I}\,\mathrm{CCX}\,\paren{X \otimes I \otimes I} \).
+	With the auxiliary qubit in \( \ket{-} \), phase kickback turns it into the phase oracle, \( U_f\ket{x}_2\ket{-} = (-1)^{f(x)}\ket{x}_2\ket{-} = \paren{V \otimes I}\ket{x}_2\ket{-} \), with \( V = \mathrm{diag}(1, -1, 1, 1) \) (lecture, Chapter~23).
+
+	\myspace
+
+	\noindent \textbf{The circuit.} \( X \) then \( H \) on \( q_0 \) prepares \( \ket{-} \), and \( H^{\otimes 2} \) on \( q_2, q_1 \) prepares \( \ket{\Phi}_2 \). Then come \( U_f \) and \( W \) on the query qubits, built as in \textbf{Problems 12} and \textbf{13}.
+	The number of repetitions: \( \tfrac{\pi}{4}\sqrt{N} = \tfrac{\pi}{2} \approx 1.6 \), but \( \theta = 30^\circ \) exactly, so one \( WV \) reaches \( \ket{a} \) and a second one over-rotates (\textbf{Problem 11}). We use one.
+
+	\myspace
+
+	\begin{codingbox*}
+qc.x(0); qc.h(0)                                       # auxiliary |0> -> |->
+qc.h([1, 2])                                           # |Phi>_2
+qc.x(2); qc.ccx(2, 1, 0); qc.x(2)                      # XOR oracle U_f for a = 1
+qc.h([1, 2]); qc.z([1, 2]); qc.cz(2, 1); qc.h([1, 2])  # W
+qc.measure([1, 2], [0, 1])                             # bit string q2 q1 = x
+\end{codingbox*}
+
+	\myspace
+
+	\noindent Before the measurement the state is exactly \( \ket{01}_2\ket{-} \) (checked with Qiskit's \texttt{Statevector}). The auxiliary qubit comes out unchanged, as the lecture predicts.
+
+	\newpage
+
+	\noindent \textbf{Results.} As in \textbf{Problem 4}, the circuit was run on Qiskit's \texttt{AerSimulator} instead of IBM-Q hardware: ideal, and with the \texttt{ibm\_marrakesh} noise model (1024 shots each). After transpiling for \texttt{ibm\_marrakesh}, the circuit has depth 50 and 10 two-qubit (CZ) gates, most of them from the Toffoli.
+	\begin{center}
+		\begin{tabular}{lcccc}
+			\toprule
+			counts \( q_2 q_1 \) (1024 shots)           & \texttt{00} & \texttt{01} & \texttt{10} & \texttt{11} \\
+			\midrule
+			1 iteration, ideal                          & 0           & 1024        & 0           & 0           \\
+			1 iteration, \texttt{ibm\_marrakesh} noise  & 13          & 1003        & 5           & 3           \\
+			2 iterations, ideal                         & 267         & 257         & 275         & 225         \\
+			2 iterations, \texttt{ibm\_marrakesh} noise & 267         & 274         & 243         & 240         \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	\fig*[0.6\linewidth]{images/problem-15-answer.png}{}{}
+	\noindent With one iteration, Grover's algorithm with the XOR oracle finds \( a = 01 \) in every ideal shot and in 98\% of the noisy shots. This is the same answer as the phase-oracle circuit of Figure~1.
+	With two iterations the state is over-rotated to \( 150^\circ \), and all four outcomes appear with probability \( \tfrac{1}{4} \) each, as computed in \textbf{Problem 11}.
+
+	\begin{remark}
+		The auxiliary qubit can also be measured. Adding \( H \) and then \( X \) on \( q_0 \) at the end returns \( \ket{-} \to \ket{1} \to \ket{0} \), so the full 3-qubit outcome should always be \( \ket{q_2 q_1 q_0} = \ket{010} \).
+		The simulator gives \texttt{010} in all 1024 ideal shots and in 987 noisy shots. The auxiliary qubit really is left in \( \ket{-} \), not entangled with the query register.
+	\end{remark}
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                     Appendix                                     %
+% ================================================================================ %
+
+\myappendix{code/assignment-09-code.pdf}{Assignment 09 | Code Solution}
+
+% ================================================================================ %
+
+\end{document}
