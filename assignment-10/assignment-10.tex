@@ -1,0 +1,983 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage{scrextend}
+\changefontsizes{9pt}
+\input{../course-config}
+\usepackage{../vendor/template/CEDT-Assignment-style}
+
+\begin{document}
+\subject
+\asgntitle{10}{}{Week 11}{\StudentID\ \StudentName}{\DefaultCollaborators}
+
+% ================================================================================ %
+%                                    Problem 01                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Discrete Fourier Transform Definition}
+\par Use matrix multiplication to show that Eq. (1) is equivalent to Eq. (2).
+\begin{align*}
+	\vec{Y} & = DFT\{\vec{X}\} \\
+	\vec{Y} & = \Omega\vec{X}
+\end{align*}
+\begin{align}
+	\begin{pmatrix}
+		y_0 \\ y_1 \\ \vdots \\ y_{N-1}
+	\end{pmatrix} & = \frac{1}{\sqrt{N}} \begin{pmatrix}
+		                                     \omega^{-0 \cdot 0}     & \cdots & \omega^{-0 \cdot (N-1)}     \\
+		                                     \vdots                  & \ddots & \vdots                      \\
+		                                     \omega^{-(N-1) \cdot 0} & \cdots & \omega^{-(N-1) \cdot (N-1)}
+	                                     \end{pmatrix} \begin{pmatrix}
+		                                                   x_0 \\ x_1 \\ \vdots \\ x_{N-1}
+	                                                   \end{pmatrix}
+\end{align}
+\begin{align}
+	y_k & = \frac{1}{\sqrt{N}} \sum_{j=0}^{N-1} \omega^{-kj} x_j = \frac{1}{\sqrt{N}} \sum_{j=0}^{N-1} e^{-i 2\pi kj/N} x_j
+\end{align}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Matrix elements.} Number the rows and columns from \( 0 \) to \( N - 1 \). The entry in row \( k \) and column \( j \) of the matrix in Eq.~(1) is
+	\[
+		\Omega_{kj} = \frac{1}{\sqrt{N}}\,\omega^{-k \cdot j}, \qquad \omega = e^{i2\pi/N}.
+	\]
+
+	\myspace
+
+	\noindent \textbf{Matrix multiplication.} The \( k \)-th component of \( \Omega\vec{X} \) is the \( k \)-th row of \( \Omega \) times the column \( \vec{X} \):
+	\[
+		y_k = \paren{\Omega\vec{X}}_k = \sum_{j = 0}^{N - 1}\Omega_{kj}\,x_j
+		= \frac{1}{\sqrt{N}}\paren{\omega^{-k \cdot 0}x_0 + \omega^{-k \cdot 1}x_1 + \cdots + \omega^{-k(N - 1)}x_{N - 1}}
+		= \frac{1}{\sqrt{N}}\sum_{j = 0}^{N - 1}\omega^{-kj}x_j .
+	\]
+	Substituting \( \omega^{-kj} = \paren{e^{i2\pi/N}}^{-kj} = e^{-i2\pi kj/N} \) gives the second form of Eq.~(2). This holds for every \( k = 0, \dots, N - 1 \), so Eq.~(1) and Eq.~(2) describe the same transformation. \( \blacksquare \)
+
+	\myspace
+
+	\noindent \textbf{Example} (\( N = 4 \), \( \omega = i \)).
+	\[
+		\begin{pmatrix} y_0 \\ y_1 \\ y_2 \\ y_3 \end{pmatrix}
+		= \frac{1}{2}\begin{pmatrix}
+			1 & 1  & 1  & 1  \\
+			1 & -i & -1 & i  \\
+			1 & -1 & 1  & -1 \\
+			1 & i  & -1 & -i
+		\end{pmatrix}\begin{pmatrix} x_0 \\ x_1 \\ x_2 \\ x_3 \end{pmatrix}
+		\ \Rightarrow\
+		y_1 = \tfrac{1}{2}\paren{x_0 - ix_1 - x_2 + ix_3} = \tfrac{1}{2}\sum_{j = 0}^{3} i^{-j}x_j ,
+	\]
+	and the same for the other rows.
+	The notebook (\textbf{Appendix~1}) compares \( \Omega\vec{X} \) with the sum in Eq.~(2) for random \( \vec{X} \) and \( N = 2, 3, 5, 8, 16 \).
+	Both also agree with \texttt{numpy.fft.fft(x, norm="ortho")}, which uses the same sign and the same \( 1/\sqrt{N} \) normalization.
+\end{solution}
+% ================================================================================ %
+
+\newpage
+
+% ================================================================================ %
+%                                    Problem 02                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Hermiticity of Quantum Fourier Transform}
+\par Is \( U_{QFT} \) Hermitian?
+Does it need to be Hermitian?
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Is it Hermitian?} \textbf{In general, no.} \( \paren{U_{QFT}}_{kj} = \tfrac{1}{\sqrt{N}}\omega^{-kj} \) and \( kj = jk \), so \( U_{QFT}^{\top} = U_{QFT} \): it is symmetric. Therefore
+	\[
+		\paren{U_{QFT}^{\dagger}}_{kj} = \paren{U_{QFT}}_{jk}^{*} = \frac{1}{\sqrt{N}}\paren{\omega^{-jk}}^{*} = \frac{1}{\sqrt{N}}\omega^{+kj}.
+	\]
+	\( U_{QFT} = U_{QFT}^{\dagger} \) requires \( \omega^{-kj} = \omega^{kj} \), i.e.\ \( \omega^{2kj} = 1 \), for every \( k, j \). Taking \( k = j = 1 \) gives \( \omega^2 = e^{i4\pi/N} = 1 \), which holds only for \( N \le 2 \).
+	\begin{itemize}
+		\item \( N = 2 \) (1 qubit): \( U_{QFT} = \tfrac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} = H \), which is Hermitian.
+		\item \( N = 2^n \), \( n \ge 2 \): not Hermitian. For 2 qubits (Eq.~(3)), \( \paren{U_{QFT}}_{11} = -\tfrac{i}{2} \) but \( \paren{U_{QFT}^{\dagger}}_{11} = +\tfrac{i}{2} \). In fact \( U_{QFT}^{\dagger} = U_{IQFT} \neq U_{QFT} \).
+	\end{itemize}
+	Another way to see it: a Hermitian unitary has eigenvalues \( \pm 1 \) only and satisfies \( U^2 = I \). But \( U_{QFT}^2 \) maps \( \ket{k} \to \ket{-k \bmod N} \) (not \( I \) for \( N > 2 \)), \( U_{QFT}^4 = I \), and for \( N \ge 3 \) its eigenvalues include \( -i \), which is not real.
+
+	\myspace
+
+	\noindent \textbf{Does it need to be Hermitian?} \textbf{No.} A quantum gate must be \emph{unitary} (\( U^{\dagger}U = I \)), so that it preserves the norm of the state (total probability \( 1 \)) and can be reversed by \( U^{\dagger} \). Hermiticity is the requirement for an \emph{observable}, whose eigenvalues are the real measurement results.
+	Many gates we already use are unitary but not Hermitian, e.g.\ \( S \), \( T \), and \( U_{CPS, \phi} \) (\( \phi \neq 0, \pi \)). \( U_{QFT} \) is unitary (\textbf{Problem 3}), and that is all it needs.
+	The notebook (\textbf{Appendix~1}) checks symmetry, Hermiticity, unitarity, and the eigenvalues for \( N = 1, \dots, 8 \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 03                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Unitarity of Quantum Fourier Transform}
+\par Prove that \( U_{QFT} \) is unitary by considering the orthonormal property of the row vectors.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Row vectors.} Let \( \ket{r_k} \) be the \( k \)-th row of \( U_{QFT} \), written as a vector:
+	\[
+		\ket{r_k} = \frac{1}{\sqrt{N}}\begin{pmatrix} \omega^{-k \cdot 0} & \omega^{-k \cdot 1} & \cdots & \omega^{-k(N - 1)} \end{pmatrix}^{\top}, \qquad k = 0, \dots, N - 1.
+	\]
+	The \( (k, l) \) element of \( U_{QFT}U_{QFT}^{\dagger} \) is the \( k \)-th row of \( U_{QFT} \) times the \( l \)-th column of \( U_{QFT}^{\dagger} \), which is the conjugate of the \( l \)-th row of \( U_{QFT} \):
+	\[
+		\paren{U_{QFT}U_{QFT}^{\dagger}}_{kl} = \sum_{j = 0}^{N - 1}\paren{U_{QFT}}_{kj}\paren{U_{QFT}}_{lj}^{*} = \braket{r_l \vert r_k}.
+	\]
+	So \( U_{QFT} \) is unitary if and only if its rows are orthonormal.
+
+	\myspace
+
+	\noindent \textbf{Inner products.} Using \( \paren{\omega^{-lj}}^{*} = \omega^{lj} \),
+	\[
+		\braket{r_l \vert r_k} = \frac{1}{N}\sum_{j = 0}^{N - 1}\omega^{lj}\omega^{-kj} = \frac{1}{N}\sum_{j = 0}^{N - 1}\paren{\omega^{l - k}}^{j}.
+	\]
+	\begin{itemize}
+		\item \( k = l \): every term is \( \omega^0 = 1 \), so \( \braket{r_k \vert r_k} = \tfrac{1}{N} \cdot N = 1 \). Each row is normalized.
+		\item \( k \neq l \): let \( q = \omega^{l - k} \). Since \( 0 < \abs{l - k} < N \), \( q = e^{i2\pi(l - k)/N} \neq 1 \), while \( q^N = e^{i2\pi(l - k)} = 1 \). The geometric series gives
+		      \[
+			      \braket{r_l \vert r_k} = \frac{1}{N}\cdot\frac{1 - q^N}{1 - q} = \frac{1}{N}\cdot\frac{1 - 1}{1 - q} = 0 .
+		      \]
+		      Different rows are orthogonal. (Geometrically, the \( N \) points \( q^j \) are spread evenly around the unit circle, so they sum to zero.)
+	\end{itemize}
+	Hence \( \braket{r_l \vert r_k} = \delta_{kl} \), i.e.\ \( U_{QFT}U_{QFT}^{\dagger} = I \). For a square matrix, a right inverse is also a left inverse, so \( U_{QFT}^{\dagger}U_{QFT} = I \) too. \( U_{QFT} \) is unitary. \( \blacksquare \)
+	The notebook (\textbf{Appendix~1}) checks \( \braket{r_l \vert r_k} = \delta_{kl} \) for \( N = 2, 3, 4, 5, 8, 16 \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 04                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Construction of \( U_{QFT} \)}
+\par Construct a 3-qubit \( U_{QFT} \).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Setting.} With \( n = 3 \) qubits, \( N = 2^3 = 8 \) and \( \omega = e^{i2\pi/8} = e^{i\pi/4} \). By definition \( \paren{U_{QFT}}_{kj} = \tfrac{1}{\sqrt{8}}\omega^{-kj} \), and since \( \omega^8 = 1 \) the exponent can be reduced to \( (-kj) \bmod 8 \).
+
+	\myspace
+
+	\noindent \textbf{Matrix.}
+	\[
+		U_{QFT} = \frac{1}{\sqrt{8}}\begin{pmatrix}
+			1 & 1        & 1        & 1        & 1        & 1        & 1        & 1        \\
+			1 & \omega^7 & \omega^6 & \omega^5 & \omega^4 & \omega^3 & \omega^2 & \omega   \\
+			1 & \omega^6 & \omega^4 & \omega^2 & 1        & \omega^6 & \omega^4 & \omega^2 \\
+			1 & \omega^5 & \omega^2 & \omega^7 & \omega^4 & \omega   & \omega^6 & \omega^3 \\
+			1 & \omega^4 & 1        & \omega^4 & 1        & \omega^4 & 1        & \omega^4 \\
+			1 & \omega^3 & \omega^6 & \omega   & \omega^4 & \omega^7 & \omega^2 & \omega^5 \\
+			1 & \omega^2 & \omega^4 & \omega^6 & 1        & \omega^2 & \omega^4 & \omega^6 \\
+			1 & \omega   & \omega^2 & \omega^3 & \omega^4 & \omega^5 & \omega^6 & \omega^7
+		\end{pmatrix},
+	\]
+	with
+	\[
+		\omega = \tfrac{1 + i}{\sqrt{2}}, \quad \omega^2 = i, \quad \omega^3 = \tfrac{-1 + i}{\sqrt{2}}, \quad \omega^4 = -1, \quad \omega^5 = \tfrac{-1 - i}{\sqrt{2}}, \quad \omega^6 = -i, \quad \omega^7 = \tfrac{1 - i}{\sqrt{2}}.
+	\]
+	For example, row \( 1 \) is \( \tfrac{1}{\sqrt{8}}\paren{1, \tfrac{1 - i}{\sqrt{2}}, -i, \tfrac{-1 - i}{\sqrt{2}}, -1, \tfrac{-1 + i}{\sqrt{2}}, i, \tfrac{1 + i}{\sqrt{2}}} \).
+	The matrix is symmetric, the first row and first column are all \( 1/\sqrt{8} \), and rows \( k \) and \( N - k \) are complex conjugates of each other.
+	The notebook (\textbf{Appendix~1}) builds it exactly with SymPy and checks that it is unitary. \textbf{Problem 13} derives the same matrix from the circuit.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 05                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Inverse Quantum Fourier Transform 1}
+\par Show \( U_{IQFT}U_{QFT} = U_{QFT}U_{IQFT} = I \).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Definitions.} \( U_{IQFT} \) has the same form as \( U_{QFT} \) with the opposite sign in the exponent:
+	\[
+		\paren{U_{QFT}}_{kj} = \frac{1}{\sqrt{N}}\omega^{-kj}, \qquad \paren{U_{IQFT}}_{kj} = \frac{1}{\sqrt{N}}\omega^{+kj}.
+	\]
+
+	\myspace
+
+	\noindent \textbf{\( U_{IQFT}U_{QFT} \).}
+	\[
+		\paren{U_{IQFT}U_{QFT}}_{kl} = \sum_{j = 0}^{N - 1}\paren{U_{IQFT}}_{kj}\paren{U_{QFT}}_{jl} = \frac{1}{N}\sum_{j = 0}^{N - 1}\omega^{kj}\omega^{-jl} = \frac{1}{N}\sum_{j = 0}^{N - 1}\paren{\omega^{k - l}}^{j} = \delta_{kl}.
+	\]
+
+	\noindent \textbf{\( U_{QFT}U_{IQFT} \).}
+	\[
+		\paren{U_{QFT}U_{IQFT}}_{kl} = \frac{1}{N}\sum_{j = 0}^{N - 1}\omega^{-kj}\omega^{jl} = \frac{1}{N}\sum_{j = 0}^{N - 1}\paren{\omega^{l - k}}^{j} = \delta_{kl}.
+	\]
+	The last step in both lines is the geometric sum from \textbf{Problem 3}: it is \( N \) when \( k = l \) and \( 0 \) when \( k \neq l \), because \( \omega^{\pm(k - l)} \neq 1 \) but \( \paren{\omega^{\pm(k - l)}}^N = 1 \).
+	Therefore \( U_{IQFT}U_{QFT} = U_{QFT}U_{IQFT} = I \). \( \blacksquare \)
+	This also shows \( U_{IQFT} = U_{QFT}^{-1} = U_{QFT}^{\dagger} \), as expected for a unitary matrix. The notebook (\textbf{Appendix~1}) checks both products for \( N = 2, 3, 4, 5, 8, 16 \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 06                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Inverse Quantum Fourier Transform 2}
+\par Construct the matrix of a 2-qubit \( U_{IQFT} \).
+Check your answer by multiplying it with the 2-qubit \( U_{QFT} \) In Eq. (3).
+\begin{align}
+	U_{QFT} & = \frac{1}{\sqrt{4}} \begin{pmatrix}
+		                               1 & 1      & 1      & 1      \\
+		                               1 & i^{-1} & i^{-2} & i^{-3} \\
+		                               1 & i^{-2} & i^{-4} & i^{-6} \\
+		                               1 & i^{-3} & i^{-6} & i^{-9}
+	                               \end{pmatrix} = \frac{1}{2} \begin{pmatrix}
+		                                                           1 & 1  & 1  & 1  \\
+		                                                           1 & -i & -1 & i  \\
+		                                                           1 & -1 & 1  & -1 \\
+		                                                           1 & i  & -1 & -i
+	                                                           \end{pmatrix}
+\end{align}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Construction.} For 2 qubits, \( N = 4 \) and \( \omega = e^{i2\pi/4} = i \). With \( \paren{U_{IQFT}}_{kj} = \tfrac{1}{\sqrt{4}}\omega^{kj} \),
+	\[
+		U_{IQFT} = \frac{1}{\sqrt{4}}\begin{pmatrix}
+			1 & 1   & 1   & 1   \\
+			1 & i^1 & i^2 & i^3 \\
+			1 & i^2 & i^4 & i^6 \\
+			1 & i^3 & i^6 & i^9
+		\end{pmatrix} = \frac{1}{2}\begin{pmatrix}
+			1 & 1  & 1  & 1  \\
+			1 & i  & -1 & -i \\
+			1 & -1 & 1  & -1 \\
+			1 & -i & -1 & i
+		\end{pmatrix}.
+	\]
+	It is the complex conjugate of Eq.~(3), and also its conjugate transpose, since the matrix is symmetric.
+
+	\myspace
+
+	\noindent \textbf{Check.}
+	\[
+		U_{IQFT}U_{QFT} = \frac{1}{4}\begin{pmatrix}
+			1 & 1  & 1  & 1  \\
+			1 & i  & -1 & -i \\
+			1 & -1 & 1  & -1 \\
+			1 & -i & -1 & i
+		\end{pmatrix}\begin{pmatrix}
+			1 & 1  & 1  & 1  \\
+			1 & -i & -1 & i  \\
+			1 & -1 & 1  & -1 \\
+			1 & i  & -1 & -i
+		\end{pmatrix} = \frac{1}{4}\begin{pmatrix}
+			4 & 0 & 0 & 0 \\
+			0 & 4 & 0 & 0 \\
+			0 & 0 & 4 & 0 \\
+			0 & 0 & 0 & 4
+		\end{pmatrix} = I.
+	\]
+	For example,
+	\begin{align*}
+		(\text{row } 1) \cdot (\text{column } 1) & = 1 \cdot 1 + i \cdot (-i) + (-1)(-1) + (-i) \cdot i = 1 + 1 + 1 + 1 = 4, \\
+		(\text{row } 1) \cdot (\text{column } 0) & = 1 + i - 1 - i = 0,                                                      \\
+		(\text{row } 1) \cdot (\text{column } 2) & = 1 + i \cdot (-1) + (-1) \cdot 1 + (-i)(-1) = 1 - i - 1 + i = 0,         \\
+		(\text{row } 3) \cdot (\text{column } 1) & = 1 + (-i)(-i) + (-1)(-1) + i \cdot i = 1 - 1 + 1 - 1 = 0.
+	\end{align*}
+	Multiplying in the other order also gives \( U_{QFT}U_{IQFT} = I \). The notebook (\textbf{Appendix~1}) computes both products exactly.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 07                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Programming of QFT}
+\par Use Google Colab to create the matrix of a \( U_{QFT} \) gate of arbitrary \( N \).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Code.} The function below uses only NumPy, so it runs unchanged in Google Colab. It builds the whole matrix at once with \( (U)_{kj} = e^{-i2\pi kj/N}/\sqrt{N} \), for any positive integer \( N \) (not only powers of 2).
+
+	\myspace
+
+	\begin{codingbox*}
+import numpy as np
+
+def qft(N):
+    """Matrix of U_QFT for an arbitrary dimension N:  U[k, j] = exp(-i 2 pi k j / N) / sqrt(N)."""
+    k = np.arange(N).reshape(-1, 1)        # row index
+    j = np.arange(N).reshape(1, -1)        # column index
+    return np.exp(-2j * np.pi * k * j / N) / np.sqrt(N)
+
+print(qft(3))
+\end{codingbox*}
+	For example, \( N = 3 \) (\( \omega = e^{i2\pi/3} \)) gives
+	\[
+		\texttt{qft(3)} = \frac{1}{\sqrt{3}}\begin{pmatrix}
+			1 & 1             & 1             \\
+			1 & \omega^{-1} & \omega^{-2} \\
+			1 & \omega^{-2} & \omega^{-4}
+		\end{pmatrix} \approx \begin{pmatrix}
+			0.577 & 0.577            & 0.577            \\
+			0.577 & -0.289 - 0.5i & -0.289 + 0.5i \\
+			0.577 & -0.289 + 0.5i & -0.289 - 0.5i
+		\end{pmatrix}.
+	\]
+
+	\myspace
+
+	\noindent \textbf{Checks} (all pass, \textbf{Appendix~1}).
+	\begin{itemize}
+		\item \texttt{qft(2)} \( = H \) and \texttt{qft(4)} \( = \) Eq.~(3).
+		\item \texttt{qft(N)} is unitary for \( N = 3, 6, 8, 16, 100, 1000 \), and \texttt{qft(N) @ x} equals NumPy's \texttt{fft(x, norm="ortho")}, the classical DFT of \textbf{Problem 1}.
+		\item For \( n = 1, \dots, 5 \) qubits, \texttt{qft(2**n)} equals the matrix of the lecture's QFT circuit (Pic.~40) built in Qiskit. It also equals the adjoint of Qiskit's \texttt{QFTGate}, because Qiskit uses the opposite sign convention, \( e^{+i2\pi kj/N} \).
+	\end{itemize}
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 08                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Quantum Fourier Transform of a Basis State}
+\par Construct the 3-qubit QFT matrix and show that when the input is \( \ket{000} \),
+the output is an equal linear superposition of all basis vectors as shown in Pic. 38 (in chapter 25).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Matrix.} The 3-qubit \( U_{QFT} \) is the \( 8 \times 8 \) matrix of \textbf{Problem 4}, \( \paren{U_{QFT}}_{kj} = \tfrac{1}{\sqrt{8}}\omega^{-kj} \) with \( \omega = e^{i\pi/4} \).
+
+	\myspace
+
+	\noindent \textbf{Input \( \ket{000} \).} \( \ket{000} = \ket{0} = \begin{pmatrix} 1 & 0 & \cdots & 0 \end{pmatrix}^{\top} \), so \( U_{QFT}\ket{000} \) is the first column (\( j = 0 \)) of \( U_{QFT} \). Every entry of that column is \( \tfrac{1}{\sqrt{8}}\omega^{-k \cdot 0} = \tfrac{1}{\sqrt{8}} \):
+	\[
+		U_{QFT}\ket{000} = \frac{1}{\sqrt{8}}\begin{pmatrix}
+			1 & 1        & \cdots & 1        \\
+			1 & \omega^7 & \cdots & \omega   \\
+			\vdots & \vdots & \ddots & \vdots \\
+			1 & \omega   & \cdots & \omega^7
+		\end{pmatrix}\begin{pmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{pmatrix}
+		= \frac{1}{\sqrt{8}}\begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \\ 1 \\ 1 \\ 1 \\ 1 \end{pmatrix}
+		= \frac{1}{\sqrt{8}}\sum_{k = 0}^{7}\ket{k},
+	\]
+	i.e.\ \( U_{QFT}\ket{000} = \tfrac{1}{\sqrt{8}}\paren{\ket{000} + \ket{001} + \ket{010} + \ket{011} + \ket{100} + \ket{101} + \ket{110} + \ket{111}} \).
+	This is an equal linear superposition of all 8 basis vectors. Each outcome has probability \( \abs{1/\sqrt{8}}^2 = \tfrac{1}{8} \), i.e.\ \( 128 \) of \( 1024 \) shots on average.
+
+	\myspace
+
+	\noindent \textbf{Circuit.} The circuit of Pic.~38 (MSB \( q_2 \) at the bottom; phases \( -\tfrac{\pi}{2}, -\tfrac{\pi}{4}, -\tfrac{\pi}{2} \) from left to right) was built in Qiskit, and its matrix equals \( U_{QFT} \) above.
+	As in Assignment 9, it was run with \texttt{AerSimulator}, 1024 shots, instead of on IBM-Q hardware: once ideal, and once with the \texttt{ibm\_marrakesh} noise model (\texttt{FakeMarrakesh}).
+	\fig*[0.6\linewidth]{images/problem-8-circuit.png}{}{}
+	\begin{center}
+		\begin{tabular}{lcccccccc}
+			\toprule
+			outcome                             & 000 & 001 & 010 & 011 & 100 & 101 & 110 & 111 \\
+			\midrule
+			ideal simulator                     & 132 & 135 & 127 & 130 & 137 & 138 & 113 & 112 \\
+			\texttt{ibm\_marrakesh} noise model & 133 & 126 & 133 & 132 & 139 & 112 & 136 & 113 \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	\fig*[0.4\linewidth]{images/problem-8-answer.png}{}{}
+	\noindent All eight outcomes appear with roughly equal frequency (about \( 1024/8 = 128 \) each), as in the hardware result of Pic.~38. The spread around 128 is shot noise.
+	A computational-basis measurement only shows magnitudes. All eight amplitudes are actually the same, \( +\tfrac{1}{\sqrt{8}} \), and the notebook's \texttt{Statevector} confirms this.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 09                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Inverse of Controlled Phase Shift Gate}
+\par Show that \( U_{CPS, \phi} U_{CPS, -\phi} = I \).
+\end{problem}
+
+\begin{solution}
+	\noindent Both matrices are diagonal, so their product is the product of the diagonal entries:
+	\[
+		U_{CPS, \phi}U_{CPS, -\phi} = \begin{pmatrix}
+			1 & 0 & 0 & 0           \\
+			0 & 1 & 0 & 0           \\
+			0 & 0 & 1 & 0           \\
+			0 & 0 & 0 & e^{i\phi}
+		\end{pmatrix}\begin{pmatrix}
+			1 & 0 & 0 & 0            \\
+			0 & 1 & 0 & 0            \\
+			0 & 0 & 1 & 0            \\
+			0 & 0 & 0 & e^{-i\phi}
+		\end{pmatrix} = \begin{pmatrix}
+			1 & 0 & 0 & 0                     \\
+			0 & 1 & 0 & 0                     \\
+			0 & 0 & 1 & 0                     \\
+			0 & 0 & 0 & e^{i\phi}e^{-i\phi}
+		\end{pmatrix} = I,
+	\]
+	since \( e^{i\phi}e^{-i\phi} = e^{0} = 1 \).
+	The same holds in the other order, since diagonal matrices commute. \( \blacksquare \)
+	So \( U_{CPS, \phi}^{-1} = U_{CPS, -\phi} \), and it equals \( U_{CPS, \phi}^{\dagger} \) because \( \paren{e^{i\phi}}^{*} = e^{-i\phi} \).
+	This is why the IQFT circuit only needs the signs of the phase angles flipped (\textbf{Problem 11}).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 10                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Inverse of SWAP Gate}
+\par Show that a 2-qubit SWAP gate is an inverse to itself.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Matrix multiplication.}
+	\[
+		U_{SWAP}U_{SWAP} = \begin{pmatrix}
+			1 & 0 & 0 & 0 \\
+			0 & 0 & 1 & 0 \\
+			0 & 1 & 0 & 0 \\
+			0 & 0 & 0 & 1
+		\end{pmatrix}\begin{pmatrix}
+			1 & 0 & 0 & 0 \\
+			0 & 0 & 1 & 0 \\
+			0 & 1 & 0 & 0 \\
+			0 & 0 & 0 & 1
+		\end{pmatrix} = \begin{pmatrix}
+			1 & 0 & 0 & 0 \\
+			0 & 1 & 0 & 0 \\
+			0 & 0 & 1 & 0 \\
+			0 & 0 & 0 & 1
+		\end{pmatrix} = I.
+	\]
+	The middle \( 2 \times 2 \) block is \( X \), and \( X^2 = I \); the corners are \( 1 \cdot 1 = 1 \).
+
+	\myspace
+
+	\noindent \textbf{From the definition.} \( U_{SWAP}\ket{ab} = \ket{ba} \), so \( U_{SWAP}U_{SWAP}\ket{ab} = U_{SWAP}\ket{ba} = \ket{ab} \) for all four basis vectors. A linear operator that fixes every basis vector is \( I \).
+	Therefore \( U_{SWAP}^{-1} = U_{SWAP} \). \( \blacksquare \)
+\end{solution}
+% ================================================================================ %
+
+\newpage
+
+% ================================================================================ %
+%                                    Problem 11                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Construction of IQFT on IBM-Q}
+\par Construct the circuits in Pic. 39 (in chapter 25). on IBM-Q and verify the output.
+Try different combinations of NOT gates to get different basis vectors as the input to further verify the circuits.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The two IQFT circuits.} Both circuits in Pic.~39 run the 3-qubit QFT of Pic.~38 and then an IQFT. Because \( U_{IQFT}U_{QFT} = I \) (\textbf{Problem 5}), the output must equal the input.
+	\begin{itemize}
+		\item \textbf{Top} (reverse the circuit). \( \paren{ABC}^{-1} = C^{-1}B^{-1}A^{-1} \), so the QFT gates are applied in reverse order and each is replaced by its inverse. \( H \) and SWAP are their own inverses (\textbf{Problem 10}), and \( U_{CPS, \phi}^{-1} = U_{CPS, -\phi} \) (\textbf{Problem 9}).
+		      The order is SWAP, \( H(q_0) \), \( U_{CPS, \pi/2}(q_0, q_1) \), \( H(q_1) \), \( U_{CPS, \pi/4}(q_0, q_2) \), \( U_{CPS, \pi/2}(q_1, q_2) \), \( H(q_2) \).
+		\item \textbf{Bottom} (same circuit, \( \phi \to -\phi \)). \( H \) and SWAP are real, so negating every phase turns each gate into its complex conjugate, and the whole circuit becomes \( U_{QFT}^{*} = U_{IQFT} \) (\textbf{Problem 6}).
+	\end{itemize}
+	In the notebook (\textbf{Appendix~1}), both IQFT circuits have exactly the matrix \( U_{IQFT} \), and QFT followed by either one is \( I \).
+
+	\myspace
+
+	\noindent \textbf{Circuits.} As in Pic.~39, the NOT gates on \( q_0 \) and \( q_1 \) prepare \( \ket{011} \) (MSB \( q_2 \) at the bottom).
+	\fig*[\linewidth]{images/problem-11-circuit-top.png}{}{}
+	\fig*[\linewidth]{images/problem-11-circuit-bottom.png}{}{}
+
+	\myspace
+
+	\noindent \textbf{Results for every input.} Every combination of NOT gates (all 8 basis vectors) was run through both circuits with \texttt{AerSimulator} (1024 shots, ideal and \texttt{ibm\_marrakesh} noise model). The table counts how often the measured string equals the input.
+	\begin{center}
+		\begin{tabular}{ccccc}
+			\toprule
+			input           & top: ideal & top: noisy & bottom: ideal & bottom: noisy \\
+			\midrule
+			\( \ket{000} \) & 1024       & 985        & 1024          & 979           \\
+			\( \ket{001} \) & 1024       & 979        & 1024          & 974           \\
+			\( \ket{010} \) & 1024       & 978        & 1024          & 979           \\
+			\( \ket{011} \) & 1024       & 978        & 1024          & 974           \\
+			\( \ket{100} \) & 1024       & 982        & 1024          & 979           \\
+			\( \ket{101} \) & 1024       & 982        & 1024          & 982           \\
+			\( \ket{110} \) & 1024       & 982        & 1024          & 983           \\
+			\( \ket{111} \) & 1024       & 981        & 1024          & 980           \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	\fig*[0.6\linewidth]{images/problem-11-answer.png}{}{}
+	\noindent Both circuits return the input with certainty in the ideal case, so both are correct IQFT circuits. With the noise model, more than 95\% of the shots still return the input.
+	The rest are spread over other outcomes because the 3-qubit QFT--IQFT pair is deep on hardware: each SWAP and each \( U_{CPS} \) is compiled into several two-qubit gates.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 12                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{\( n \)-Qubit QFT Circuit}
+\par Based on Pic. 40 (in chapter 25), derive the number of controlled phase shift gates required in an \( n \)-qubit QFT circuits.
+If all gates have the same execution time, how long does it take to finish the computation?
+\par\noindent \textit{Hints:} Do not forget the Hadamard gates and SWAP gates.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Controlled phase shift gates.} In Pic.~40 the qubits are processed from the MSB down. Each qubit gets one \( H \), followed by one \( U_{CPS} \) controlled by each qubit below it:
+	\begin{itemize}
+		\item the MSB: \( n - 1 \) gates (\( \phi = -2\pi/2^2, \dots, -2\pi/2^n \)),
+		\item the next qubit: \( n - 2 \) gates,
+		\item \( \dots \), the second qubit from the LSB: \( 1 \) gate, and the LSB: \( 0 \) gates.
+	\end{itemize}
+	\[
+		N_{CPS}(n) = (n - 1) + (n - 2) + \cdots + 1 + 0 = \sum_{m = 0}^{n - 1}m = \frac{n(n - 1)}{2}.
+	\]
+
+	\myspace
+
+	\noindent \textbf{All gates.} There is one Hadamard per qubit, \( N_H = n \). The \( n \)-qubit SWAP reverses the order of the qubits with \( N_{SWAP} = \lfloor n/2 \rfloor \) 2-qubit SWAP gates (the middle qubit stays in place when \( n \) is odd). In total,
+	\[
+		N_{\text{total}}(n) = n + \frac{n(n - 1)}{2} + \left\lfloor \frac{n}{2} \right\rfloor = \frac{n(n + 1)}{2} + \left\lfloor \frac{n}{2} \right\rfloor .
+	\]
+	For example, \( n = 3 \) gives \( 3 + 3 + 1 = 7 \) gates, which matches Pic.~38.
+
+	\myspace
+
+	\noindent \textbf{Execution time.} Let every gate take time \( \tau \). Pic.~40 draws the gates one after another, so running them one at a time takes
+	\[
+		T(n) = N_{\text{total}}(n)\,\tau = \paren{\frac{n(n + 1)}{2} + \left\lfloor \frac{n}{2} \right\rfloor}\tau = O(n^2)\,\tau .
+	\]
+	This is polynomial in \( n \), while the classical FFT of a \( 2^n \)-component vector needs \( O(n2^n) \) operations.
+	(Gates on different qubits can also run at the same time. The \( H \) of each qubit can then start two steps after the one above it, and all SWAPs fit in one layer, so the depth drops to \( 2n \) steps, i.e.\ \( T = 2n\tau = O(n) \) for \( n \ge 2 \).)
+	The notebook (\textbf{Appendix~1}) builds the circuit for \( n = 1, \dots, 10 \), counts the gates, and confirms all three counts and the depth \( 2n \).
+\end{solution}
+% ================================================================================ %
+
+\newpage
+
+% ================================================================================ %
+%                                    Problem 13                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{3-Qubit QFT}
+\par Derive the matrix of a 3-qubit QFT gate.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Setting.} Apply the 3-qubit circuit of Pic.~37 to a basis vector \( \ket{j} = \ket{j_2j_1j_0} \), with \( j = 4j_2 + 2j_1 + j_0 \) and \( j_2 \) the MSB. Write binary fractions as \( 0.j_2j_1j_0 = \tfrac{j_2}{2} + \tfrac{j_1}{4} + \tfrac{j_0}{8} = \tfrac{j}{8} \).
+	Two facts are used:
+	\begin{itemize}
+		\item \( H\ket{j_m} = \tfrac{1}{\sqrt{2}}\paren{\ket{0} + (-1)^{j_m}\ket{1}} = \tfrac{1}{\sqrt{2}}\paren{\ket{0} + e^{-i2\pi(0.j_m)}\ket{1}} \).
+		\item \( U_{CPS, \phi} \) multiplies by \( e^{i\phi} \) only when both qubits are \( 1 \). With the control in the basis state \( \ket{j_c} \), it multiplies the \( \ket{1} \) part of the target by \( e^{i\phi j_c} \).
+	\end{itemize}
+
+	\myspace
+
+	\noindent \textbf{Step by step.}
+	\begin{enumerate}
+		\item \( H \) on \( q_2 \): \( q_2 \to \tfrac{1}{\sqrt{2}}\paren{\ket{0} + e^{-i2\pi(0.j_2)}\ket{1}} \).
+		\item \( U_{CPS, -2\pi/2^2} \), control \( q_1 \): the phase gets \( e^{-i2\pi j_1/4} \), so \( q_2 \to \tfrac{1}{\sqrt{2}}\paren{\ket{0} + e^{-i2\pi(0.j_2j_1)}\ket{1}} \).
+		\item \( U_{CPS, -2\pi/2^3} \), control \( q_0 \): the phase gets \( e^{-i2\pi j_0/8} \), so \( q_2 \to \tfrac{1}{\sqrt{2}}\paren{\ket{0} + e^{-i2\pi(0.j_2j_1j_0)}\ket{1}} \).
+		\item \( H \) on \( q_1 \), then \( U_{CPS, -2\pi/2^2} \) with control \( q_0 \): \( q_1 \to \tfrac{1}{\sqrt{2}}\paren{\ket{0} + e^{-i2\pi(0.j_1j_0)}\ket{1}} \).
+		\item \( H \) on \( q_0 \): \( q_0 \to \tfrac{1}{\sqrt{2}}\paren{\ket{0} + e^{-i2\pi(0.j_0)}\ket{1}} \).
+		\item SWAP \( q_2 \leftrightarrow q_0 \) reverses the order of the three factors:
+		      \[
+			      U_{QFT}\ket{j_2j_1j_0} = \frac{1}{\sqrt{8}}\paren{\ket{0} + e^{-i2\pi(0.j_0)}\ket{1}}\paren{\ket{0} + e^{-i2\pi(0.j_1j_0)}\ket{1}}\paren{\ket{0} + e^{-i2\pi(0.j_2j_1j_0)}\ket{1}}.
+		      \]
+	\end{enumerate}
+
+	\myspace
+
+	\noindent \textbf{Expanding the product.} The coefficient of \( \ket{k} = \ket{k_2k_1k_0} \) (\( k = 4k_2 + 2k_1 + k_0 \)) is
+	\[
+		\frac{1}{\sqrt{8}}\exp\!\sqbracket{-i2\pi\paren{k_2(0.j_0) + k_1(0.j_1j_0) + k_0(0.j_2j_1j_0)}}.
+	\]
+	Compare this with \( \omega^{-jk} = e^{-i2\pi jk/8} \). Split \( \tfrac{jk}{8} = \tfrac{j \cdot 4k_2}{8} + \tfrac{j \cdot 2k_1}{8} + \tfrac{j \cdot k_0}{8} \) and drop the integer parts, which do not change \( e^{-i2\pi(\cdot)} \):
+	\begin{align*}
+		\tfrac{4jk_2}{8} & = k_2\paren{2j_2 + j_1 + \tfrac{j_0}{2}} \equiv k_2(0.j_0) \pmod 1,                                 \\
+		\tfrac{2jk_1}{8} & = k_1\paren{j_2 + \tfrac{j_1}{2} + \tfrac{j_0}{4}} \equiv k_1(0.j_1j_0) \pmod 1,                    \\
+		\tfrac{jk_0}{8}  & = k_0\paren{\tfrac{j_2}{2} + \tfrac{j_1}{4} + \tfrac{j_0}{8}} = k_0(0.j_2j_1j_0).
+	\end{align*}
+	Hence
+	\[
+		U_{QFT}\ket{j} = \frac{1}{\sqrt{8}}\sum_{k = 0}^{7}\omega^{-jk}\ket{k}, \quad \omega = e^{i\pi/4}
+		\qquad \Longrightarrow \qquad
+		\paren{U_{QFT}}_{kj} = \bra{k}U_{QFT}\ket{j} = \frac{1}{\sqrt{8}}\omega^{-kj}.
+	\]
+
+	\myspace
+
+	\noindent \textbf{Matrix.}
+	\[
+		U_{QFT} = \frac{1}{\sqrt{8}}\begin{pmatrix}
+			1 & 1                     & 1  & 1                      & 1  & 1                      & 1  & 1                     \\
+			1 & \frac{1 - i}{\sqrt{2}} & -i & \frac{-1 - i}{\sqrt{2}} & -1 & \frac{-1 + i}{\sqrt{2}} & i  & \frac{1 + i}{\sqrt{2}} \\
+			1 & -i                    & -1 & i                      & 1  & -i                     & -1 & i                     \\
+			1 & \frac{-1 - i}{\sqrt{2}} & i  & \frac{1 - i}{\sqrt{2}}  & -1 & \frac{1 + i}{\sqrt{2}}  & -i & \frac{-1 + i}{\sqrt{2}} \\
+			1 & -1                    & 1  & -1                     & 1  & -1                     & 1  & -1                    \\
+			1 & \frac{-1 + i}{\sqrt{2}} & -i & \frac{1 + i}{\sqrt{2}}  & -1 & \frac{1 - i}{\sqrt{2}}  & i  & \frac{-1 - i}{\sqrt{2}} \\
+			1 & i                     & -1 & -i                     & 1  & i                      & -1 & -i                    \\
+			1 & \frac{1 + i}{\sqrt{2}} & i  & \frac{-1 + i}{\sqrt{2}} & -1 & \frac{-1 - i}{\sqrt{2}} & -i & \frac{1 - i}{\sqrt{2}}
+		\end{pmatrix},
+	\]
+	the same matrix as in \textbf{Problem 4}. The notebook (\textbf{Appendix~1}) also multiplies the seven \( 8 \times 8 \) gate matrices exactly,
+	\[
+		U_{SWAP}^{(q_2, q_0)}\paren{I \otimes I \otimes H}\paren{I \otimes U_{CPS, -\pi/2}}\paren{I \otimes H \otimes I}
+		U_{CPS, -\pi/4}^{(q_2, q_0)}\paren{U_{CPS, -\pi/2} \otimes I}\paren{H \otimes I \otimes I},
+	\]
+	and obtains the same result.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 14                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{7-Qubit SWAP Gate}
+\par How would \( \ket{1001100} \) be transformed in a 7-qubit SWAP gate?
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Definition.} \( U_{SWAP, 7}\ket{X_0X_1X_2X_3X_4X_5X_6} = \ket{X_6X_5X_4X_3X_2X_1X_0} \): the order of the qubits is reversed.
+	Here \( \paren{X_0, \dots, X_6} = \paren{1, 0, 0, 1, 1, 0, 0} \).
+
+	\myspace
+
+	\noindent \textbf{Using 2-qubit SWAP gates.} \( n = 7 \) is odd, so the middle qubit \( X_3 \) stays in place and \( \lfloor 7/2 \rfloor = 3 \) swaps are needed:
+	\begin{align*}
+		\ket{1001100} & \xrightarrow{U_{SWAP, 0, 6}} \ket{\mathbf{0}00110\mathbf{1}}
+		\xrightarrow{U_{SWAP, 1, 5}} \ket{0\mathbf{0}011\mathbf{0}1}
+		\xrightarrow{U_{SWAP, 2, 4}} \ket{00\mathbf{1}1\mathbf{0}01}.
+	\end{align*}
+	\[
+		U_{SWAP, 7}\ket{1001100} = \ket{0011001}.
+	\]
+	This is the input string read backwards, i.e.\ \( \ket{76} \to \ket{25} \) in decimal. The swap \( U_{SWAP, 1, 5} \) exchanges two \( 0 \)s, so it has no visible effect for this particular input. A Qiskit \texttt{Statevector} check in the notebook (\textbf{Appendix~1}) gives \( \ket{0011001} \) with probability 1.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 15                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Effect of Global Phase on a Single Qubit}
+\par Show that the global phase of a single qubit has no effect when finding its expectation value on a \( \sigma_z \) matrix.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Setting.} Let \( \ket{\psi} = \cos\tfrac{\theta}{2}e^{-i\phi/2}\ket{0} + \sin\tfrac{\theta}{2}e^{i\phi/2}\ket{1} \), and add a global phase \( \gamma \in \R \):
+	\[
+		\ket{\psi'} = e^{i\gamma}\ket{\psi} = \begin{pmatrix} e^{i\gamma}\cos\frac{\theta}{2}e^{-i\phi/2} \\ e^{i\gamma}\sin\frac{\theta}{2}e^{i\phi/2} \end{pmatrix}, \qquad
+		\bra{\psi'} = \paren{\ket{\psi'}}^{\dagger} = e^{-i\gamma}\bra{\psi}.
+	\]
+
+	\myspace
+
+	\noindent \textbf{Expectation value.}
+	\begin{align*}
+		\bra{\psi'}\sigma_z\ket{\psi'}
+		 & = \begin{pmatrix} e^{-i\gamma}\cos\frac{\theta}{2}e^{i\phi/2} & e^{-i\gamma}\sin\frac{\theta}{2}e^{-i\phi/2} \end{pmatrix}
+		\begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}
+		\begin{pmatrix} e^{i\gamma}\cos\frac{\theta}{2}e^{-i\phi/2} \\ e^{i\gamma}\sin\frac{\theta}{2}e^{i\phi/2} \end{pmatrix}                                    \\
+		 & = e^{-i\gamma}e^{i\gamma}\paren{\cos\tfrac{\theta}{2}e^{i\phi/2}\cos\tfrac{\theta}{2}e^{-i\phi/2} - \sin\tfrac{\theta}{2}e^{-i\phi/2}\sin\tfrac{\theta}{2}e^{i\phi/2}} \\
+		 & = 1 \cdot \paren{\cos^2\tfrac{\theta}{2} - \sin^2\tfrac{\theta}{2}} = \cos\theta = \bra{\psi}\sigma_z\ket{\psi}.
+	\end{align*}
+	The factor \( e^{i\gamma} \) from the ket and \( e^{-i\gamma} \) from the bra always appear together and multiply to \( \abs{e^{i\gamma}}^2 = 1 \). The result does not depend on \( \gamma \). \( \blacksquare \)
+	The same argument works for any operator \( M \): \( \bra{\psi'}M\ket{\psi'} = e^{-i\gamma}e^{i\gamma}\bra{\psi}M\ket{\psi} = \bra{\psi}M\ket{\psi} \).
+	The notebook (\textbf{Appendix~1}) repeats the calculation symbolically and for random states and phases.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 16                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Extrema on the Bloch Sphere}
+\par To which qubit states do the extrema on the Bloch sphere correspond?
+We have proved three of them in the text.
+Please prove the rest.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The six extrema.} The point \( (\theta, \phi) \) has coordinates \( (\sin\theta\cos\phi, \sin\theta\sin\phi, \cos\theta) \) and state \( \ket{\psi} = \cos\tfrac{\theta}{2}e^{-i\phi/2}\ket{0} + \sin\tfrac{\theta}{2}e^{i\phi/2}\ket{1} \). The text proved \( +z \to \ket{0} \), \( -x \to \ket{-} \), and \( +y \to \tfrac{1}{\sqrt{2}}\paren{\ket{0} + i\ket{1}} \). The other three are below.
+
+	\myspace
+
+	\noindent \textbf{\( -z \)} (\( z = -1 \), the ``South Pole''): \( \theta = \pi \), \( \phi \) arbitrary.
+	\[
+		\ket{\psi_{\theta = \pi, \phi}} = \cos\tfrac{\pi}{2}e^{-i\phi/2}\ket{0} + \sin\tfrac{\pi}{2}e^{i\phi/2}\ket{1} = 0 \cdot \ket{0} + e^{i\phi/2}\ket{1} = e^{i\phi/2}\ket{1}.
+	\]
+	The factor \( e^{i\phi/2} \) is a global phase, so this point is \( \ket{1} \) (for \( \phi = 0 \), exactly \( \ket{1} \)).
+
+	\noindent \textbf{\( +x \)} (\( x = 1 \), \( y = z = 0 \)): \( \theta = \tfrac{\pi}{2} \), \( \phi = 0 \).
+	\[
+		\ket{\psi_{\theta = \pi/2, \phi = 0}} = \cos\tfrac{\pi}{4}e^{0}\ket{0} + \sin\tfrac{\pi}{4}e^{0}\ket{1} = \tfrac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}} = \ket{+}.
+	\]
+
+	\noindent \textbf{\( -y \)} (\( y = -1 \), \( x = z = 0 \)): \( \theta = \tfrac{\pi}{2} \), \( \phi = \tfrac{3\pi}{2} \) (or \( -\tfrac{\pi}{2} \)).
+	\begin{align*}
+		\ket{\psi_{\theta = \pi/2, \phi = 3\pi/2}} & = \cos\tfrac{\pi}{4}e^{-i3\pi/4}\ket{0} + \sin\tfrac{\pi}{4}e^{i3\pi/4}\ket{1}                                                           \\
+		                                           & = \tfrac{1}{\sqrt{2}}e^{-i3\pi/4}\paren{\ket{0} + e^{i3\pi/2}\ket{1}} = e^{-i3\pi/4}\tfrac{1}{\sqrt{2}}\paren{\ket{0} - i\ket{1}}.
+	\end{align*}
+	Discarding the global phase \( e^{-i3\pi/4} \), this point is \( \ket{{-i}} = \tfrac{1}{\sqrt{2}}\paren{\ket{0} - i\ket{1}} \).
+
+	\myspace
+
+	\noindent \textbf{Summary.} Each pair of opposite extrema is the pair of eigenvectors of one Pauli matrix: \( +1 \) at the positive end and \( -1 \) at the negative end.
+	\begin{center}
+		\renewcommand{\arraystretch}{1.25}
+		\begin{tabular}{cccccc}
+			\toprule
+			extremum & \( (x, y, z) \) & \( (\theta, \phi) \)                  & state                                                     & eigenvector of & eigenvalue \\
+			\midrule
+			\( +z \) & \( (0, 0, 1) \)  & \( (0, \cdot) \)                      & \( \ket{0} \)                                             & \( \sigma_z \) & \( +1 \)   \\
+			\( -z \) & \( (0, 0, -1) \) & \( (\pi, \cdot) \)                    & \( \ket{1} \)                                             & \( \sigma_z \) & \( -1 \)   \\
+			\( +x \) & \( (1, 0, 0) \)  & \( (\tfrac{\pi}{2}, 0) \)             & \( \ket{+} = \tfrac{1}{\sqrt{2}}(\ket{0} + \ket{1}) \)   & \( \sigma_x \) & \( +1 \)   \\
+			\( -x \) & \( (-1, 0, 0) \) & \( (\tfrac{\pi}{2}, \pi) \)           & \( \ket{-} = \tfrac{1}{\sqrt{2}}(\ket{0} - \ket{1}) \)   & \( \sigma_x \) & \( -1 \)   \\
+			\( +y \) & \( (0, 1, 0) \)  & \( (\tfrac{\pi}{2}, \tfrac{\pi}{2}) \) & \( \ket{{+i}} = \tfrac{1}{\sqrt{2}}(\ket{0} + i\ket{1}) \) & \( \sigma_y \) & \( +1 \)   \\
+			\( -y \) & \( (0, -1, 0) \) & \( (\tfrac{\pi}{2}, \tfrac{3\pi}{2}) \) & \( \ket{{-i}} = \tfrac{1}{\sqrt{2}}(\ket{0} - i\ket{1}) \) & \( \sigma_y \) & \( -1 \)   \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	For example, \( \sigma_y\ket{{-i}} = \tfrac{1}{\sqrt{2}}\begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}\begin{pmatrix} 1 \\ -i \end{pmatrix} = \tfrac{1}{\sqrt{2}}\begin{pmatrix} -1 \\ i \end{pmatrix} = -\ket{{-i}} \), and \( \sigma_x\ket{+} = \ket{+} \), \( \sigma_z\ket{1} = -\ket{1} \).
+	\fig*[0.5\linewidth]{images/problem-16-answer.png}{}{}
+	\noindent The notebook (\textbf{Appendix~1}) builds all six states from \( (\theta, \phi) \), identifies each one up to a global phase, checks the eigenvector property, and draws them on the Bloch sphere above.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 17                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Expectation Values of Pauli Matrices of the States on Bloch Sphere}
+\par Prove Eqs. (1) and (2).
+\par\noindent\textbf{Eq. (1)}
+\[ \bra{\psi} \sigma_x \ket{\psi} = \sin\theta \cos\phi \]
+
+\par\noindent\textbf{Eq. (2)}
+\[ \bra{\psi} \sigma_y \ket{\psi} = \sin\theta \sin\phi \]
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Setting.} Write \( c = \cos\tfrac{\theta}{2} \) and \( s = \sin\tfrac{\theta}{2} \) (both real). Then
+	\[
+		\ket{\psi} = \begin{pmatrix} c\,e^{-i\phi/2} \\ s\,e^{i\phi/2} \end{pmatrix}, \qquad
+		\bra{\psi} = \begin{pmatrix} c\,e^{i\phi/2} & s\,e^{-i\phi/2} \end{pmatrix}, \qquad
+		2sc = \sin\theta .
+	\]
+
+	\myspace
+
+	\noindent \textbf{Eq.~(1).}
+	\begin{align*}
+		\bra{\psi}\sigma_x\ket{\psi}
+		 & = \begin{pmatrix} c\,e^{i\phi/2} & s\,e^{-i\phi/2} \end{pmatrix}\begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}\begin{pmatrix} c\,e^{-i\phi/2} \\ s\,e^{i\phi/2} \end{pmatrix}
+		= \begin{pmatrix} c\,e^{i\phi/2} & s\,e^{-i\phi/2} \end{pmatrix}\begin{pmatrix} s\,e^{i\phi/2} \\ c\,e^{-i\phi/2} \end{pmatrix} \\
+		 & = sc\,e^{i\phi} + sc\,e^{-i\phi} = sc\paren{e^{i\phi} + e^{-i\phi}} = 2sc\cos\phi = \sin\theta\cos\phi. \quad \blacksquare
+	\end{align*}
+
+	\noindent \textbf{Eq.~(2).}
+	\begin{align*}
+		\bra{\psi}\sigma_y\ket{\psi}
+		 & = \begin{pmatrix} c\,e^{i\phi/2} & s\,e^{-i\phi/2} \end{pmatrix}\begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}\begin{pmatrix} c\,e^{-i\phi/2} \\ s\,e^{i\phi/2} \end{pmatrix}
+		= \begin{pmatrix} c\,e^{i\phi/2} & s\,e^{-i\phi/2} \end{pmatrix}\begin{pmatrix} -is\,e^{i\phi/2} \\ ic\,e^{-i\phi/2} \end{pmatrix} \\
+		 & = -isc\,e^{i\phi} + isc\,e^{-i\phi} = -isc\paren{e^{i\phi} - e^{-i\phi}} = -isc\paren{2i\sin\phi} = 2sc\sin\phi = \sin\theta\sin\phi. \quad \blacksquare
+	\end{align*}
+	Together with \( \bra{\psi}\sigma_z\ket{\psi} = \cos\theta \) from the text, the three expectation values are exactly the Cartesian coordinates of the point \( (\theta, \phi) \) on the unit sphere: the projections of the state onto the \( x \)-, \( y \)-, and \( z \)-axes.
+	The notebook (\textbf{Appendix~1}) repeats both derivations with SymPy.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 18                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{State on Bloch Sphere}
+\par Find \( \theta \) for \( \phi \) for \( \ket{\psi} = \paren{\frac{3}{4} - i\frac{\sqrt{3}}{4}} \ket{0} + \paren{\frac{\sqrt{3}}{4} - i\frac{1}{4}} \ket{1} \).
+Draw it on the Bloch sphere.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Polar form of the amplitudes.}
+	\begin{align*}
+		\alpha & = \tfrac{3}{4} - i\tfrac{\sqrt{3}}{4} = \tfrac{\sqrt{3}}{2}\paren{\tfrac{\sqrt{3}}{2} - \tfrac{1}{2}i} = \tfrac{\sqrt{3}}{2}e^{-i\pi/6}, & \abs{\alpha} & = \sqrt{\tfrac{9}{16} + \tfrac{3}{16}} = \tfrac{\sqrt{3}}{2}, \\
+		\beta  & = \tfrac{\sqrt{3}}{4} - i\tfrac{1}{4} = \tfrac{1}{2}\paren{\tfrac{\sqrt{3}}{2} - \tfrac{1}{2}i} = \tfrac{1}{2}e^{-i\pi/6},                  & \abs{\beta}  & = \sqrt{\tfrac{3}{16} + \tfrac{1}{16}} = \tfrac{1}{2}.
+	\end{align*}
+	\( \abs{\alpha}^2 + \abs{\beta}^2 = \tfrac{3}{4} + \tfrac{1}{4} = 1 \), so the state is normalized. Both amplitudes have the same phase, which can be factored out:
+	\[
+		\ket{\psi} = e^{-i\pi/6}\paren{\tfrac{\sqrt{3}}{2}\ket{0} + \tfrac{1}{2}\ket{1}}.
+	\]
+
+	\myspace
+
+	\noindent \textbf{Matching the Bloch form.} Compare with \( e^{i\gamma}\paren{\cos\tfrac{\theta}{2}e^{-i\phi/2}\ket{0} + \sin\tfrac{\theta}{2}e^{i\phi/2}\ket{1}} \):
+	\begin{itemize}
+		\item Relative phase: \( \phi = \arg\beta - \arg\alpha = -\tfrac{\pi}{6} - \paren{-\tfrac{\pi}{6}} = 0 \).
+		\item Amplitude: \( \cos\tfrac{\theta}{2} = \tfrac{\sqrt{3}}{2} \) and \( \sin\tfrac{\theta}{2} = \tfrac{1}{2} \), so \( \tfrac{\theta}{2} = \tfrac{\pi}{6} \).
+		\item Global phase: \( e^{i\gamma} = e^{-i\pi/6} \), which has no physical effect (\textbf{Problem 15}).
+	\end{itemize}
+	\[
+		\boxed{\theta = \frac{\pi}{3} = 60^{\circ}, \qquad \phi = 0}
+	\]
+
+	\myspace
+
+	\noindent \textbf{On the Bloch sphere.} The point is \( (\sin\theta\cos\phi, \sin\theta\sin\phi, \cos\theta) = \paren{\tfrac{\sqrt{3}}{2}, 0, \tfrac{1}{2}} \): it lies in the \( xz \)-plane, \( 60^{\circ} \) down from \( \ket{0} \) towards \( \ket{+} \). The red arc is the meridian from \( \ket{0} \).
+	\fig*[0.5\linewidth]{images/problem-18-answer.png}{}{}
+	\noindent The notebook (\textbf{Appendix~1}) computes \( \bra{\psi}\sigma_{x, y, z}\ket{\psi} = \paren{0.866, 0, 0.5} \) directly from the given amplitudes, which confirms the point.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 19                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{\( U_{\theta, \phi, \lambda} \) as a Hadamard gate}
+\par Construct the Hadamard gate using \( U_{\theta, \phi, \lambda} \) like in below example.
+\par\noindent\textit{Hints:} The answer is \( U_{\frac{\pi}{2}, 0, \pi} \).
+\begin{align*}
+	\ket{\psi_{\theta=0, \phi=0}} & = \cos\paren{\frac{\theta}{2} e^{-i\phi/2}} \ket{0} + \sin\paren{\frac{\theta}{2} e^{i\phi/2}} \ket{1} \\
+	                              & = \cos\paren{\frac{0}{2} e^{-i0/2}} \ket{0} + \sin\paren{\frac{0}{2} e^{i0/2}} \ket{1}                 \\
+	                              & = \ket{0}
+\end{align*}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Matching the matrices.} As with the NOT gate in the text, set \( U_{\theta, \phi, \lambda} = H \):
+	\[
+		\begin{pmatrix}
+			\cos\frac{\theta}{2}            & -e^{i\lambda}\sin\frac{\theta}{2}       \\
+			e^{i\phi}\sin\frac{\theta}{2} & e^{i(\lambda + \phi)}\cos\frac{\theta}{2}
+		\end{pmatrix} = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}.
+	\]
+	This gives four equations:
+	\[
+		\cos\tfrac{\theta}{2} = \tfrac{1}{\sqrt{2}}, \qquad
+		-e^{i\lambda}\sin\tfrac{\theta}{2} = \tfrac{1}{\sqrt{2}}, \qquad
+		e^{i\phi}\sin\tfrac{\theta}{2} = \tfrac{1}{\sqrt{2}}, \qquad
+		e^{i(\lambda + \phi)}\cos\tfrac{\theta}{2} = -\tfrac{1}{\sqrt{2}}.
+	\]
+	\begin{itemize}
+		\item The first one gives \( \tfrac{\theta}{2} = \tfrac{\pi}{4} \), so \( \theta = \tfrac{\pi}{2} \), and then \( \sin\tfrac{\theta}{2} = \tfrac{1}{\sqrt{2}} \).
+		\item The third one becomes \( e^{i\phi} = 1 \), so \( \phi = 0 \).
+		\item The second one becomes \( -e^{i\lambda} = 1 \), i.e.\ \( e^{i\lambda} = -1 \), so \( \lambda = \pi \).
+		\item Check the fourth: \( e^{i(\pi + 0)}\cos\tfrac{\pi}{4} = -\tfrac{1}{\sqrt{2}} \). \checkmark
+	\end{itemize}
+	So the solution is \( (\theta, \phi, \lambda) = \paren{\tfrac{\pi}{2}, 0, \pi} \):
+	\[
+		U_{\frac{\pi}{2}, 0, \pi} = \begin{pmatrix}
+			\cos\frac{\pi}{4}    & -e^{i\pi}\sin\frac{\pi}{4}     \\
+			e^{i0}\sin\frac{\pi}{4} & e^{i(\pi + 0)}\cos\frac{\pi}{4}
+		\end{pmatrix} = \begin{pmatrix}
+			\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}}  \\
+			\frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}}
+		\end{pmatrix} = H.
+	\]
+
+	\myspace
+
+	\noindent \textbf{Check on the basis states.} \( U_{\frac{\pi}{2}, 0, \pi}\ket{0} = \tfrac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}} = \ket{+} \) and \( U_{\frac{\pi}{2}, 0, \pi}\ket{1} = \tfrac{1}{\sqrt{2}}\paren{\ket{0} - \ket{1}} = \ket{-} \), as expected of \( H \).
+	The notebook (\textbf{Appendix~1}) confirms the matrix with SymPy and with Qiskit's \texttt{UGate}\( (\pi/2, 0, \pi) \), which equals \texttt{HGate}.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 20                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Rotation on Bloch Sphere by Hadamard Gate}
+\par Show on the Bloch sphere how \( \ket{+} \) and \( \ket{1} \) evolve when it is applied with the Hadamard gate.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{The rotation.} By \textbf{Problem 19}, \( H = U_{\frac{\pi}{2}, 0, \pi} \). As an extrinsic Euler rotation (Pic.~42), it first rotates about the \( z \)-axis by \( \lambda = \pi \), then about the \( y \)-axis by \( \theta = \tfrac{\pi}{2} \), and finally about the \( z \)-axis by \( \phi = 0 \) (no rotation).
+	A rotation about \( y \) by \( \tfrac{\pi}{2} \) moves \( +z \to +x \to -z \to -x \to +z \).
+
+	\myspace
+
+	\noindent \textbf{\( \ket{+} \)}, starting at \( +x = (1, 0, 0) \):
+	\begin{itemize}
+		\item about \( z \) by \( \pi \): along the equator to \( (-1, 0, 0) = \ket{-} \);
+		\item about \( y \) by \( \tfrac{\pi}{2} \): from \( -x \) up to \( +z = (0, 0, 1) = \ket{0} \).
+	\end{itemize}
+	So \( \ket{+} \to \ket{-} \to \ket{0} \), in agreement with \( H\ket{+} = \ket{0} \).
+
+	\noindent \textbf{\( \ket{1} \)}, starting at \( -z = (0, 0, -1) \):
+	\begin{itemize}
+		\item about \( z \) by \( \pi \): a point on the \( z \)-axis does not move (only a global phase);
+		\item about \( y \) by \( \tfrac{\pi}{2} \): from \( -z \) along the \( xz \) meridian to \( -x = (-1, 0, 0) = \ket{-} \).
+	\end{itemize}
+	So \( \ket{1} \to \ket{-} \), in agreement with \( H\ket{1} = \ket{-} \).
+
+	\myspace
+
+	\noindent \textbf{On the Bloch sphere.} The red vector is the input, the blue vector is the output, and the curves are the rotation paths: the first rotation about \( z \) (red) and the second rotation about \( y \) (blue).
+	\fig*[0.8\linewidth]{images/problem-20-answer.png}{}{}
+	\noindent The same end points also follow from a single rotation: \( H \) is a rotation by \( \pi \) about the axis \( \tfrac{1}{\sqrt{2}}(\hat{x} + \hat{z}) \), which swaps \( \pm x \leftrightarrow \pm z \).
+	The Euler decomposition only gives a different path between the same points. The notebook (\textbf{Appendix~1}) computes the paths and checks that each end point equals the Bloch vector of \( H\ket{+} \) and \( H\ket{1} \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 21                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Entanglement Circuit on IBM-Q}
+\par Construct an entanglement state using only \( U_{\theta, \phi, \lambda} \) on IBM-Q.
+We know that we need a CNOT gate, and it can be done by constructing a controlled version of \( U_{\theta, \phi, \lambda} \).
+Set \( \gamma = 0 \), which will be discussed in the next chapter.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Ingredients.} The usual entangling circuit is \( H \) on the control, then CNOT. Both can be built from \( U_{\theta, \phi, \lambda} \):
+	\begin{itemize}
+		\item \( H = U_{\frac{\pi}{2}, 0, \pi} \) (\textbf{Problem 19}).
+		\item \( X = U_{\pi, 0, \pi} \) (text), so \( \mathrm{CNOT} = \) controlled-\( U_{\pi, 0, \pi} \).
+	\end{itemize}
+	The IBM-Q / Qiskit controlled-\( U \) gate has a fourth angle \( \gamma \):
+	\[
+		CU_{\theta, \phi, \lambda, \gamma} = \ket{0}\bra{0} \otimes I + e^{i\gamma}\ket{1}\bra{1} \otimes U_{\theta, \phi, \lambda}.
+	\]
+	A global phase of \( U \) alone has no effect, but once \( U \) is controlled it becomes a \emph{relative} phase between the control's \( \ket{0} \) and \( \ket{1} \) branches. \( \gamma \) is that phase, and setting \( \gamma = 0 \) gives exactly
+	\[
+		CU_{\pi, 0, \pi, 0} = \ket{0}\bra{0} \otimes I + \ket{1}\bra{1} \otimes X = \begin{pmatrix}
+			1 & 0 & 0 & 0 \\
+			0 & 1 & 0 & 0 \\
+			0 & 0 & 0 & 1 \\
+			0 & 0 & 1 & 0
+		\end{pmatrix} = \mathrm{CNOT}
+	\]
+	(control \( q_1 \) = MSB, target \( q_0 \) = LSB). With \( \gamma = \tfrac{\pi}{2} \), for example, it would be \( \ket{0}\bra{0} \otimes I + i\ket{1}\bra{1} \otimes X \), which is not a CNOT.
+
+	\myspace
+
+	\noindent \textbf{Circuit and state.} Starting from \( \ket{00} \),
+	\[
+		\ket{00} \xrightarrow{U_{\frac{\pi}{2}, 0, \pi} \text{ on } q_1} \tfrac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}}\ket{0}
+		\xrightarrow{CU_{\pi, 0, \pi, 0}} \tfrac{1}{\sqrt{2}}\paren{\ket{00} + \ket{11}} = \ket{\Phi^+}.
+	\]
+	\( \ket{\Phi^+} \) cannot be written as \( \paren{a\ket{0} + b\ket{1}}\paren{c\ket{0} + d\ket{1}} \): that would need \( ac = bd = \tfrac{1}{\sqrt{2}} \) and \( ad = bc = 0 \), which is impossible. So it is entangled.
+	Using \( U_{\pi, 0, \pi} \) (NOT) on the inputs gives the other three Bell states: \( \ket{01} \to \ket{\Psi^+} \), \( \ket{10} \to \ket{\Phi^-} \), \( \ket{11} \to \ket{\Psi^-} \).
+	\begin{codingbox*}
+qc.u(np.pi / 2, 0, np.pi, 1)          # U_{pi/2, 0, pi} = H on q1 (control)
+qc.cu(np.pi, 0, np.pi, 0, 1, 0)       # controlled-U_{pi, 0, pi}, gamma = 0  ->  CNOT q1 -> q0
+qc.measure([0, 1], [0, 1])
+\end{codingbox*}
+	\fig*[0.35\linewidth]{images/problem-21-circuit.png}{}{}
+
+	\myspace
+
+	\noindent \textbf{Results} (\texttt{AerSimulator}, 1024 shots, ideal and \texttt{ibm\_marrakesh} noise model).
+	\begin{center}
+		\begin{tabular}{lccccc}
+			\toprule
+			input \( \to \) state                   & run   & 00  & 01  & 10  & 11  \\
+			\midrule
+			\( \ket{00} \to \ket{\Phi^+} \), \( \ket{10} \to \ket{\Phi^-} \) & ideal & 524 & 0   & 0   & 500 \\
+			                                        & noisy & 518 & 3   & 10  & 493 \\
+			\( \ket{01} \to \ket{\Psi^+} \), \( \ket{11} \to \ket{\Psi^-} \) & ideal & 0   & 524 & 500 & 0   \\
+			                                        & noisy & 9   & 512 & 496 & 7   \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	\fig*[\linewidth]{images/problem-21-answer.png}{}{}
+	\noindent For \( \ket{\Phi^\pm} \), only \( 00 \) and \( 11 \) appear, each about half the time. The two qubits are random but always equal, which is the signature of entanglement. For \( \ket{\Psi^\pm} \), they are always opposite.
+	\( \ket{\Phi^+} \) and \( \ket{\Phi^-} \) give the same counts, because they differ only in a relative sign, which a computational-basis measurement cannot see (the notebook's \texttt{Statevector} shows the sign).
+	With the noise model, about 98\% of the shots are still correlated.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                     Appendix                                     %
+% ================================================================================ %
+
+\myappendix{code/assignment-10-code.pdf}{Assignment 10 | Code Solution}
+
+% ================================================================================ %
+
+\end{document}
