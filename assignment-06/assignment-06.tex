@@ -29,6 +29,8 @@ what is the maximum size of the quantum register state the world's memory can st
 		B(n) = 2 \cdot 2^n = 2^{\,n+1} \; \text{bytes}.
 	\]
 
+	\myspace
+
 	\noindent \textbf{Solving the constraint.} We need \( B(n) \le 10^{21} \), so
 	\[
 		2^{\,n+1} \le 10^{21}
@@ -38,6 +40,8 @@ what is the maximum size of the quantum register state the world's memory can st
 		n \le 68.76 .
 	\]
 	Since \( n \) must be an integer, \( n_{\max} = 68 \).
+
+	\myspace
 
 	\noindent \textbf{Check.}
 	\[
@@ -76,7 +80,7 @@ what is the maximum size of the quantum register state the world's memory can st
 		\paren{a\ket{0} + b\ket{1}} \otimes \paren{c\ket{0} + d\ket{1}}
 		= ac\ket{00} + ad\ket{01} + bc\ket{10} + bd\ket{11},
 	\]
-	so \( \ket{\chi} = \sum_{i,j} c_{ij}\ket{ij} \) is separable if and only if \( c_{00} = ac \), \( c_{01} = ad \), \( c_{10} = bc \), \( c_{11} = bd \) for some \( a, b, c, d \in \C \).
+	so \( \ket{\chi} = \sum_{i,j} c_{ij}\ket{ij} \) is separable \( \iff c_{00} = ac \), \( c_{01} = ad \), \( c_{10} = bc \), \( c_{11} = bd \) for some \( a, b, c, d \in \C \).
 
 	\noindent \textbf{A criterion.} Any such factorization forces
 	\[
@@ -85,16 +89,19 @@ what is the maximum size of the quantum register state the world's memory can st
 	that is, the coefficient matrix \( C = \begin{pmatrix} c_{00} & c_{01} \\ c_{10} & c_{11} \end{pmatrix} \) must be singular.
 	Contrapositively, \textbf{if \( \det C \ne 0 \) the state is entangled.}
 
+	\myspace
+
 	\noindent \textbf{Applying it to the four Bell states.}
 	\begin{center}
+		\renewcommand{\arraystretch}{1.4}
 		\begin{tabular}{ccccccc}
 			\toprule
 			State                & \( c_{00} \)              & \( c_{01} \)              & \( c_{10} \)               & \( c_{11} \)               & \( \det C = c_{00}c_{11} - c_{01}c_{10} \) & entangled? \\
 			\midrule
-			\( \ket{\phi^{+}} \) & \( \tfrac{1}{\sqrt{2}} \) & \( 0 \)                   & \( 0 \)                    & \( \tfrac{1}{\sqrt{2}} \)  & \( +\tfrac{1}{2} \)                        & yes        \\
-			\( \ket{\phi^{-}} \) & \( \tfrac{1}{\sqrt{2}} \) & \( 0 \)                   & \( 0 \)                    & \( -\tfrac{1}{\sqrt{2}} \) & \( -\tfrac{1}{2} \)                        & yes        \\
-			\( \ket{\psi^{+}} \) & \( 0 \)                   & \( \tfrac{1}{\sqrt{2}} \) & \( \tfrac{1}{\sqrt{2}} \)  & \( 0 \)                    & \( -\tfrac{1}{2} \)                        & yes        \\
-			\( \ket{\psi^{-}} \) & \( 0 \)                   & \( \tfrac{1}{\sqrt{2}} \) & \( -\tfrac{1}{\sqrt{2}} \) & \( 0 \)                    & \( +\tfrac{1}{2} \)                        & yes        \\
+			\( \ket{\phi^{+}} \) & \( \frac{1}{\sqrt{2}} \) & \( 0 \)                   & \( 0 \)                    & \( \frac{1}{\sqrt{2}} \)  & \( +\frac{1}{2} \)                        & yes        \\
+			\( \ket{\phi^{-}} \) & \( \frac{1}{\sqrt{2}} \) & \( 0 \)                   & \( 0 \)                    & \( -\frac{1}{\sqrt{2}} \) & \( -\frac{1}{2} \)                        & yes        \\
+			\( \ket{\psi^{+}} \) & \( 0 \)                   & \( \frac{1}{\sqrt{2}} \) & \( \frac{1}{\sqrt{2}} \)  & \( 0 \)                    & \( -\frac{1}{2} \)                        & yes        \\
+			\( \ket{\psi^{-}} \) & \( 0 \)                   & \( \frac{1}{\sqrt{2}} \) & \( -\frac{1}{\sqrt{2}} \) & \( 0 \)                    & \( +\frac{1}{2} \)                        & yes        \\
 			\bottomrule
 		\end{tabular}
 	\end{center}
@@ -106,10 +113,10 @@ what is the maximum size of the quantum register state the world's memory can st
 	\[
 		\tfrac{1}{\sqrt{2}}\paren{\ket{00} + \ket{11}} = \paren{a\ket{0} + b\ket{1}} \otimes \paren{c\ket{0} + d\ket{1}} .
 	\]
-	Matching coefficients gives \( ac = \tfrac{1}{\sqrt{2}} \), \( ad = 0 \), \( bc = 0 \), \( bd = \tfrac{1}{\sqrt{2}} \).
+	Matching coefficients gives \( ac = \frac{1}{\sqrt{2}} \), \( ad = 0 \), \( bc = 0 \), \( bd = \frac{1}{\sqrt{2}} \).
 	From \( ac \ne 0 \) we get \( a \ne 0 \) and \( c \ne 0 \); then \( ad = 0 \) forces \( d = 0 \) and \( bc = 0 \) forces \( b = 0 \),
-	so \( bd = 0 \ne \tfrac{1}{\sqrt{2}} \) -- a contradiction.
-	The other three states fail in exactly the same way (for \( \ket{\psi^{\pm}} \) the roles of the vanishing and non-vanishing pairs are swapped).
+	so \( bd = 0 \ne \frac{1}{\sqrt{2}} \) -- a contradiction.
+	The other three states fail in exactly the same way.
 
 	\begin{remark}
 		Entanglement entropy gives the same verdict quantitatively: tracing out one qubit of any Bell state leaves \( \rho_A = \tfrac{1}{2}I \), the maximally mixed state, so \( S = 1 \) bit -- the largest value a two-qubit state can reach (\textbf{Problem 6}).
@@ -134,7 +141,7 @@ Is this really useful? In other words, is this a riskless investment for the inv
 \end{problem}
 
 \begin{solution}
-	\noindent \textbf{Short answer.} No. The correlation he is exploiting is real, but it is nothing more than a shared coin flip, and it is certainly not riskless.
+	\noindent \textbf{Short answer.} \( \boxed{\text{No.}} \) The correlation he is exploiting is real, but it is nothing more than a shared coin flip, and it is certainly not riskless.
 
 	\myspace
 
@@ -142,6 +149,8 @@ Is this really useful? In other words, is this a riskless investment for the inv
 	Whoever measures first gets \( \uparrow \) or \( \downarrow \) with probability \( \tfrac{1}{2} \) each, and the partner electron then agrees with certainty.
 	So yes -- by measuring his own electron he learns her outcome without waiting for the radio wave, which takes hours to cross the solar system.
 
+	\myspace
+	
 	\noindent \textbf{What it does not give him.} Nothing was \emph{transmitted}. His electron alone is described by the reduced density matrix
 	\[
 		\rho_A = \mathrm{Tr}_B \paren{\ket{\phi^{+}}\bra{\phi^{+}}} = \tfrac{1}{2}I,
