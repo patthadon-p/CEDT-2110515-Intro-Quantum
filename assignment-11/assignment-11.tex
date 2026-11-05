@@ -1,0 +1,358 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage{scrextend}
+\changefontsizes{9pt}
+\input{../course-config}
+\usepackage{../vendor/template/CEDT-Assignment-style}
+
+\begin{document}
+\subject
+\asgntitle{11}{}{Week 12}{\StudentID\ \StudentName}{\DefaultCollaborators}
+
+% ================================================================================ %
+%                                    Problem 01                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Unitary Gate Construction}
+\par Represent the gate \( \frac{1}{\sqrt{2}} \begin{pmatrix} -i & -i \\ -i & i \end{pmatrix} \)
+in the form of \( U_{\theta, \phi, \lambda, \gamma} \).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Definition.}
+	\[
+		U_{\theta, \phi, \lambda, \gamma} = e^{i\gamma}U_{\theta, \phi, \lambda} = \begin{pmatrix}
+			e^{i\gamma}\cos\paren{\frac{\theta}{2}}                 & -e^{i\paren{\lambda + \gamma}}\sin\paren{\frac{\theta}{2}}        \\
+			e^{i\paren{\phi + \gamma}}\sin\paren{\frac{\theta}{2}} & e^{i\paren{\lambda + \phi + \gamma}}\cos\paren{\frac{\theta}{2}}
+		\end{pmatrix}.
+	\]
+
+	\myspace
+
+	\noindent \textbf{Factor out the phase.} Taking \( -i \) out of every element,
+	\[
+		\frac{1}{\sqrt{2}}\begin{pmatrix} -i & -i \\ -i & i \end{pmatrix} = -i \cdot \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} = e^{-i\pi/2}H .
+	\]
+	So the gate is the Hadamard gate with a global phase \( e^{-i\pi/2} \).
+
+	\myspace
+
+	\noindent \textbf{Match element by element} (\( 0 \le \theta \le \pi \)).
+	\begin{itemize}
+		\item Magnitudes: \( \abs{\cos\paren{\frac{\theta}{2}}} = \abs{\sin\paren{\frac{\theta}{2}}} = \frac{1}{\sqrt{2}} \Rightarrow \theta = \frac{\pi}{2} \).
+		\item \( e_{00} \): \( e^{i\gamma}\cdot\frac{1}{\sqrt{2}} = \frac{-i}{\sqrt{2}} \Rightarrow e^{i\gamma} = -i \Rightarrow \gamma = -\frac{\pi}{2} \) (or \( \frac{3\pi}{2} \)).
+		\item \( e_{10}/e_{00} \): \( e^{i\phi} = \frac{-i}{-i} = 1 \Rightarrow \phi = 0 \).
+		\item \( e_{01}/e_{00} \): \( -e^{i\lambda} = \frac{-i}{-i} = 1 \Rightarrow e^{i\lambda} = -1 \Rightarrow \lambda = \pi \).
+	\end{itemize}
+	\noindent \textbf{Check.}
+	\[
+		U_{\frac{\pi}{2}, 0, \pi, -\frac{\pi}{2}} = \begin{pmatrix}
+			e^{-i\pi/2}\cdot\frac{1}{\sqrt{2}}                  & -e^{i\paren{\pi - \pi/2}}\cdot\frac{1}{\sqrt{2}}       \\
+			e^{i\paren{0 - \pi/2}}\cdot\frac{1}{\sqrt{2}}       & e^{i\paren{\pi + 0 - \pi/2}}\cdot\frac{1}{\sqrt{2}}
+		\end{pmatrix}
+		= \frac{1}{\sqrt{2}}\begin{pmatrix} -i & -i \\ -i & i \end{pmatrix}. \checkmark
+	\]
+	\[
+		\boxed{\ \frac{1}{\sqrt{2}}\begin{pmatrix} -i & -i \\ -i & i \end{pmatrix} = U_{\frac{\pi}{2}, 0, \pi, -\frac{\pi}{2}}\ }
+	\]
+	(\( \gamma = \frac{3\pi}{2} \) gives the same matrix, since \( e^{i3\pi/2} = e^{-i\pi/2} \).)
+	The notebook (\textbf{Appendix~1}) checks this with SymPy and with Qiskit's \texttt{UGate}\( \paren{\pi/2, 0, \pi} \) times \( e^{-i\pi/2} \).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 02                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{General Controlled Unitary Gate}
+\par Using the method in below example, show that other non-zero and non-unity elements in Eq. (1) are correct.
+
+\noindent \textbf{Example:} \( e_{2, 2} = \bra{10} C - U_{\theta, \phi, \lambda, \gamma} \ket{10} = e^{i\gamma} \cos\paren{\frac{\theta}{2}} \)
+
+\noindent \textbf{Eq(1):}
+\begin{align}
+	C - U_{\theta, \phi, \lambda, \gamma} & =
+	\begin{pmatrix}
+		1 & 0 & 0                                                        & 0                                                                  \\
+		0 & 1 & 0                                                        & 0                                                                  \\
+		0 & 0 & e^{i\gamma} \cos\paren{\frac{\theta}{2}}                 & -e^{i \paren{\lambda + \gamma}} \sin\paren{\frac{\theta}{2}}       \\
+		0 & 0 & e^{i \paren{\phi + \gamma}} \sin\paren{\frac{\theta}{2}} & e^{i \paren{\lambda + \phi + \gamma}} \cos\paren{\frac{\theta}{2}}
+	\end{pmatrix}
+\end{align}
+
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Method.} \( C\text{-}U \) does nothing when the control (first qubit) is \( \ket{0} \), and applies \( U = U_{\theta, \phi, \lambda, \gamma} \) to the second qubit when the control is \( \ket{1} \):
+	\[
+		C\text{-}U\ket{0x} = \ket{0}\ket{x}, \qquad C\text{-}U\ket{1x} = \ket{1}\paren{U\ket{x}}.
+	\]
+	The element in row \( r \) and column \( c \) is \( e_{r, c} = \bra{r} C\text{-}U \ket{c} \). As in the example, \( C\text{-}U\ket{10} = \ket{1}U\ket{0} \) and \( C\text{-}U\ket{11} = \ket{1}U\ket{1} \), where
+	\begin{align*}
+		U\ket{0} & = \begin{pmatrix} e^{i\gamma}\cos\paren{\frac{\theta}{2}} \\ e^{i\paren{\phi + \gamma}}\sin\paren{\frac{\theta}{2}} \end{pmatrix} = e^{i\gamma}\cos\paren{\tfrac{\theta}{2}}\ket{0} + e^{i\paren{\phi + \gamma}}\sin\paren{\tfrac{\theta}{2}}\ket{1}, \\
+		U\ket{1} & = \begin{pmatrix} -e^{i\paren{\lambda + \gamma}}\sin\paren{\frac{\theta}{2}} \\ e^{i\paren{\lambda + \phi + \gamma}}\cos\paren{\frac{\theta}{2}} \end{pmatrix} = -e^{i\paren{\lambda + \gamma}}\sin\paren{\tfrac{\theta}{2}}\ket{0} + e^{i\paren{\lambda + \phi + \gamma}}\cos\paren{\tfrac{\theta}{2}}\ket{1}.
+	\end{align*}
+	So
+	\begin{align*}
+		C\text{-}U\ket{10} & = e^{i\gamma}\cos\paren{\tfrac{\theta}{2}}\ket{10} + e^{i\paren{\phi + \gamma}}\sin\paren{\tfrac{\theta}{2}}\ket{11},                     \\
+		C\text{-}U\ket{11} & = -e^{i\paren{\lambda + \gamma}}\sin\paren{\tfrac{\theta}{2}}\ket{10} + e^{i\paren{\lambda + \phi + \gamma}}\cos\paren{\tfrac{\theta}{2}}\ket{11}.
+	\end{align*}
+
+	\myspace
+
+	\noindent \textbf{The other three elements.} Using \( \braket{10 \vert 10} = \braket{11 \vert 11} = 1 \) and \( \braket{10 \vert 11} = \braket{11 \vert 10} = 0 \):
+	\begin{align*}
+		e_{2, 3} & = \bra{10} C\text{-}U \ket{11} = -e^{i\paren{\lambda + \gamma}}\sin\paren{\tfrac{\theta}{2}}\braket{10 \vert 10} + e^{i\paren{\lambda + \phi + \gamma}}\cos\paren{\tfrac{\theta}{2}}\braket{10 \vert 11} = -e^{i\paren{\lambda + \gamma}}\sin\paren{\tfrac{\theta}{2}} \checkmark \\
+		e_{3, 2} & = \bra{11} C\text{-}U \ket{10} = e^{i\gamma}\cos\paren{\tfrac{\theta}{2}}\braket{11 \vert 10} + e^{i\paren{\phi + \gamma}}\sin\paren{\tfrac{\theta}{2}}\braket{11 \vert 11} = e^{i\paren{\phi + \gamma}}\sin\paren{\tfrac{\theta}{2}} \checkmark \\
+		e_{3, 3} & = \bra{11} C\text{-}U \ket{11} = -e^{i\paren{\lambda + \gamma}}\sin\paren{\tfrac{\theta}{2}}\braket{11 \vert 10} + e^{i\paren{\lambda + \phi + \gamma}}\cos\paren{\tfrac{\theta}{2}}\braket{11 \vert 11} = e^{i\paren{\lambda + \phi + \gamma}}\cos\paren{\tfrac{\theta}{2}} \checkmark
+	\end{align*}
+	These are the remaining entries of the lower-right block of Eq.~(1).
+
+	\myspace
+
+	\noindent \textbf{Remaining elements.} For completeness, \( C\text{-}U\ket{00} = \ket{00} \) and \( C\text{-}U\ket{01} = \ket{01} \), so \( e_{0, 0} = e_{1, 1} = 1 \) and every other element of columns \( 0, 1 \) is \( 0 \). Columns \( 2, 3 \) only contain \( \ket{10}, \ket{11} \), so \( e_{0, 2} = e_{0, 3} = e_{1, 2} = e_{1, 3} = 0 \).
+	The notebook (\textbf{Appendix~1}) computes all 16 elements \( \bra{r} C\text{-}U \ket{c} \) from this definition with SymPy and gets exactly Eq.~(1).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 03                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{General Controlled Unitary Gate Matrix}
+\par Use matrix multiplication to prove Eq.(2).
+
+\noindent \textbf{Eq(2):}
+\begin{align}
+	C - U_{\theta, \phi, \lambda, \gamma} & = \ket{0}\bra{0} \otimes I + \ket{1}\bra{1} \otimes U_{\theta, \phi, \lambda, \gamma}
+\end{align}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Projectors.}
+	\[
+		\ket{0}\bra{0} = \begin{pmatrix} 1 \\ 0 \end{pmatrix}\begin{pmatrix} 1 & 0 \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}, \qquad
+		\ket{1}\bra{1} = \begin{pmatrix} 0 \\ 1 \end{pmatrix}\begin{pmatrix} 0 & 1 \end{pmatrix} = \begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix}.
+	\]
+	Write \( U = U_{\theta, \phi, \lambda, \gamma} = \begin{pmatrix} u_{00} & u_{01} \\ u_{10} & u_{11} \end{pmatrix} \) with
+	\( u_{00} = e^{i\gamma}\cos\paren{\frac{\theta}{2}} \), \( u_{01} = -e^{i\paren{\lambda + \gamma}}\sin\paren{\frac{\theta}{2}} \), \( u_{10} = e^{i\paren{\phi + \gamma}}\sin\paren{\frac{\theta}{2}} \), \( u_{11} = e^{i\paren{\lambda + \phi + \gamma}}\cos\paren{\frac{\theta}{2}} \).
+
+	\myspace
+
+	\noindent \textbf{Tensor products.} \( A \otimes B \) replaces each element \( a_{ij} \) of \( A \) by the block \( a_{ij}B \):
+	\[
+		\ket{0}\bra{0} \otimes I = \begin{pmatrix} 1 \cdot I & 0 \cdot I \\ 0 \cdot I & 0 \cdot I \end{pmatrix} = \begin{pmatrix}
+			1 & 0 & 0 & 0 \\
+			0 & 1 & 0 & 0 \\
+			0 & 0 & 0 & 0 \\
+			0 & 0 & 0 & 0
+		\end{pmatrix},
+	\]
+	\[
+		\ket{1}\bra{1} \otimes U = \begin{pmatrix} 0 \cdot U & 0 \cdot U \\ 0 \cdot U & 1 \cdot U \end{pmatrix} = \begin{pmatrix}
+			0 & 0 & 0      & 0      \\
+			0 & 0 & 0      & 0      \\
+			0 & 0 & u_{00} & u_{01} \\
+			0 & 0 & u_{10} & u_{11}
+		\end{pmatrix}.
+	\]
+
+	\noindent \textbf{Sum.}
+	\[
+		\ket{0}\bra{0} \otimes I + \ket{1}\bra{1} \otimes U = \begin{pmatrix}
+			1 & 0 & 0      & 0      \\
+			0 & 1 & 0      & 0      \\
+			0 & 0 & u_{00} & u_{01} \\
+			0 & 0 & u_{10} & u_{11}
+		\end{pmatrix} = \begin{pmatrix}
+			1 & 0 & 0                                                        & 0                                                                  \\
+			0 & 1 & 0                                                        & 0                                                                  \\
+			0 & 0 & e^{i \gamma} \cos\paren{\frac{\theta}{2}}                & -e^{i \paren{\lambda + \gamma}} \sin\paren{\frac{\theta}{2}}       \\
+			0 & 0 & e^{i \paren{\phi + \gamma}} \sin\paren{\frac{\theta}{2}} & e^{i \paren{\lambda + \phi + \gamma}} \cos\paren{\frac{\theta}{2}}
+		\end{pmatrix},
+	\]
+	which is Eq.~(1). \( \blacksquare \)
+
+	\myspace
+
+	\noindent Eq.~(2) also reads naturally: ``if the control is \( \ket{0} \), apply \( I \); if it is \( \ket{1} \), apply \( U \).''
+	The notebook (\textbf{Appendix~1}) checks the product with SymPy, and for 20 random angles it also agrees with Qiskit's \texttt{CUGate} (which puts the control on \( q_0 \), so the same matrix appears as \( I \otimes \ket{0}\bra{0} + U \otimes \ket{1}\bra{1} \)).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 04                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{QPE Calculation}
+\par In the text, we used \( \ket{e_1} \) as the input to the b-register.
+Now, derive the QPE result for \( \ket{e_0} \) of the Z-gate.
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Setup.} As in the text, the c-register has \( n = 2 \) qubits (\( c_1c_0 \), \( N = 2^2 = 4 \)) and the b-register holds an eigenvector of \( U = Z \):
+	\[
+		Z\ket{e_0} = Z\ket{0} = +1\ket{0} = e^{i2\pi \cdot 0}\ket{0} \ \Rightarrow\ \psi = 0, \qquad
+		Z\ket{e_1} = Z\ket{1} = -1\ket{1} = e^{i2\pi \cdot \frac{1}{2}}\ket{1} \ \Rightarrow\ \psi = \tfrac{1}{2}.
+	\]
+	The circuit is: \( H \) on both c-qubits, \( C\text{-}U^{2^0} \) controlled by \( c_0 \), \( C\text{-}U^{2^1} \) controlled by \( c_1 \), then the Fourier step \( U_{QFT} \) (course convention, \( \paren{U_{QFT}}_{kj} = \frac{1}{\sqrt{N}}\omega^{-kj} \), i.e.\ the inverse of the map \( \ket{k} \mapsto \frac{1}{\sqrt{N}}\sum_j\omega^{kj}\ket{j} \) that the kickback produces), and a measurement of the c-register.
+
+	\myspace
+
+	\noindent \textbf{Step 1: initial state and Hadamards.}
+	\[
+		\ket{00}\ket{e_0} \xrightarrow{H \otimes H} \frac{1}{2}\paren{\ket{00} + \ket{01} + \ket{10} + \ket{11}}\ket{0}.
+	\]
+
+	\noindent \textbf{Step 2: controlled gates.} \( C\text{-}U^{2^0} = C\text{-}Z \), and \( C\text{-}U^{2^1} = C\text{-}Z^2 = C\text{-}I = I \). Since \( Z\ket{0} = \ket{0} \), the controlled-\( Z \) gives a phase \( (+1)^{c_0} = 1 \) to every term (no phase kickback):
+	\[
+		\frac{1}{2}\paren{\ket{00} + \ket{01} + \ket{10} + \ket{11}}\ket{0} \quad \text{(unchanged)}.
+	\]
+	In general the term \( \ket{j} \) gets \( e^{i2\pi\psi j} \); here \( \psi = 0 \), so all phases are \( 1 \).
+
+	\myspace
+
+	\noindent \textbf{Step 3: Fourier step} (\( \omega = e^{i2\pi/4} = i \), matrix of Eq.~(3) in Assignment 10):
+	\[
+		U_{QFT}\cdot\frac{1}{2}\begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix} = \frac{1}{2}\begin{pmatrix}
+			1 & 1  & 1  & 1  \\
+			1 & -i & -1 & i  \\
+			1 & -1 & 1  & -1 \\
+			1 & i  & -1 & -i
+		\end{pmatrix}\frac{1}{2}\begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix} = \frac{1}{4}\begin{pmatrix} 4 \\ 1 - i - 1 + i \\ 1 - 1 + 1 - 1 \\ 1 + i - 1 - i \end{pmatrix} = \begin{pmatrix} 1 \\ 0 \\ 0 \\ 0 \end{pmatrix} = \ket{00}.
+	\]
+
+	\noindent \textbf{Result.} The final state is \( \ket{00}\ket{0} \): the c-register reads \( k = 0 \) with probability 1, so
+	\[
+		2\pi\psi = \frac{2\pi k}{2^n} = \frac{2\pi \cdot 0}{4} = 0 \ \Rightarrow\ \text{eigenvalue } e^{i0} = 1,
+	\]
+	which is the correct eigenvalue of \( Z \) for \( \ket{e_0} = \ket{0} \).
+	For comparison, \( \ket{e_1} \) (the text) gives \( \frac{1}{2}\paren{\ket{00} - \ket{01} + \ket{10} - \ket{11}} \) after step 2 and \( \ket{10} \) after step 3, so \( k = 2 \), \( \psi = \frac{2}{4} = \frac{1}{2} \), eigenvalue \( e^{i\pi} = -1 \).
+
+	\myspace
+
+	\noindent \textbf{Simulation} (\texttt{AerSimulator}, 1024 shots, ideal and \texttt{ibm\_marrakesh} noise model, as in Assignments 9 and 10). The b-register is \( q_0 \) and is not measured, so the strings are \( c_1c_0 0 \).
+	\fig*[0.55\linewidth]{images/problem-4-circuit.png}{}{}
+	\fig*[0.7\linewidth]{images/problem-4-answer.png}{}{}
+	\noindent \( \ket{e_0} \) gives \( \texttt{000} \) (\( k = 0 \)) in all 1024 ideal shots and in 1008 noisy shots; \( \ket{e_1} \) gives \( \texttt{100} \) (\( k = 2 \)) in all 1024 ideal shots and in 1009 noisy shots.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 05                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{QPE on IBM-Q}
+\par Repeat what we did in the text, but use 3 qubits \( \paren{n = 3} \) for the c-register.
+\par\noindent \textit{Hints:} You need to create a \( z^{2^3 - 1} \) gate
+and its controlled version and simplify it first.
+The answer should be \( \ket{1000} \).
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Circuit.} The b-register is \( q_0 \), prepared in \( \ket{e_1} = \ket{1} \) with an \( X \) gate (\( \psi = \frac{1}{2} \)). The c-register is \( q_1, q_2, q_3 \) (\( c_0, c_1, c_2 \); \( q_3 \) is the MSB), \( N = 2^3 = 8 \). Qubit \( c_m \) controls \( U^{2^m} \), \( m = 0, 1, 2 \).
+
+	\myspace
+
+	\noindent \textbf{Simplify the controlled gates first.} In the \( U_{\theta, \phi, \lambda} \) form,
+	\[
+		Z = U_{0, 0, \pi} = \begin{pmatrix} 1 & 0 \\ 0 & e^{i\pi} \end{pmatrix}
+		\quad\Rightarrow\quad
+		Z^{2^m} = U_{0, 0, 2^m\pi} = \begin{pmatrix} 1 & 0 \\ 0 & e^{i2^m\pi} \end{pmatrix}:
+	\]
+	\begin{itemize}
+		\item \( m = 0 \): \( Z^{2^0} = Z \) \( \Rightarrow \) \( C\text{-}Z \) (controlled-\( U_{0, 0, \pi, 0} \)) from \( q_1 \) to \( q_0 \).
+		\item \( m = 1 \): \( Z^{2^1} = Z^2 = I \) \( \Rightarrow \) \( C\text{-}I = I_4 \), removed.
+		\item \( m = 2 \): \( Z^{2^{3 - 1}} = Z^4 = \paren{Z^2}^2 = I \) \( \Rightarrow \) \( C\text{-}Z^4 = \ket{0}\bra{0} \otimes I + \ket{1}\bra{1} \otimes I = I_4 \) (Eq.~(2)), removed.
+	\end{itemize}
+	So only one controlled gate is left. The notebook (\textbf{Appendix~1}) builds the full circuit with all three controlled gates and checks that it has the same matrix as the simplified one.
+	\fig*[0.85\linewidth]{images/problem-5-circuit.png}{}{}
+
+	\noindent \textbf{Derivation.}
+	\begin{align*}
+		\ket{000}\ket{1} & \xrightarrow{H^{\otimes 3}} \frac{1}{\sqrt{8}}\sum_{j = 0}^{7}\ket{j}\ket{1}
+		\xrightarrow{C\text{-}Z \text{ from } c_0} \frac{1}{\sqrt{8}}\sum_{j = 0}^{7}(-1)^{j_0}\ket{j}\ket{1} = \frac{1}{\sqrt{8}}\sum_{j = 0}^{7}e^{i2\pi\frac{1}{2}j}\ket{j}\ket{1} \\
+		                 & = \underbrace{\tfrac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}}}_{c_2}\underbrace{\tfrac{1}{\sqrt{2}}\paren{\ket{0} + \ket{1}}}_{c_1}\underbrace{\tfrac{1}{\sqrt{2}}\paren{\ket{0} - \ket{1}}}_{c_0}\ket{1}
+	\end{align*}
+	(\( (-1)^j = (-1)^{j_0} \), since only the last bit decides whether \( j \) is odd). Applying \( U_{QFT} \) (\( \omega = e^{i\pi/4} \)):
+	\[
+		\frac{1}{\sqrt{8}}\sum_{j = 0}^{7}e^{i\pi j}\ket{j} \xrightarrow{U_{QFT}} \sum_{k = 0}^{7}\underbrace{\sqbracket{\frac{1}{8}\sum_{j = 0}^{7}e^{i2\pi j\paren{\frac{1}{2} - \frac{k}{8}}}}}_{= \delta_{k, 4}}\ket{k} = \ket{4} = \ket{100}.
+	\]
+	For \( k = 4 \) every term is \( 1 \), and for \( k \neq 4 \) it is a geometric sum of a root of unity \( \neq 1 \), which is \( 0 \) (as in Assignment 10, Problem 3).
+	The final state is \( \ket{100}_c\ket{1}_b \), so \( k = 4 \) and \( 2\pi\psi = \frac{2\pi \cdot 4}{2^3} = \pi \), i.e.\ eigenvalue \( e^{i\pi} = -1 \). \checkmark
+
+	\myspace
+
+	\noindent \textbf{Results} (\texttt{AerSimulator}, 1024 shots, ideal and \texttt{ibm\_marrakesh} noise model). Only the c-register (\( q_1, q_2, q_3 \)) is measured, into classical bits \( 1, 2, 3 \); bit \( 0 \) of the b-register stays \( 0 \). So the readout is \( \texttt{1000} \) = \( \ket{100}_c \) followed by the unmeasured bit, as given in the hint.
+	\fig*[0.45\linewidth]{images/problem-5-answer.png}{}{}
+	\noindent Ideal: \( \texttt{1000} \) in all 1024 shots. With the noise model: \( \texttt{1000} \) in 991 shots (96.8\%), the rest spread over \( \texttt{0000} \) (14), \( \texttt{1010} \) (10) and a few others. If the b-register is measured too, the ideal result is \( \texttt{1001} \), i.e.\ it is still \( \ket{e_1} = \ket{1} \): QPE does not change the eigenvector.
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                    Problem 06                                    %
+% ================================================================================ %
+\begin{problem}
+\textbf{Derive the General QPE Algorithm}
+\par Show that if c-register has \( n \) qubits, the answer is that in Eq. (3).
+
+\noindent \textbf{Eq(3):}
+\begin{align}
+	2 \pi\psi & =  \frac{2\pi k}{2^n}
+\end{align}
+\end{problem}
+
+\begin{solution}
+	\noindent \textbf{Setting.} Let \( U\ket{e} = e^{i2\pi\psi}\ket{e} \) with \( 0 \le \psi < 1 \). The c-register has \( n \) qubits \( c_{n - 1}\dots c_1c_0 \), \( N = 2^n \), and a basis state is \( \ket{j} = \ket{j_{n - 1}\dots j_0} \) with \( j = \sum_{m = 0}^{n - 1}j_m2^m \). Qubit \( c_m \) controls \( U^{2^m} \).
+
+	\myspace
+
+	\noindent \textbf{Step 1: Hadamards.}
+	\[
+		\ket{0}^{\otimes n}\ket{e} \xrightarrow{H^{\otimes n}} \frac{1}{\sqrt{N}}\sum_{j = 0}^{N - 1}\ket{j}\ket{e}.
+	\]
+
+	\noindent \textbf{Step 2: controlled-\( U^{2^m} \) (phase kickback).} Since \( U^{p}\ket{e} = e^{i2\pi\psi p}\ket{e} \), the gate controlled by \( c_m \) multiplies \( \ket{j}\ket{e} \) by \( e^{i2\pi\psi 2^m j_m} \) (by \( 1 \) if \( j_m = 0 \)). The b-register stays \( \ket{e} \), and the phases of all \( n \) gates multiply:
+	\[
+		\prod_{m = 0}^{n - 1}e^{i2\pi\psi 2^m j_m} = e^{i2\pi\psi\sum_m j_m2^m} = e^{i2\pi\psi j}
+		\quad\Rightarrow\quad
+	\]
+	\[
+		\frac{1}{\sqrt{N}}\sum_{j = 0}^{N - 1}e^{i2\pi\psi j}\ket{j}\ket{e} = \bigotimes_{m = n - 1}^{0}\frac{\ket{0} + e^{i2\pi\psi 2^m}\ket{1}}{\sqrt{2}}\ \ket{e}.
+	\]
+
+	\noindent \textbf{Step 3: Fourier step.} With \( \paren{U_{QFT}}_{kj} = \frac{1}{\sqrt{N}}e^{-i2\pi kj/N} \),
+	\[
+		U_{QFT}\frac{1}{\sqrt{N}}\sum_{j = 0}^{N - 1}e^{i2\pi\psi j}\ket{j} = \sum_{k = 0}^{N - 1}a_k\ket{k},
+	\]
+	\[
+		a_k = \frac{1}{N}\sum_{j = 0}^{N - 1}e^{i2\pi j\paren{\psi - \frac{k}{N}}} = \frac{1}{N}\sum_{j = 0}^{N - 1}q^{j}, \quad q = e^{i2\pi\paren{\psi - k/N}}.
+	\]
+
+	\noindent \textbf{Step 4: measurement.} Suppose \( \psi = \frac{k_0}{N} \) for an integer \( 0 \le k_0 < N \) (\( \psi \) has an exact \( n \)-bit binary expansion). Then \( q = e^{i2\pi\paren{k_0 - k}/N} \):
+	\begin{itemize}
+		\item \( k = k_0 \): \( q = 1 \), so \( a_{k_0} = \frac{1}{N} \cdot N = 1 \).
+		\item \( k \neq k_0 \): \( q \neq 1 \) but \( q^N = e^{i2\pi\paren{k_0 - k}} = 1 \), so \( a_k = \frac{1}{N}\cdot\frac{1 - q^N}{1 - q} = 0 \).
+	\end{itemize}
+	So the c-register ends in \( \ket{k_0} \) with probability \( 1 \), and the measured integer \( k \) satisfies \( \psi = k/2^n \), i.e.
+	\[
+		\boxed{\ 2\pi\psi = \frac{2\pi k}{2^n}\ }
+	\]
+	which is Eq.~(3). \( \blacksquare \)
+	Problems 4 and 5 are the special cases \( n = 2, k = 0 \) and \( n = 3, k = 4 \).
+
+	\myspace
+
+	\noindent \textbf{If \( \psi \) is not a multiple of \( 1/2^n \).} Then no \( a_k \) is exactly \( 1 \): \( \abs{a_k}^2 = \frac{\sin^2\paren{\pi N\delta}}{N^2\sin^2\paren{\pi\delta}} \) with \( \delta = \psi - k/N \). The distribution peaks at the \( k \) closest to \( N\psi \), with probability at least \( 4/\pi^2 \approx 0.405 \). Eq.~(3) is then the best \( n \)-bit estimate of \( \psi \), and more c-qubits give a better estimate.
+	The notebook (\textbf{Appendix~1}) checks that \( \psi = k/2^n \) is read out with probability 1 for every \( k \) and \( n = 1, \dots, 6 \), and runs full QPE circuits for \( \psi = 5/8, 11/16, 19/32 \). For \( \psi = 0.3 \) it gives \( k/2^n = 0.25 \) (\( n = 3 \), \( P = 0.58 \)), \( 0.3125 \) (\( n = 5 \), \( P = 0.57 \)), and \( 0.30078 \) (\( n = 8 \), \( P = 0.88 \)).
+\end{solution}
+% ================================================================================ %
+
+% ================================================================================ %
+%                                     Appendix                                     %
+% ================================================================================ %
+
+\myappendix{code/assignment-11-code.pdf}{Assignment 11 | Code Solution}
+
+% ================================================================================ %
+
+\end{document}
